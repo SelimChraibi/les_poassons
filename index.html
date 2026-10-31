@@ -475,8 +475,7 @@ input.dim { opacity: .4; }
 @keyframes invite { 0% { transform: scale(1); opacity: .9; } 70%, 100% { transform: scale(1.6); opacity: 0; } }
 #tour { position: fixed; inset: 0; z-index: 80; opacity: 0; transition: opacity .3s ease; }
 #tour.on { opacity: 1; }
-#tour .tspot { position: fixed; left: 0; top: 0; pointer-events: none; box-shadow: 0 0 0 200vmax rgba(3, 9, 20, .62), 0 0 0 2px rgba(124, 247, 234, .6), 0 0 28px 2px rgba(124, 247, 234, .35); }
-#tour .tspot.none { box-shadow: 0 0 0 200vmax rgba(3, 9, 20, .62); }
+#tour .tspot { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 #tour .tcard { position: fixed; width: min(340px, calc(100vw - 32px)); padding: 20px 20px 14px; border-radius: 24px; background: var(--panel-2); border: 1px solid var(--glass-line); box-shadow: var(--glass-shadow); transition: opacity .16s ease, transform .16s ease; }
 #tour .tcard.swap { opacity: 0; transform: translateY(6px); }
 #tour h3 { margin: 0 0 6px; font-size: 20px; font-weight: 400; color: #fff; }
@@ -2021,49 +2020,88 @@ const Sound = {
       case 'woozy': [0, 0.17, 0.34].forEach((d, i) => T(540 - i * 40, 0.2, 'sine', 0.05, { to: 740 - i * 60, delay: d, glide: 0.1 })); T(690, 0.55, 'triangle', 0.035, { to: 340, delay: 0.5, glide: 0.5, wet: 0.3 }); break;
     }
   },
-  /* a fish breaking the surface (into: falling back in), heard where it is, through the fish's own channel. In: the
-     slap of the water, the round rising "plunk" of the hollow closing, the rush of the splash and the column
-     dropping back, the drops pattering down one by one, and the air dragged under bubbling up. Out: the water
-     pulled up after it, and drips. k 0..1: how hard; a bigger fish sounds deeper */
+  /* a body breaking the surface (into: falling back in), heard where it happens: a fish through its own channel
+     (its place in space), anything else (thrown litter) through the effects. The sound itself is made once, from
+     what a real dive is made of, and kept (makeSplash) */
   leapSplash(f, k, into) {
-    const c = this.ctx;
-    if (!c || c.state !== 'running' || !this.on || !this.fishOn || !f || f.muted) return;
-    const t = c.currentTime, size = clamp((f.w || 120) / 150, 0.5, 2.2), deep = 1 / Math.sqrt(size);
-    /* (heard where the fish breaks the surface: its channel places it) */
-    const bus = c.createGain(); bus.gain.value = 0.9;
-    const wet = c.createGain(); wet.gain.value = 0.16 * this.fishVol;
-    this.placeFish(f);
-    bus.connect(this.fishOut(f)); bus.connect(wet); wet.connect(this.rev);
-    const white = this.whiteBuf || (this.whiteBuf = this.noiseBuf(2));
-    const burst = (at, dur, type, f0, f1, q, peak, att) => {
-      const s = c.createBufferSource(); s.buffer = white;
-      const b = c.createBiquadFilter(); b.type = type; b.Q.value = q;
-      b.frequency.setValueAtTime(f0, t + at); b.frequency.exponentialRampToValueAtTime(f1, t + at + dur);
-      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t + at); g.gain.exponentialRampToValueAtTime(peak, t + at + att); g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
-      s.connect(b); b.connect(g); g.connect(bus); s.start(t + at, Math.random() * 1.5); s.stop(t + at + dur + 0.05);
-    };
-    /* a drop or a hollow closing: a short sine whose pitch jumps up */
-    const plink = (at, f0, peak, dur, rise = 1.7) => {
-      const o = c.createOscillator(); o.type = 'sine';
-      o.frequency.setValueAtTime(f0, t + at); o.frequency.exponentialRampToValueAtTime(f0 * rise, t + at + dur * 0.8);
-      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t + at); g.gain.exponentialRampToValueAtTime(peak, t + at + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
-      o.connect(g); g.connect(bus); o.start(t + at); o.stop(t + at + dur + 0.03);
-    };
-    if (into) {
-      burst(0, 0.1, 'bandpass', 2600, 1100, 0.7, 0.4 * (0.4 + 0.6 * k), 0.003);
-      plink(0.025, 360 * deep, 0.2 * (0.5 + 0.5 * k), 0.15, 2.1);
-      burst(0.01, 0.6 + 0.3 * k, 'lowpass', 6000, 650, 0.5, 0.26 * (0.4 + 0.6 * k), 0.02);
-      burst(0.24, 0.32, 'bandpass', 1400, 800, 1.1, 0.08 * k, 0.05);
-      const n = Math.round(9 + 12 * k);
-      for (let i = 0; i < n; i++) plink(0.14 + Math.pow(Math.random(), 0.75) * 0.8, rand(1300, 3800), rand(0.012, 0.045), rand(0.02, 0.05));
-      for (let i = 0; i < 3; i++) plink(0.18 + i * rand(0.07, 0.15), rand(150, 230) * deep, 0.05, 0.1, 1.9);
-    } else {
-      burst(0, 0.24, 'bandpass', 650, 2700, 0.9, 0.18 * (0.4 + 0.6 * k), 0.03);
-      plink(0.035, 520 * deep, 0.07, 0.1, 1.6);
-      const n = Math.round(5 + 7 * k);
-      for (let i = 0; i < n; i++) plink(0.12 + Math.random() * 0.65, rand(1500, 4000), rand(0.01, 0.032), rand(0.02, 0.045));
+    const c = this.ctx, fish = !!(f && f.id);
+    if (!c || c.state !== 'running' || !this.on || !f || (fish ? !this.fishOn || f.muted : !this.uiOn)) return;
+    const key = into ? 'in' : 'out', bank = this.splashBank[key] || (this.splashBank[key] = []);
+    if (bank.length < 3) bank.push(this.makeSplash(into));
+    this.splashN = (this.splashN || 0) + 1;
+    const buf = bank[this.splashN % bank.length], size = clamp((f.w || 120) / 150, 0.5, 2.2);
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    /* a bigger body sounds deeper */
+    src.playbackRate.value = clamp(Math.pow(size, -0.2) * rand(0.94, 1.06), 0.7, 1.4);
+    const g = c.createGain(); g.gain.value = (into ? 0.7 : 0.42) * (0.45 + 0.55 * k);
+    const wet = c.createGain(); wet.gain.value = 0.14 * (fish ? this.fishVol : this.uiVol);
+    let out;
+    if (fish) { this.placeFish(f); out = this.fishOut(f); }
+    else {
+      const p = c.createStereoPanner(); p.pan.value = clamp((f.x / Scene.W - 0.5) * 1.4, -0.8, 0.8); p.connect(this.sfx); out = p;
+      setTimeout(() => { try { p.disconnect(); } catch (e) { /* gone */ } }, 2000);
     }
-    setTimeout(() => { try { bus.disconnect(); wet.disconnect(); } catch (e) { /* ignore */ } }, 2200);
+    src.connect(g); g.connect(out); g.connect(wet); wet.connect(this.rev);
+    src.onended = () => { try { g.disconnect(); wet.disconnect(); } catch (e) { /* gone */ } };
+    src.start();
+  },
+  /* a dive, built from what is heard at a real one, into a buffer: the slap of the body on the water with a thud in
+     it, the sploosh of the water thrown up (a broad hush that darkens as it falls), the hollow closing with a round
+     low bloop, the air dragged under gurgling up in small bubbles, then the drops falling back one by one, each a
+     tiny click and a rising plink, thick at first and thinning out. Out of the water: the water pulled up after the
+     fish, and its drops dripping back */
+  splashBank: {},
+  makeSplash(into) {
+    const c = this.ctx, sr = c.sampleRate, len = Math.floor(sr * (into ? 1.35 : 1)), d = new Float32Array(len), R = Math.random;
+    const add = (i, v) => { if (i >= 0 && i < len) d[i] += v; };
+    /* a damped sine whose pitch climbs as it rings: a bubble, a drop (rise < 0: it falls, a thud) */
+    const blip = (t0, f0, rise, dec, amp) => {
+      const n = Math.floor(dec * 6 * sr), i0 = Math.floor(t0 * sr);
+      let ph = 0;
+      for (let j = 0; j < n; j++) {
+        const t = j / sr;
+        ph += TAU * f0 * (1 + rise * (1 - Math.exp(-t / (dec * 1.5)))) / sr;
+        add(i0 + j, Math.sin(ph) * Math.min(1, t / 0.0006) * Math.exp(-t / dec) * amp);
+      }
+    };
+    /* noise through a band that slides from fc0 to fc1 (a state-variable filter) */
+    const burst = (t0, dur, fc0, fc1, q, amp, att) => {
+      const n = Math.floor(dur * sr), i0 = Math.floor(t0 * sr);
+      let low = 0, band = 0;
+      for (let j = 0; j < n; j++) {
+        const u = j / n, fc = Math.min(fc0 * Math.pow(fc1 / fc0, u), sr * 0.2), fk = 2 * Math.sin(Math.PI * fc / sr);
+        low += fk * band; const hi = R() * 2 - 1 - low - q * band; band += fk * hi;
+        add(i0 + j, band * Math.min(1, j / sr / att) * Math.pow(1 - u, 1.6) * amp);
+      }
+    };
+    /* a drop falling back: a click and its plink */
+    const drop = (t, a) => { burst(t, 0.005, 4800, 3200, 0.5, a * 0.45, 0.0012); blip(t + 0.001, 1300 + R() * 2700, 0.45, 0.006 + R() * 0.012, a); };
+    if (into) {
+      burst(0, 0.09, 2800, 900, 0.9, 0.9, 0.0008);
+      blip(0, 95, -0.35, 0.05, 0.55);
+      let l1 = 0, l2 = 0;
+      const n = Math.floor(0.75 * sr), i0 = Math.floor(0.004 * sr), ph0 = R() * 6;
+      for (let j = 0; j < n; j++) {
+        const t = j / sr, fc = 4200 * Math.exp(-t * 3.2) + 500, a = 1 - Math.exp(-TAU * fc / sr);
+        l1 += a * (R() * 2 - 1 - l1); l2 += a * (l1 - l2);
+        add(i0 + j, l2 * Math.min(1, t / 0.012) * Math.exp(-t / 0.2) * (0.75 + 0.25 * Math.sin(t * 37 + ph0)) * 2.2);
+      }
+      blip(0.09 + R() * 0.03, 160 + R() * 60, 1.2, 0.045, 0.4);
+      for (let i = 0; i < 18; i++) { const t = 0.1 + Math.pow(R(), 1.5) * 0.55; blip(t, 500 + R() * 1600, 0.25, 0.008 + R() * 0.014, 0.12 * (1 - t) * (0.4 + R())); }
+      for (let i = 0; i < 34; i++) { const t = 0.18 + Math.pow(R(), 0.8) * 0.95; drop(t, 0.16 * Math.exp(-(t - 0.2) * 1.6) * (0.3 + R())); }
+    } else {
+      burst(0, 0.26, 600, 2600, 0.7, 0.6, 0.02);
+      blip(0.02, 260 + R() * 80, 0.8, 0.035, 0.16);
+      for (let i = 0; i < 16; i++) { const t = 0.15 + Math.pow(R(), 0.9) * 0.7; drop(t, 0.12 * Math.exp(-(t - 0.15) * 1.8) * (0.3 + R())); }
+    }
+    let pk = 0;
+    for (let i = 0; i < len; i++) pk = Math.max(pk, Math.abs(d[i]));
+    const sc = 0.9 / Math.max(pk, 1e-4), fade = Math.floor(0.02 * sr);
+    for (let i = 0; i < len; i++) d[i] *= sc * (i > len - fade ? (len - i) / fade : 1);
+    const b = c.createBuffer(1, len, sr);
+    b.copyToChannel(d, 0);
+    return b;
   },
   /* paper tearing: a dry crackle of fibres giving way, thickest in the middle, over the time the rip takes */
   rip(dur) {
@@ -5546,6 +5584,16 @@ uniform vec3 u_skyCam; uniform vec2 u_skyOff;
 /* the weather out there: wind, rain, how rough the open sea is */
 uniform vec3 u_skyW;
 vec2 skyUV(vec2 pS){ vec2 c = (pS - u_skyOff - u_skyCam.xy) * u_skyCam.z + u_res * .5; return vec2(c.x / u_res.x, 1. - c.y / u_res.y); }
+/* the sky picture is drawn at half size (less on a small device): read back with a smooth cubic (a B-spline from
+   four filtered reads), so that enlarged it never shows blocks, nor the grain of the clouds' march */
+vec4 skySmooth(vec2 uv){
+  vec2 ts = vec2(textureSize(u_skyTex, 0)), st = uv * ts - .5, i = floor(st), f = st - i;
+  vec2 w0 = (1. - f) * (1. - f) * (1. - f) / 6., w1 = (3. * f * f * f - 6. * f * f + 4.) / 6.;
+  vec2 w2 = (-3. * f * f * f + 3. * f * f + 3. * f + 1.) / 6., w3 = f * f * f / 6.;
+  vec2 g0 = w0 + w1, g1 = w2 + w3;
+  vec2 a = (i - 1. + w1 / g0 + .5) / ts, b = (i + 1. + w3 / g1 + .5) / ts;
+  return g0.y * (g0.x * texture(u_skyTex, a) + g1.x * texture(u_skyTex, vec2(b.x, a.y))) + g1.y * (g0.x * texture(u_skyTex, vec2(a.x, b.y)) + g1.x * texture(u_skyTex, b));
+}
 /* the light of the sky itself: the scene's colours from the horizon up, the glow of the air around the sun (strong
    forward scattering), warm along the horizon when the sun is low, and the grey overcast of rain */
 vec3 atmo(vec3 d, vec3 sd){
@@ -5694,8 +5742,10 @@ vec3 seaAt(vec2 p, float hz, float F, float cx, vec3 sd, float sunVis){
   float t = u_time;
   float rough = .3 + u_skyW.z * .85 + u_skyW.y * .35;
   float fw = clamp(length(fwidth(P)) * 1.2, 0., 1.);
-  vec2 s1 = texture(u_noise, P * vec2(.06, .03) + vec2(t * .004, -t * .016)).gb - .5;
-  vec2 s2 = (texture(u_noise, P * vec2(.21, .11) + vec2(-t * .011, -t * .035)).gb - .5) * (1. - fw);
+  /* the waves run across the view with the wind (it blows sideways), faster the harder it blows */
+  float wv = u_skyW.x;
+  vec2 s1 = texture(u_noise, P * vec2(.06, .03) + vec2(-t * (.004 + .009 * wv), -t * .002)).gb - .5;
+  vec2 s2 = (texture(u_noise, P * vec2(.21, .11) + vec2(-t * (.01 + .022 * wv), -t * .004)).gb - .5) * (1. - fw);
   vec2 sl = (s1 * 1.3 + s2 * .8) * rough;
   vec3 n = normalize(vec3(-sl.x, 1., -sl.y * .8));
   vec3 v = normalize(vec3(ux, -td, 1.));
@@ -5712,12 +5762,12 @@ vec3 seaAt(vec2 p, float hz, float F, float cx, vec3 sd, float sunVis){
   vec3 hv = normalize(sd - v);
   float rk = clamp(rough, .25, 1.3);
   float path = pow(max(dot(n, hv), 0.), 70. / (rk * rk));
-  float fac = smoothstep(.8, .97, texture(u_noise, P * vec2(1.1, .55) + vec2(t * .06, -t * .15)).a);
+  float fac = smoothstep(.8, .97, texture(u_noise, P * vec2(1.1, .55) + vec2(-t * (.05 + .1 * wv), -t * .02)).a);
   float glit = path * mix(.35, .12 + 3.2 * fac, 1. - fw);
   c += u_sunC * min(glit, 2.5) * u_sunS.w * sunVis * (1. - u_skP.z * .4) * (1. - u_skyW.y * .85);
   float wc = smoothstep(.55, .95, u_skyW.z);
   if (wc > 0.) {
-    float cap = smoothstep(.64, .8, texture(u_noise, P * vec2(.045, .022) + vec2(t * .003, -t * .01)).r) * texture(u_noise, P * vec2(.3, .15)).a;
+    float cap = smoothstep(.64, .8, texture(u_noise, P * vec2(.045, .022) + vec2(-t * (.003 + .007 * wv), -t * .001)).r) * texture(u_noise, P * vec2(.3, .15) + vec2(-t * (.003 + .007 * wv), 0.)).a;
     c = mix(c, vec3(.9, .94, .96) * (.7 + .3 * u_sunS.w), clamp(cap * wc * 1.4, 0., .9) * (1. - fw * .6));
   }
   if (u_skyW.y > 0.) {
@@ -5737,7 +5787,7 @@ vec3 outside(vec2 p, float hz, vec2 uvT){
   float sunVis = texture(u_skyTex, clamp(sunUV, .001, .999)).a;
   if (p.y >= hz) return seaAt(p, hz, F, cx, sd, sunVis);
   vec3 d = normalize(vec3((p.x - cx) / F, (hz - p.y) / F, 1.));
-  vec4 S = texture(u_skyTex, uvT);
+  vec4 S = skySmooth(uvT);
   vec3 c = S.rgb;
   /* a built-up cloud gets its clean outline here, at full size, from the softened picture of the sky (the way a
      letter is drawn sharp from a blurred shape); the cloud's own colour is taken back out of the picture and laid
@@ -7917,8 +7967,8 @@ function fishActivity() {
   const S = G.state && G.state.settings, a = S && Number.isFinite(S.activity) ? clamp(S.activity, 0, 1) : 0.5;
   return a < 0.5 ? lerp(0.35, 1, a / 0.5) : lerp(1, 1.9, (a - 0.5) / 0.5);
 }
-/* the Queue leu leu setting (0..1): how often the fish swim in a line */
-function congaSetting() { const S = G.state && G.state.settings; return S && Number.isFinite(S.conga) ? clamp(S.conga, 0, 1) : 0.4; }
+/* how often the fish swim in a line: one of the things the Activity setting makes more frequent */
+function congaSetting() { return clamp(0.15 + 0.35 * fishActivity(), 0, 1); }
 const NOFLIP_TRICKS = ['twirl', 'jelly', 'wiggle', 'bubble', 'jolt'];
 
 const QUOTES = {
@@ -8914,6 +8964,18 @@ const Tank = {
     this.sandFloor(f, bot, dt, false);
     /* brought down low, it keeps close over the sand as the bottom rises and falls (unless steered up) */
     if (!keys.has('arrowup') && f.y < bot && f.y > bot - f.h * 0.3) f.y += (bot - f.y) * (1 - Math.exp(-dt * 4));
+    /* going fast (Space held): thin trails stream out behind it, and a few bubbles */
+    if (Ctl.boost) {
+      const s = Scene.s(f.z), sv = Math.hypot(f.vx, f.vy * s);
+      if (sv > 140) {
+        const dx = f.vx / sv, dy = f.vy * s / sv, len = rand(40, 90) * s * Math.min(1.7, sv / 280);
+        if (Math.random() < dt * 70) {
+          const off = rand(-0.4, 0.4) * f.h * s, back = f.w * s * 0.45 + len * 0.42;
+          this.fx.push({ type: 'streak', x: f.x - dx * back - dy * off, y: Scene.projY(f.y, f.z) - dy * back + dx * off, z: f.z + 0.002, t: 0, life: rand(0.22, 0.38), s: len, vx: dx * 25, vy: dy * 25, rot: Math.atan2(dy, dx), al: 0.75 });
+        }
+        if (Math.random() < dt * 22) this.bubbles.push({ x: f.x - dx * f.w * 0.5, y: f.y - (dy / s) * f.w * 0.5 + rand(-4, 4), z: f.z, r: rand(1, 2.6), vy: -rand(10, 30), ph: rand(TAU) });
+      }
+    }
     /* rushing at the others scatters them */
     if (Ctl.boost) {
       const v = Math.hypot(f.vx, f.vy);
@@ -9375,7 +9437,7 @@ const Tank = {
     this.groupT = this.showGap();
     if (!this.fish.some((o) => o.trick && TRICKS[o.trick.type].label)) this.startShow();
   },
-  /* how long until the next line of fish: the Queue leu leu setting (never at 0) */
+  /* how long until the next line of fish (the livelier the tank, the sooner) */
   showGap() { const c = congaSetting(); return c < 0.02 ? 1e9 : rand(100, 190) / (0.2 + c * 1.6); },
   /* a fish's show waits while another one is on, and for a few seconds after it */
   showBusy() {
@@ -9441,7 +9503,6 @@ const Tank = {
     }
     this.emote(lead, 'note', 2); crew.forEach((f) => this.emote(f, 'note'));
     Sound.play('party');
-    if (!UI.hidden) UI.toast('<b>Chenille !</b> ' + escapeHtml(lead.name) + ' mène la danse.');
     this.group = { type: 'conga', t: 0, dur: TRICKS.congaLead.dur, crew };
     return true;
   },
@@ -9457,7 +9518,6 @@ const Tank = {
     crew.forEach((f, i) => { if (f.trick) { f.trick = null; f.vis = null; } f.boost = 0; f.mode = 'ring'; f.modeT = dur + 0.5; f.tgt = { cx, cy, cz, rx, rz, a0: i / crew.length * TAU, w: w * dir, t0: this.t }; this.emote(f, 'note'); });
     this.group = { type: 'ring', t: 0, dur, crew };
     Sound.play('party');
-    if (!UI.hidden) UI.toast('<b>Ronde !</b> Tes poissons tournent en rond.');
     return true;
   },
   nearestFood(f) {
@@ -9671,17 +9731,17 @@ const Tank = {
     if (o.vy < -150 && Scene.projY(o.y, o.z) < -60) return true;
     /* the surface: thrown up hard enough it leaves the water, else it stops under it and sinks again */
     if (o.y < surf) {
-      if (o.vy < -150) { o.air = true; this.litterSplash(o, clamp(-o.vy / 900, 0.3, 1)); }
+      if (o.vy < -150) { o.air = true; this.litterSplash(o, clamp(-o.vy / 900, 0.3, 1), false); }
       else { o.y = surf; o.vy = Math.max(0, o.vy); }
     }
     return false;
   },
-  litterSplash(o, k) {
+  litterSplash(o, k, into = true) {
     const sy = Scene.projY(Scene.geo.surfY, o.z);
     this.ripples.push({ x: o.x, y: Math.max(sy, 20), z: o.z, t: 0, big: 1 });
     for (let i = 0; i < 8 + 10 * k; i++) this.fx.push({ type: 'spray', x: o.x + rand(-10, 10), y: sy - rand(0, 4), z: o.z, t: 0, life: rand(0.35, 0.7), s: rand(2.5, 5), vx: rand(-80, 80) + o.vx * 0.15, vy: -rand(80, 260) * (0.5 + k) });
     for (let i = 0; i < 8; i++) this.bubbles.push({ x: o.x + rand(-14, 14), y: Scene.geo.surfY + rand(6, 40), z: o.z, r: rand(1.2, 3.2), vy: -rand(15, 50), ph: rand(TAU) });
-    Sound.play('splash');
+    Sound.leapSplash(o, k * 0.7, into);
   },
   /* a little cloud of sand where something knocks it, with its ring through the sand */
   sandPuff(x, z, k) {
@@ -9816,7 +9876,6 @@ const Tank = {
     Sound.play('love', a);
     if (b.mode !== 'leave' && b.mode !== 'enter' && b !== Ctl.fish && !this.still(b)) { if (b.trick && !b.trick.hand) this.endTrick(b); b.mode = 'follow'; b.modeT = rand(7, 11); b.tgt = { fish: a, ox: rand(-40, 40), oy: rand(-25, 25), oz: rand(-0.03, 0.03), friend: true }; b.heartT = 0.8; }
     BUS.emit('friends', [a, b]);
-    if (was <= -0.4) UI.toast(escapeHtml(a.name) + ' et ' + escapeHtml(b.name) + ' ont fait la paix.');
   },
   /* small hearts rising from a fish, one after another */
   miniHearts(f, n) {
@@ -9896,7 +9955,8 @@ const Tank = {
     const w = f.w * s, hh = f.h * s, cx = f.x, cy = Scene.projY(f.y, f.z);
     f.screen.x = cx; f.screen.y = cy; f.screen.w = w; f.screen.h = hh; f.screen.s = s;
     const sil = IMAGES.silTex(rec), gw = 3.2 + 1.8 * s;
-    const piece = (o, a) => Object.assign({ tex: rec.tex, uvr: rec.uvr, w, h: hh, ax: 0.5, ay: 0.5, z: f.z, flip: F, mode: 0, pop: this.fishPop(),
+    /* (drawn like the fish itself: its own colours, no shade of the scenery on it) */
+    const piece = (o, a) => Object.assign({ tex: rec.tex, uvr: rec.uvr, w, h: hh, ax: 0.5, ay: 0.5, z: f.z, flip: F, mode: 0, dry: 1, belly: 0.34, pop: this.fishPop(),
       outline: { sil: a, grow: gw, col: [0.93, 0.93, 0.93], tex: sil, uvr: rec.silUvr } }, o);
     const W0 = 0.055;
     /* sad, trembling a little, then still whole while the rip runs down */
@@ -9987,7 +10047,6 @@ const Tank = {
     this.despawn(f);
     f.travelUntil = now() + randi(4, 9) * 60 * 1000;
     G.save();
-    UI.toast('<b>' + escapeHtml(f.name) + '</b> a bouclé sa minuscule valise : il part en voyage.');
   },
   /* ----- drawing ----- */
   draw() {
@@ -10185,7 +10244,7 @@ const Tank = {
         SO.push({ uv: ATLAS.map.star, x: F.screen.x + Math.cos(ang) * R, y: F.screen.y - F.screen.h * 0.6 + Math.sin(ang) * R * 0.3, w: e.s * (back ? 0.8 : 1), h: e.s * (back ? 0.8 : 1), rot: e.t * 4, r: 1, g: 1, b: 1, a: a * (back ? 0.55 : 1), z: F.z });
         continue;
       }
-      if (e.type === 'streak') { SP.push({ uv: ATLAS.map.streak, x: e.x, y: e.y, w: e.s * (1 - k * 0.4), h: Math.max(2.5, e.s * 0.1), rot: 0, r: 0.9, g: 0.96, b: 1, a: a * 0.6, add: 1, z: e.z }); continue; }
+      if (e.type === 'streak') { SP.push({ uv: ATLAS.map.streak, x: e.x, y: e.y, w: e.s * (1 - k * 0.4), h: Math.max(2.5, e.s * 0.1), rot: e.rot || 0, r: 0.9, g: 0.96, b: 1, a: a * (e.al || 0.6), add: 1, z: e.z }); continue; }
       const sz = e.s * (0.7 + 0.3 * Math.min(1, k * 4));
       const col = e.type === 'heart' ? [1, 0.62, 0.72] : [1, 1, 1];
       /* a face that stays over its fish while it rises */
@@ -10288,7 +10347,6 @@ function makeBaby(a, b) {
   Tank.emote(baby, 'heart', 2);
   Tank.sparkles(baby.screen.x || baby._x, Scene.projY(baby._y, baby._z), 16, [1, 0.8, 0.9]);
   Sound.play('level');
-  UI.toast(escapeHtml(a.name) + ' et ' + escapeHtml(b.name) + ' ont eu un bébé ! Dis bonjour à <b>' + escapeHtml(name) + '</b>.');
   BUS.emit('baby', baby);
   G.save();
 }
@@ -10300,7 +10358,6 @@ function returnFromTrip(f) {
   f.quote = pick(QUOTES.travel);
   setTimeout(() => {
     Tank.emote(f, 'heart', 2);
-    UI.toast('<b>' + escapeHtml(f.name) + '</b> revient de voyage : "' + escapeHtml(f.quote) + '"');
   }, 1200);
   G.save();
 }
@@ -10776,9 +10833,9 @@ const UI = {
     this.initOutside();
     this.initRanges();
     BUS.on('levelUp', () => { G.checkObjectives('levelUp'); });
-    BUS.on('friends', ([a, b]) => { UI.toast('<b>' + escapeHtml(a.name) + '</b> et <b>' + escapeHtml(b.name) + '</b> sont maintenant amis.'); G.checkObjectives('friends'); });
-    BUS.on('rivals', ([a, b]) => { UI.toast(escapeHtml(a.name) + ' et ' + escapeHtml(b.name) + ' ne s\'entendent pas.'); });
-    BUS.on('couple', ([a, b]) => { UI.toast('<b>' + escapeHtml(a.name) + '</b> et <b>' + escapeHtml(b.name) + '</b> sont tombés amoureux !'); G.checkObjectives('couple'); });
+    /* what the fish do among themselves is seen in the tank (hearts, a loop...), never told in a notification */
+    BUS.on('friends', () => G.checkObjectives('friends'));
+    BUS.on('couple', () => G.checkObjectives('couple'));
     BUS.on('baby', () => G.checkObjectives('baby'));
     BUS.on('ate', () => { G.checkObjectives('ate'); });
     /* litter thrown out over the rim of the tank: one less, and it counts as cleaning */
@@ -11518,10 +11575,7 @@ const UI = {
     let type = Tank.pickTrick(f, K);
     for (let i = 0; i < 6 && (type === f.lastTrick || type === 'bubble'); i++) type = Tank.pickTrick(f, K);
     if (type === 'bubble') type = 'roll';
-    if (Tank.startTrick(f, type, { force: true }) && f.trick) {
-      const def = TRICKS[f.trick.type];
-      if (def && def.label) this.toast('<b>' + escapeHtml(f.name) + '</b> : ' + def.label + ' !', 1800);
-    }
+    Tank.startTrick(f, type, { force: true });
   },
   refreshCard(force) {
     const P = this.panels.card;
@@ -11811,8 +11865,7 @@ const UI = {
     syncQ();
     P.tick = syncQ;
     list.append(head('AQUARIUM'),
-      slide('Activité des poissons', 'Calmes à gauche, très actifs à droite (et plus bavards)', () => (S.activity === undefined ? 0.5 : S.activity), (v) => { S.activity = v; }),
-      slide('Queue leu leu', 'Jamais à gauche, souvent à droite', () => (S.conga === undefined ? 0.4 : S.conga), (v) => { S.conga = v; Tank.groupT = Math.min(Tank.groupT || 0, Tank.showGap()); }),
+      slide('Activité des poissons', 'Calmes à gauche, très actifs à droite : plus de figures, de queues leu leu et de petits bruits', () => (S.activity === undefined ? 0.5 : S.activity), (v) => { S.activity = v; Tank.groupT = Math.min(Tank.groupT || 0, Tank.showGap()); }),
       head('AFFICHAGE'),
       qRow,
       toggle('Afficher les FPS', () => S.fps, (v) => { S.fps = v; }),
@@ -11894,7 +11947,10 @@ const UI = {
           const cur = (E[kindKey] || kindDef) === k;
           m.appendChild(h('button', { class: cur ? 'on' : '', role: 'menuitemradio', 'aria-checked': String(cur), html: '<span>' + v.name + '</span>' + (cur ? icon('check') : ''), onclick: (ev) => {
             ev.stopPropagation();
-            E[kindKey] = k; closeMenu(); sync(); G.save();
+            /* choosing a kind is wanting it: a weather that was off comes back on */
+            E[kindKey] = k;
+            if (E[key] <= 0.005) E[key] = E[key + 'Was'] > 0.05 ? E[key + 'Was'] : 0.5;
+            closeMenu(); sync(); G.save();
             Sound.unlock(); Ambience.preview(preview);
           } }));
         }
@@ -12489,7 +12545,7 @@ const TOUR_STEPS = [
   { at: 'music', title: 'La musique', text: 'Choisis ce qui joue, ou ajoute tes propres morceaux.' },
   { at: 'sounds', title: 'Les sons', text: 'Le volume de chaque famille : musique, poissons, météo, eau, interface.' },
   { at: 'hide', title: 'Masquer', text: 'Pour ne voir que l\'aquarium. Approche la souris du bas (ou touche l\'œil) pour retrouver les boutons.' },
-  { at: 'settings', title: 'Réglages', text: 'L\'activité des poissons, leurs queues leu leu, la qualité de l\'image, la sauvegarde.' },
+  { at: 'settings', title: 'Réglages', text: 'L\'activité des poissons, la qualité de l\'image, la sauvegarde.' },
   { at: 'surface', title: 'La surface', text: 'Attrape la ligne de l\'eau pour la monter ou la baisser.', hidden: 'Attrape le haut de l\'écran et tire vers le bas pour faire descendre l\'eau.' },
   { title: 'À toi de jouer !', text: 'Le bouton ? te remontre ce guide quand tu veux.' },
 ];
@@ -12514,7 +12570,7 @@ const Tour = {
     this.steps = TOUR_STEPS.filter((s) => s.at !== 'fish' || this.fish);
     this.i = 0; this.open = true; this.spot = null;
     const el = h('div', { id: 'tour', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Visite guidée' });
-    this.spotEl = h('div', { class: 'tspot' });
+    this.spotEl = h('canvas', { class: 'tspot', 'aria-hidden': 'true' });
     this.title = h('h3'); this.text = h('p');
     this.dots = h('div', { class: 'tdots', 'aria-hidden': 'true' }, this.steps.map(() => h('i')));
     this.back = h('button', { class: 'roundbtn small ghost tback', 'aria-label': 'Étape précédente', html: icon('chevl'), onclick: () => this.go(this.i - 1) });
@@ -12595,11 +12651,7 @@ const Tour = {
     const k = this.spot ? 0.2 : 1;
     for (const key of ['x', 'y', 'w', 'h', 'r']) sp[key] += (goal[key] - sp[key]) * k;
     this.spot = sp;
-    const st = this.spotEl.style;
-    st.transform = 'translate(' + sp.x.toFixed(1) + 'px,' + sp.y.toFixed(1) + 'px)';
-    st.width = Math.max(0, sp.w).toFixed(1) + 'px'; st.height = Math.max(0, sp.h).toFixed(1) + 'px';
-    st.borderRadius = Math.max(0, sp.r).toFixed(1) + 'px';
-    this.spotEl.classList.toggle('none', !T);
+    this.drawSpot(sp, !!T);
     /* the card sits under the light, or over it when the light is low on the screen; alone, in the middle */
     const cw = this.card.offsetWidth, ch = this.card.offsetHeight, g = 16;
     let cx, cy;
@@ -12616,6 +12668,54 @@ const Tour = {
       cs.left = cx.toFixed(1) + 'px'; cs.top = cy.toFixed(1) + 'px';
       this.placeCard = false;
     }
+  },
+  /* the light on what is being shown: the rest of the screen dims, and the light is a living shape, a soft round
+     blob whose outline breathes and ripples slowly, its edge clean in places and melting in others, the two
+     turning slowly round; a faint glow at its rim. Still for those who ask for less motion */
+  drawSpot(sp, on) {
+    const cv = this.spotEl, dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    const g = cv.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.globalCompositeOperation = 'source-over';
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = 'rgba(3, 9, 20, .62)';
+    g.fillRect(0, 0, W, H);
+    if (!on || sp.w < 2 || sp.h < 2) return;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = still ? 0 : performance.now() / 1000;
+    const cx = sp.x + sp.w / 2, cy = sp.y + sp.h / 2, rx = sp.w / 2 + 6, ry = sp.h / 2 + 6;
+    /* a rounded shape around the box (a superellipse), its radius rippling with three slow waves */
+    const blob = (grow, hard) => {
+      g.beginPath();
+      for (let i = 0; i <= 96; i++) {
+        const a = i / 96 * TAU, c = Math.cos(a), sn = Math.sin(a);
+        const r = 1 / Math.pow(Math.pow(Math.abs(c), 2.6) + Math.pow(Math.abs(sn), 2.6), 1 / 2.6);
+        let k = 1 + 0.05 * Math.sin(3 * a + t * 0.8) + 0.03 * Math.sin(5 * a - t * 1.15 + 1.3) + 0.018 * Math.sin(8 * a + t * 1.7 + 2.1);
+        /* the clean part of the edge: on one side it reaches the soft one, on the other it stays inside it */
+        if (hard) k -= 0.13 * (0.5 + 0.5 * Math.sin(a + t * 0.35));
+        const x = cx + (rx + grow) * r * c * k, y = cy + (ry + grow) * r * sn * k;
+        if (i) g.lineTo(x, y); else g.moveTo(x, y);
+      }
+      g.closePath();
+    };
+    g.globalCompositeOperation = 'destination-out';
+    /* the soft opening: the shape's blurred shadow, cast back from far away */
+    const off = 10000 + W;
+    g.save();
+    g.translate(-off, 0);
+    g.shadowColor = '#000'; g.shadowBlur = 24 * dpr; g.shadowOffsetX = off * dpr;
+    blob(4, false); g.fill();
+    g.restore();
+    /* the clean core */
+    blob(0, true); g.fill();
+    /* a faint glow at its rim */
+    g.globalCompositeOperation = 'source-over';
+    g.save();
+    g.shadowColor = 'rgba(124, 247, 234, .35)'; g.shadowBlur = 16 * dpr;
+    g.strokeStyle = 'rgba(160, 250, 240, .1)'; g.lineWidth = 1.5;
+    blob(2, false); g.stroke();
+    g.restore();
   },
   close() {
     if (!this.open) return;
@@ -14938,7 +15038,7 @@ async function start() {
   const after = (fn, ms) => { const w = () => (Main.dive ? setTimeout(w, 150) : setTimeout(fn, ms)); setTimeout(w, 300); };
   if (G.fresh) after(() => UI.toast('Bienvenue ! Touche le <b>+</b> en bas, puis <b>Poissons</b>, pour dessiner ton premier poisson.', 6000), 400);
   else if (G.awayMs && G.awayMs > 3600 * 1000) after(() => UI.toast('Te revoilà ! Déjà ' + Math.round(G.awayMs / 3600000) + ' heures sans toi. Tes poissons t\'attendaient.', 5000), 400);
-  for (const f of Tank.fish) if (f._returned) { delete f._returned; after(() => UI.toast('<b>' + escapeHtml(f.name) + '</b> est de retour de voyage : "' + escapeHtml(f.quote || '') + '"'), 1300); }
+  for (const f of Tank.fish) delete f._returned;
   G.save();
   Main.last = performance.now();
   Main.raf = requestAnimationFrame(loop);

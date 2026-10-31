@@ -257,7 +257,7 @@ input[type=range].vert::-webkit-slider-thumb { margin-top: 0; margin-left: -6px;
   .fishcard .fc-name { font-size: 22px; }
   .fishcard .ring { width: 54px; height: 54px; }
   .fishcard .fc-stats { margin: 8px 0 6px; }
-  .fishcard .fc-about { margin-top: 6px; max-height: 64px; overflow: auto; }
+  .fishcard .fc-about { margin-top: 6px; max-height: 92px; overflow: auto; }
 }
 .fc-name { font-size: 26px; font-weight: 400; color: var(--orange); line-height: 1.05; padding-right: 30px; cursor: text; overflow-wrap: anywhere; }
 .fc-name input { width: 100%; background: var(--inset); border: 1px solid var(--line-2); border-radius: 10px; padding: 2px 8px; color: var(--orange); font-size: 22px; font-weight: 400; }
@@ -592,6 +592,10 @@ input.dim { opacity: .4; }
 .drow .dl { font-size: 14px; color: var(--muted); }
 .drow input[type=range] { width: 100%; min-width: 0; }
 .dsec .presets { margin: 6px 0 8px; grid-template-columns: repeat(auto-fill, 34px); }
+.dsec .presets.named { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets.named .pchip { width: auto; min-width: 34px; height: 32px; padding: 0 11px; border-radius: 999px; font-size: 13px; background: var(--gbtn); border-color: var(--gbtn-line); white-space: nowrap; }
+.presets.named .pchip.dot { padding: 0; width: 32px; }
+.presets.named .pchip.dot .ic { width: 16px; height: 16px; opacity: .8; }
 .swbtn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .4); justify-self: start; position: relative; overflow: hidden; box-shadow: 0 1px 4px rgba(0, 0, 0, .35); }
 .swbtn:hover { border-color: #fff; }
 /* "Natural": no tint, shown as an empty circle crossed by a diagonal line */
@@ -665,7 +669,7 @@ input.dim { opacity: .4; }
 #keypad .key.space { grid-column: 1 / span 3; height: 40px; font-size: 13px; letter-spacing: .04em; }
 #keypad .key.pir { grid-auto-flow: row; gap: 1px; align-content: center; }
 #keypad .key.pir .ic { width: 22px; height: 22px; stroke-width: 2.2; }
-#keypad .key.pir .kd { font-size: 10px; line-height: 1; letter-spacing: .02em; }
+#keypad .key.pir .ic.kd { width: 26px; height: 26px; stroke-width: 2.1; }
 #keypad .key.on { background: rgba(124, 247, 234, .35); border-color: rgba(124, 247, 234, .8); box-shadow: 0 0 18px rgba(124, 247, 234, .45); transform: scale(.96); }
 #keypad.touch { left: auto; right: calc(var(--gutter-r) + 8px); transform: none; bottom: calc(var(--gutter-b) + 12px); grid-template-columns: repeat(3, 58px); grid-auto-rows: 58px; }
 #keypad.touch.show { opacity: .92; pointer-events: auto; }
@@ -716,6 +720,18 @@ input.dim { opacity: .4; }
 .sbt:hover { color: #fff; background: rgba(40, 70, 120, .95); }
 .sbt.del:hover { background: rgba(160, 50, 60, .9); border-color: rgba(255, 140, 140, .6); }
 .savedgrid .empty { grid-column: 1 / -1; margin: 6px 4px; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.saved { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.saved.dragging { z-index: 5; pointer-events: none; }
+.saved.dragging .smain { transform: scale(1.05); border-color: var(--accent-line); background: rgba(20, 40, 70, .92); box-shadow: 0 12px 28px rgba(0, 8, 24, .5); }
+.saved.dragging .stools { opacity: 0; }
+.savedgrid.sorting { cursor: grabbing; }
+.saved.hidden .smain canvas, .saved.hidden .smain .sn { opacity: .42; }
+.shid { position: absolute; top: 7px; left: 7px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: rgba(16, 28, 62, .85); color: var(--muted); pointer-events: none; }
+.shid .ic { width: 14px; height: 14px; }
+.saved:hover .shid { opacity: 0; }
+.sadd { display: grid; place-items: center; min-height: 96px; aspect-ratio: .86; border-radius: 14px; border: 1.5px dashed var(--line-2); background: transparent; color: var(--muted); transition: border-color .12s, color .12s, background .12s; }
+.sadd .ic { width: 30px; height: 30px; }
+.sadd:hover { border-color: var(--accent-line); color: var(--accent); background: rgba(255, 255, 255, .04); }
 .filebox { gap: 6px; }
 .act { display: flex; align-items: center; gap: 9px; border: 1px solid var(--gbtn-line); background: var(--gbtn); color: var(--ink); border-radius: 13px; padding: 7px 10px; min-height: 40px; text-align: left; transition: background .15s; }
 .act:hover { background: var(--gbtn-hi); color: #fff; }
@@ -789,6 +805,10 @@ input.dim { opacity: .4; }
 .bigact { flex: none; height: 58px; border-radius: 999px; font-size: 21px; font-weight: 400; color: #e9fffc; background: rgba(16, 52, 72, .72); border: 1px solid var(--accent-line); box-shadow: 0 0 18px rgba(124, 247, 234, .22); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: background .15s, transform .12s, box-shadow .15s; }
 .bigact:hover { background: rgba(28, 92, 104, .85); box-shadow: var(--accent-glow); color: #fff; }
 .bigact:active { transform: scale(.98); }
+.actrow { flex: none; display: flex; gap: 10px; }
+.actrow .bigact { flex: 1; min-width: 0; }
+.actrow .bigact.cancel { flex: 0 0 auto; padding: 0 28px; color: var(--ink); background: rgba(10, 22, 40, .62); border-color: var(--glass-line); box-shadow: none; }
+.actrow .bigact.cancel:hover { background: rgba(30, 48, 78, .8); color: #fff; box-shadow: none; }
 .bigact.shake { animation: shake .4s; }
 @keyframes shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
 /* right: undo and redo, tools, layers, colours, brush; the column scrolls when the window is short */
@@ -874,7 +894,7 @@ input.dim { opacity: .4; }
   .ed-extra { grid-template-columns: minmax(0, 1fr); }
   .savedbox { flex: none; }
   .savedgrid { max-height: 360px; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
-  .bigact { position: fixed; left: var(--gutter-l); right: var(--gutter-r); bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 5; }
+  .actrow { position: fixed; left: var(--gutter-l); right: var(--gutter-r); bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 5; }
 }
 @media (max-width: 480px) {
   .cbrow { flex-wrap: wrap; justify-content: center; }
@@ -882,6 +902,7 @@ input.dim { opacity: .4; }
   .swatches { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .tool { height: 52px; }
   .bigact { font-size: 18px; }
+  .actrow .bigact.cancel { padding: 0 18px; }
 }
 
 /* environment sliders show where they sit, in percent */
@@ -928,6 +949,7 @@ input.dim { opacity: .4; }
 .flyfish { position: fixed; z-index: 60; pointer-events: none; transform-origin: center; transition: transform .6s cubic-bezier(.55, -0.15, .7, .6), opacity .6s ease-in; }
 .db.gulp { animation: gulp .45s ease-out; }
 @keyframes gulp { 0% { transform: scale(1); } 35% { transform: scale(1.22); } 70% { transform: scale(0.94); } 100% { transform: scale(1); } }
+.setnote { display: block; margin-top: 1px; font-size: 12px; color: var(--muted); }
 
 </style>
 </head>
@@ -1513,10 +1535,13 @@ const LN = {
   upload: '<path d="M12 15V4M7.5 8.5L12 4l4.5 4.5"/><path d="M4.5 16v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V16"/>',
   imgplus: '<rect x="3.5" y="6" width="13" height="12" rx="2"/><circle cx="7.5" cy="10" r="1.3"/><path d="M4 16.5l3.5-3.5 2.5 2.5 2-2 4 3.5"/><path d="M19.5 3.5v5M17 6h5"/>',
   imgdown: '<rect x="3.5" y="4" width="13" height="12" rx="2"/><circle cx="7.5" cy="8" r="1.3"/><path d="M4 14.5l3.5-3.5 2.5 2.5 2-2 4 3.5"/><path d="M19.5 13v7.5M16.8 18l2.7 2.7 2.7-2.7"/>',
+  imgup: '<rect x="3.5" y="8" width="13" height="12" rx="2"/><circle cx="7.5" cy="12" r="1.3"/><path d="M4 18.5l3.5-3.5 2.5 2.5 2-2 4 3.5"/><path d="M19.5 11V3.5M16.8 6.2l2.7-2.7 2.7 2.7"/>',
   layers: '<path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5"/><path d="M3.5 16.5L12 21l8.5-4.5"/>',
   steer: '<path d="M7 8h10a4 4 0 0 1 3.9 4.9l-.9 3.9a2.2 2.2 0 0 1-3.8 1L14.5 16h-5l-1.7 1.8a2.2 2.2 0 0 1-3.8-1l-.9-3.9A4 4 0 0 1 7 8z"/><path d="M8 10.8v3M6.5 12.3h3"/>' + LN_DOT([[15.4, 11.4], [17.2, 13.2]]),
   gamepad: '<path d="M7 8h10a4 4 0 0 1 3.9 4.9l-.9 3.9a2.2 2.2 0 0 1-3.8 1L14.5 16h-5l-1.7 1.8a2.2 2.2 0 0 1-3.8-1l-.9-3.9A4 4 0 0 1 7 8z"/><path d="M8 10.8v3M6.5 12.3h3"/>' + LN_DOT([[15.4, 11.4], [17.2, 13.2]]),
   chevu: '<path d="M6 14.5l6-6 6 6"/>',
+  /* the Enter key: its arrow coming down and back to the left */
+  enterkey: '<path d="M18.5 5v6.5a3 3 0 0 1-3 3H6"/><path d="M9.5 11l-3.5 3.5L9.5 18"/>',
   wave: '<path d="M3 9c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 15c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>',
   copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
   addfish: '<path d="M2.5 12c2.3-3.8 7.1-4.6 10.4-2l3.6-2.6v9.2l-3.6-2.6C9.6 16.6 4.8 15.8 2.5 12z"/><path d="M19.5 3.5v5M17 6h5"/>',
@@ -1567,9 +1592,10 @@ function icon(name, cls) {
 function iconEl(name, cls) { const s = document.createElement('span'); s.className = 'icw'; s.innerHTML = icon(name, cls); return s.firstChild; }
 
 /* ---------- sound: effects are synthesized with WebAudio, music plays from files ---------- */
-/* no music of its own any more: the personal copy brings its own tracks (DT_EXTRA), and you can add yours */
+/* no music of its own any more: the personal copy brings its own tracks (DT_EXTRA) and which one plays first
+   (DT_MUSIC_DEFAULT; nothing of them is in the published page), and you can add yours */
 const MUSIC_TRACKS = [];
-const MUSIC_DEFAULT = 'p-nouveau-lien';
+const MUSIC_DEFAULT = window.DT_MUSIC_DEFAULT || '';
 /* A playlist of audio files, routed through the music bus so volume works everywhere (iPhone included). */
 const Music = {
   list: [], idx: 0, decks: [], cur: -1, started: false, paused: false, bad: new Set(), useSynth: false, onChange: null, srcCache: {},
@@ -1679,7 +1705,14 @@ function embedUrl(b64) {
   try { const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return URL.createObjectURL(new Blob([u], { type: 'audio/mpeg' })); } catch (e) { return null; }
 }
 /* sounds that belong to a fish (eating, tricks, love...) go through the fish channel; the rest are interface sounds */
-const FISH_SFX = new Set(['nom', 'pet', 'love', 'level', 'bubble', 'whoosh', 'wee', 'spin', 'boing', 'pop', 'thud', 'giggle', 'party', 'fright', 'rip', 'sad', 'woozy']);
+const FISH_SFX = new Set(['nom', 'pet', 'love', 'level', 'bubble', 'whoosh', 'wee', 'spin', 'boing', 'pop', 'thud', 'giggle', 'party', 'fright', 'rip', 'sad', 'woozy', 'chirp', 'coo', 'blip']);
+/* each fish has its own voice: the same sounds a little higher or lower (smaller fish higher), always the same for it */
+function fishPitch(f) {
+  if (!f || !f.id) return 1;
+  const h = (hashStr(String(f.id)) % 1000) / 1000;
+  const size = f.w ? clamp(1.18 - f.w / 520, 0.86, 1.16) : 1;
+  return size * (0.92 + 0.16 * h);
+}
 const Sound = {
   ctx: null, master: null, sfx: null, fishBus: null, amb: null, mus: null, rev: null, _bus: null, _wet: 1, fishGains: new Map(),
   on: true, vol: 0.7, musicOn: true, musicVol: 0.35, ambientOn: true, ambVol: 0.7, uiOn: true, uiVol: 0.8, fishOn: true, fishVol: 0.9, ambiOn: true, ambiVol: 0.8,
@@ -1753,16 +1786,48 @@ const Sound = {
     this.apply();
   },
   /* each fish has its own gain inside the fish channel: its volume and mute never touch the others */
+  /* each fish has its own channel (its volume and mute), and its own place in space: heard where it swims (HRTF:
+     with headphones, left or right, high or low, near or far behind the glass), the deeper ones a little duller,
+     as through more water. The place follows the fish (placeFish, from ambientTick) */
   fishOut(f) {
     if (!this.ctx) return this.master;
     if (!f || !f.id) return this.fishBus;
     let g = this.fishGains.get(f.id);
-    if (!g) { g = this.ctx.createGain(); g.connect(this.fishBus); this.fishGains.set(f.id, g); }
+    if (!g) {
+      const c = this.ctx;
+      g = c.createGain();
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.5; lp.frequency.value = 14000;
+      const p = c.createPanner(); p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.35;
+      g.connect(lp); lp.connect(p); p.connect(this.fishBus);
+      g.lp = lp; g.pan = p;
+      this.fishGains.set(f.id, g);
+      this.placeFish(f);
+    }
     g.gain.value = f.muted ? 0 : (f.vol === undefined ? 1 : f.vol);
     return g;
   },
-  setFishLevel(f) { const g = this.fishGains.get(f.id); if (g && this.ctx) g.gain.setTargetAtTime(f.muted ? 0 : (f.vol === undefined ? 1 : f.vol), this.ctx.currentTime, 0.05); },
-  dropFish(id) { const g = this.fishGains.get(id); if (g) { try { g.disconnect(); } catch (e) { /* ignore */ } this.fishGains.delete(id); } },
+  /* the same channel for a sound already placed on its own (the sand, the splash, with their own panners): volume
+     and mute apply, the place does not twice */
+  fishRaw(f) {
+    const g = this.fishOut(f);
+    if (!g.raw && this.ctx) { g.raw = this.ctx.createGain(); g.raw.connect(this.fishBus); }
+    if (g.raw) g.raw.gain.value = g.gain.value;
+    return g.raw || g;
+  },
+  /* where a fish is heard: x to the right, y up, z away behind the glass (the same space as the weather's sounds) */
+  placeFish(f, tc) {
+    const g = this.fishGains.get(f.id);
+    if (!g || !g.pan || !this.ctx) return;
+    const S = f.screen, sx = S && Number.isFinite(S.x) ? S.x : f.x, sy = S && Number.isFinite(S.y) ? S.y : Scene.H * 0.5, z = clamp(Number.isFinite(f.z) ? f.z : 0.3, 0, 1);
+    Ambience.pos(g.pan, clamp(sx / Scene.W - 0.5, -0.8, 0.8) * 6, clamp(0.5 - sy / Scene.H, -0.6, 0.6) * 3, -1.2 - z * 2.5, tc);
+    const fr = lerp(15000, 5200, smoothstep(0.15, 0.9, z));
+    if (tc) g.lp.frequency.setTargetAtTime(fr, this.ctx.currentTime, tc); else g.lp.frequency.value = fr;
+  },
+  setFishLevel(f) {
+    const g = this.fishGains.get(f.id), v = f.muted ? 0 : (f.vol === undefined ? 1 : f.vol);
+    if (g && this.ctx) { g.gain.setTargetAtTime(v, this.ctx.currentTime, 0.05); if (g.raw) g.raw.gain.setTargetAtTime(v, this.ctx.currentTime, 0.05); }
+  },
+  dropFish(id) { const g = this.fishGains.get(id); if (g) { try { g.disconnect(); if (g.lp) g.lp.disconnect(); if (g.pan) g.pan.disconnect(); if (g.raw) g.raw.disconnect(); } catch (e) { /* ignore */ } this.fishGains.delete(id); } },
   noiseBuf(sec, brown) {
     const c = this.ctx, len = Math.floor(c.sampleRate * sec), b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0);
     let last = 0;
@@ -1781,9 +1846,9 @@ const Sound = {
   tone(freq, dur, type = 'sine', gain = 0.2, opts = {}) {
     const c = this.ctx; if (!c) return;
     if (!Number.isFinite(freq) || !Number.isFinite(dur) || !Number.isFinite(gain) || (opts.to !== undefined && !Number.isFinite(opts.to))) return;
-    const t = c.currentTime + (opts.delay || 0);
-    const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(freq, t);
-    if (opts.to) o.frequency.exponentialRampToValueAtTime(opts.to, t + (opts.glide || dur));
+    const t = c.currentTime + (opts.delay || 0), pk = this._pitch || 1;
+    const o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(freq * pk, t);
+    if (opts.to) o.frequency.exponentialRampToValueAtTime(opts.to * pk, t + (opts.glide || dur));
     const g = c.createGain();
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + (opts.attack || 0.008));
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
@@ -1809,7 +1874,8 @@ const Sound = {
     if (!isFish && !this.uiOn) return;
     this._bus = isFish ? this.fishOut(fish) : this.sfx;
     this._wet = isFish ? this.fishVol * (fish && fish.vol !== undefined ? fish.vol : 1) : this.uiVol;
-    try { this.playNamed(name); } finally { this._bus = null; this._wet = 1; }
+    this._pitch = isFish ? fishPitch(fish) : 1;
+    try { this.playNamed(name); } finally { this._bus = null; this._wet = 1; this._pitch = 1; }
   },
   /* heard in the editor, as a recorded voice is: whatever the fish and interface switches say */
   preview(name) {
@@ -1826,7 +1892,7 @@ const Sound = {
     const c = this.ctx;
     const fish = !!(f && f.id);
     if (!c || c.state !== 'running' || !this.on || !f || (fish ? !this.fishOn || f.muted : !this.uiOn)) return;
-    const t = c.currentTime, out = fish ? this.fishOut(f) : this.sfx;
+    const t = c.currentTime, out = fish ? this.fishRaw(f) : this.sfx;
     const sx = f.screen && isFinite(f.screen.x) ? f.screen.x : f.x;
     const X = clamp(sx / Scene.W - 0.5, -0.7, 0.7) * 6, Y = -0.9, Z = -1.2 - f.z * 2.5;
     const nodes = [];
@@ -1883,7 +1949,7 @@ const Sound = {
     const sx = f.screen && isFinite(f.screen.x) ? f.screen.x : f.x;
     const p = c.createPanner();
     p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.5;
-    Ambience.pos(p, clamp(sx / Scene.W - 0.5, -0.7, 0.7) * 6, -0.9, -1.2 - f.z * 2.5); p.connect(this.fishOut(f)); nodes.push(p);
+    Ambience.pos(p, clamp(sx / Scene.W - 0.5, -0.7, 0.7) * 6, -0.9, -1.2 - f.z * 2.5); p.connect(this.fishRaw(f)); nodes.push(p);
     const h = c.createBufferSource(); h.buffer = this.brownBuf || (this.brownBuf = this.noiseBuf(1.6, true));
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.9;
     bp.frequency.setValueAtTime(420, t); bp.frequency.exponentialRampToValueAtTime(900, t + 0.18); bp.frequency.exponentialRampToValueAtTime(360, t + 0.6);
@@ -1943,12 +2009,61 @@ const Sound = {
       /* a fright: a tiny yelp that wobbles up, and the splash of the dart away */
       case 'fright': { const f0 = 700 + Math.random() * 250; T(f0, 0.16, 'triangle', 0.08, { to: f0 * 1.9, glide: 0.08 }); T(f0 * 1.5, 0.1, 'sine', 0.04, { to: f0 * 1.1, delay: 0.1 }); this.noise(0.16, 2200, 0.8, 0.07, 0.04); break; }
       case 'party': [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => T(f, 0.22, 'triangle', 0.06, { delay: i * 0.085, wet: 0.35 })); break;
-      /* a fish torn up: paper giving way; before it, a small sad sigh (when it has no sound of its own) */
-      case 'rip': this.rip(0.48); break;
+      /* a fish torn up: paper giving way with a cartoon zip and a pop; before it, a small sad sigh (when it has no
+         sound of its own) */
+      case 'rip': this.rip(0.3); this.sweep(0.24, 700, 5600, 0.06); T(480, 0.09, 'sine', 0.05, { to: 1250, delay: 0.27 }); break;
       case 'sad': T(660, 0.44, 'sine', 0.07, { to: 430, glide: 0.4, wet: 0.35 }); T(520, 0.5, 'triangle', 0.03, { to: 330, delay: 0.18, glide: 0.45, wet: 0.35 }); break;
+      /* small happy sounds a fish makes now and then: a double pip, a soft coo, a round bubbly bloop */
+      case 'chirp': T(1150, 0.06, 'sine', 0.045, { to: 1650 }); T(1300, 0.075, 'sine', 0.04, { to: 1900, delay: 0.09 }); break;
+      case 'coo': T(560, 0.2, 'sine', 0.05, { to: 820, glide: 0.13, wet: 0.25 }); T(820, 0.2, 'triangle', 0.025, { to: 690, delay: 0.17, wet: 0.25 }); break;
+      case 'blip': T(360, 0.12, 'sine', 0.06, { to: 980, glide: 0.09 }); T(990, 0.05, 'sine', 0.02, { to: 1300, delay: 0.1 }); break;
       /* shaken too hard: a woozy wobble up and down */
       case 'woozy': [0, 0.17, 0.34].forEach((d, i) => T(540 - i * 40, 0.2, 'sine', 0.05, { to: 740 - i * 60, delay: d, glide: 0.1 })); T(690, 0.55, 'triangle', 0.035, { to: 340, delay: 0.5, glide: 0.5, wet: 0.3 }); break;
     }
+  },
+  /* a fish breaking the surface (into: falling back in), heard where it is, through the fish's own channel. In: the
+     slap of the water, the round rising "plunk" of the hollow closing, the rush of the splash and the column
+     dropping back, the drops pattering down one by one, and the air dragged under bubbling up. Out: the water
+     pulled up after it, and drips. k 0..1: how hard; a bigger fish sounds deeper */
+  leapSplash(f, k, into) {
+    const c = this.ctx;
+    if (!c || c.state !== 'running' || !this.on || !this.fishOn || !f || f.muted) return;
+    const t = c.currentTime, size = clamp((f.w || 120) / 150, 0.5, 2.2), deep = 1 / Math.sqrt(size);
+    /* (heard where the fish breaks the surface: its channel places it) */
+    const bus = c.createGain(); bus.gain.value = 0.9;
+    const wet = c.createGain(); wet.gain.value = 0.16 * this.fishVol;
+    this.placeFish(f);
+    bus.connect(this.fishOut(f)); bus.connect(wet); wet.connect(this.rev);
+    const white = this.whiteBuf || (this.whiteBuf = this.noiseBuf(2));
+    const burst = (at, dur, type, f0, f1, q, peak, att) => {
+      const s = c.createBufferSource(); s.buffer = white;
+      const b = c.createBiquadFilter(); b.type = type; b.Q.value = q;
+      b.frequency.setValueAtTime(f0, t + at); b.frequency.exponentialRampToValueAtTime(f1, t + at + dur);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t + at); g.gain.exponentialRampToValueAtTime(peak, t + at + att); g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
+      s.connect(b); b.connect(g); g.connect(bus); s.start(t + at, Math.random() * 1.5); s.stop(t + at + dur + 0.05);
+    };
+    /* a drop or a hollow closing: a short sine whose pitch jumps up */
+    const plink = (at, f0, peak, dur, rise = 1.7) => {
+      const o = c.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(f0, t + at); o.frequency.exponentialRampToValueAtTime(f0 * rise, t + at + dur * 0.8);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t + at); g.gain.exponentialRampToValueAtTime(peak, t + at + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
+      o.connect(g); g.connect(bus); o.start(t + at); o.stop(t + at + dur + 0.03);
+    };
+    if (into) {
+      burst(0, 0.1, 'bandpass', 2600, 1100, 0.7, 0.4 * (0.4 + 0.6 * k), 0.003);
+      plink(0.025, 360 * deep, 0.2 * (0.5 + 0.5 * k), 0.15, 2.1);
+      burst(0.01, 0.6 + 0.3 * k, 'lowpass', 6000, 650, 0.5, 0.26 * (0.4 + 0.6 * k), 0.02);
+      burst(0.24, 0.32, 'bandpass', 1400, 800, 1.1, 0.08 * k, 0.05);
+      const n = Math.round(9 + 12 * k);
+      for (let i = 0; i < n; i++) plink(0.14 + Math.pow(Math.random(), 0.75) * 0.8, rand(1300, 3800), rand(0.012, 0.045), rand(0.02, 0.05));
+      for (let i = 0; i < 3; i++) plink(0.18 + i * rand(0.07, 0.15), rand(150, 230) * deep, 0.05, 0.1, 1.9);
+    } else {
+      burst(0, 0.24, 'bandpass', 650, 2700, 0.9, 0.18 * (0.4 + 0.6 * k), 0.03);
+      plink(0.035, 520 * deep, 0.07, 0.1, 1.6);
+      const n = Math.round(5 + 7 * k);
+      for (let i = 0; i < n; i++) plink(0.12 + Math.random() * 0.65, rand(1500, 4000), rand(0.01, 0.032), rand(0.02, 0.045));
+    }
+    setTimeout(() => { try { bus.disconnect(); wet.disconnect(); } catch (e) { /* ignore */ } }, 2200);
   },
   /* paper tearing: a dry crackle of fibres giving way, thickest in the middle, over the time the rip takes */
   rip(dur) {
@@ -2042,6 +2157,12 @@ const Sound = {
     }
   },
   ambientTick(dt) {
+    /* the fish's voices follow them about, a few times a second, gliding */
+    this.placeT = (this.placeT || 0) - dt;
+    if (this.ctx && this.placeT <= 0 && this.fishGains.size) {
+      this.placeT = 0.06;
+      for (const f of Tank.fish) if (this.fishGains.has(f.id)) this.placeFish(f, 0.05);
+    }
     if (!this.ctx || !this.on || !this.ambientOn) return;
     if (Math.random() < dt * 0.5) this.tone(250 + Math.random() * 300, 0.07, 'sine', 0.025, { to: 900 + Math.random() * 500, glide: 0.05, bus: this.amb });
   },
@@ -2055,7 +2176,7 @@ const VOICE_SLOTS = [
   { k: 'chew', label: 'Il mange', when: 'Juste après une bouchée', core: true },
   { k: 'trick', label: 'Une figure', when: 'Quand il fait une figure', core: true },
   { k: 'afraid', label: 'Il a peur', when: 'Quand quelque chose lui fait peur. Sans son à lui, il pousse un petit cri.', core: true, def: 'fright' },
-  { k: 'shaken', label: 'On le secoue', when: 'Quand tu le secoues trop fort. Sans son à lui, il a le tournis.', core: true, def: 'woozy' },
+  { k: 'shaken', label: 'On le secoue', when: 'Quand tu le secoues trop fort. Sans son à lui, il fait son petit rire.', core: true, def: 'giggle' },
   { k: 'torn', label: 'Il se déchire', when: 'Quand tu le supprimes. Sans son à lui, il pousse un petit soupir.', core: true, def: 'sad' },
   /* older slots: sounds recorded there before keep playing */
   { k: 'bubbles', label: 'Bulles', when: 'Quand il fait des bulles' },
@@ -2250,8 +2371,9 @@ const MicRec = {
     const c = Sound.ctx;
     if (!c) throw { code: 'unsupported' };
     try { if (navigator.audioSession) navigator.audioSession.type = 'play-and-record'; } catch (e) { /* not supported */ }
-    /* the microphone is asked for once: the stream stays open (muted) for the rest of the visit, so the browser
-       does not ask again at every recording */
+    /* a take right after another reuses the open stream, so the browser does not ask again; it is closed for good
+       a few seconds after the last take (drop), and the phone stops showing the microphone as in use */
+    clearTimeout(this.dropT);
     let stream = this.kept && this.kept.getAudioTracks().some((t) => t.readyState === 'live') ? this.kept : null, err = null;
     const plain = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 };
     if (!stream) try { stream = await navigator.mediaDevices.getUserMedia({ audio: plain }); } catch (e) { err = e; }
@@ -2308,6 +2430,15 @@ const MicRec = {
     this.stream = null; this.src = null; this.node = null; this.sink = null;
     this.restoreSession();
     Sound.duck(false);
+    clearTimeout(this.dropT);
+    this.dropT = setTimeout(() => this.drop(), 6000);
+  },
+  /* the microphone is let go entirely: on leaving the editor or the page, and a little after the last take */
+  drop() {
+    clearTimeout(this.dropT);
+    if (this.active) return;
+    if (this.kept) { try { this.kept.getTracks().forEach((t) => t.stop()); } catch (e) { /* ignore */ } }
+    this.kept = null;
   },
   restoreSession() { try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ } },
   /* the recorder's last data arrives after stop() */
@@ -2353,7 +2484,7 @@ const MicRec = {
   cancel() { if (this.active || this.stream || this.rec) this.release(); this.chunks = []; this.recParts = []; },
 };
 
-/* playback: few voices at once, spaced out, placed left or right like the fish */
+/* playback: few voices at once, spaced out, heard where the fish is (its channel's place in space) */
 const FishVoice = {
   active: 0, lastStart: -9, perFish: new Map(), preview: null,
   has(f, slot) { return !!(f && f.sounds && f.sounds[slot]); },
@@ -2377,14 +2508,8 @@ const FishVoice = {
     const g = c.createGain();
     g.gain.value = 0.62 + 0.38 * (1 - clamp(f.z || 0, 0, 1));
     src.connect(g);
-    let tail = g;
-    if (c.createStereoPanner) {
-      const p = c.createStereoPanner();
-      const sx = f.sx !== undefined ? f.sx : (f.x || 0);
-      const pan = (sx / Math.max(1, Scene.W) - 0.5) * 1.2;
-      p.pan.value = Number.isFinite(pan) ? clamp(pan, -0.75, 0.75) : 0;
-      g.connect(p); tail = p;
-    }
+    /* (placed where the fish is by its own channel, in space) */
+    const tail = g;
     tail.connect(Sound.fishOut(f));
     this.active++;
     src.onended = () => { this.active = Math.max(0, this.active - 1); try { tail.disconnect(); } catch (e) { /* ignore */ } };
@@ -3814,6 +3939,81 @@ function buildAtlas() {
   cell('bird1', (g, C) => gull(g, C, -0.09, -0.13));
   cell('bird2', (g, C) => gull(g, C, -0.07, 0.05));
   cell('bird3', (g, C) => gull(g, C, 0.08, 0.27));
+  /* a point of light out of focus: an even disc, a touch brighter at its rim, its edge soft but clear */
+  cell('bokeh', (g, C) => {
+    const m = C / 2, R = m * 0.9;
+    const r = g.createRadialGradient(m, m, 0, m, m, R);
+    r.addColorStop(0, 'rgba(255,255,255,0.5)'); r.addColorStop(0.62, 'rgba(255,255,255,0.56)'); r.addColorStop(0.86, 'rgba(255,255,255,0.82)');
+    r.addColorStop(0.94, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = r; g.beginPath(); g.arc(m, m, R, 0, TAU); g.fill();
+  });
+  /* a point of light: a smooth bell (exp(-9 r²) out to the cell's edge), for the hearts of the little lights */
+  cell('gauss', (g, C) => {
+    /* (drawn on its own canvas first: pixels put straight into the atlas would ignore the cell's place) */
+    const m = C / 2, c2 = makeCanvas(C, C), g2 = c2.getContext('2d'), im = g2.createImageData(C, C), d = im.data;
+    for (let y = 0; y < C; y++) for (let x = 0; x < C; x++) {
+      const r2 = ((x + 0.5 - m) ** 2 + (y + 0.5 - m) ** 2) / (m * m), o = (y * C + x) * 4;
+      d[o] = d[o + 1] = d[o + 2] = 255; d[o + 3] = r2 >= 1 ? 0 : Math.round(255 * Math.exp(-9 * r2));
+    }
+    g2.putImageData(im, 0, 0);
+    g.drawImage(c2, 0, 0);
+  });
+  /* a tiny stone catching the light: four long thin rays and a hot heart, two shorter rays across */
+  cell('glint', (g, C) => {
+    const m = C / 2;
+    const ray = (a, L, w) => {
+      g.save(); g.translate(m, m); g.rotate(a);
+      const gr = g.createLinearGradient(-L, 0, L, 0);
+      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.beginPath(); g.moveTo(-L, 0); g.quadraticCurveTo(0, -w, L, 0); g.quadraticCurveTo(0, w, -L, 0); g.fill();
+      g.restore();
+    };
+    ray(0, m * 0.96, C * 0.05); ray(Math.PI / 2, m * 0.96, C * 0.05);
+    ray(Math.PI / 4, m * 0.42, C * 0.035); ray(-Math.PI / 4, m * 0.42, C * 0.035);
+    const r = g.createRadialGradient(m, m, 0, m, m, m * 0.3); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.6)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = r; g.fillRect(0, 0, C, C);
+  });
+  /* small rowing boats seen far away, side on (bow to the right), white to be tinted by the distance: a rower
+     pulling at the oars, or a fisherman standing with his rod */
+  const boat = (g, C, standing) => {
+    const y0 = C * 0.6, x0 = C * 0.08, x1 = C * 0.92;
+    g.fillStyle = '#fff'; g.strokeStyle = '#fff'; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath();
+    g.moveTo(x0, y0 - C * 0.075);
+    g.quadraticCurveTo(C * 0.5, y0 - C * 0.03, x1, y0 - C * 0.1);
+    g.quadraticCurveTo(x1 - C * 0.06, y0 + C * 0.07, x1 - C * 0.2, y0 + C * 0.075);
+    g.lineTo(x0 + C * 0.13, y0 + C * 0.075);
+    g.quadraticCurveTo(x0 + C * 0.03, y0 + C * 0.05, x0, y0 - C * 0.075);
+    g.fill();
+    if (standing) {
+      const px = C * 0.38;
+      g.lineWidth = C * 0.07; g.beginPath(); g.moveTo(px, y0 - C * 0.06); g.lineTo(px + C * 0.01, y0 - C * 0.27); g.stroke();
+      g.beginPath(); g.arc(px + C * 0.012, y0 - C * 0.32, C * 0.045, 0, TAU); g.fill();
+      g.lineWidth = C * 0.022; g.beginPath(); g.moveTo(px + C * 0.03, y0 - C * 0.22); g.quadraticCurveTo(C * 0.66, y0 - C * 0.44, C * 0.92, y0 - C * 0.36); g.stroke();
+      g.lineWidth = C * 0.01; g.beginPath(); g.moveTo(C * 0.92, y0 - C * 0.36); g.lineTo(C * 0.95, y0 + C * 0.02); g.stroke();
+    } else {
+      const px = C * 0.52;
+      g.beginPath(); g.ellipse(px, y0 - C * 0.12, C * 0.05, C * 0.075, -0.25, 0, TAU); g.fill();
+      g.beginPath(); g.arc(px + C * 0.025, y0 - C * 0.225, C * 0.042, 0, TAU); g.fill();
+      g.lineWidth = C * 0.022; g.beginPath(); g.moveTo(px - C * 0.12, y0 - C * 0.15); g.lineTo(px + C * 0.24, y0 + C * 0.1); g.stroke();
+    }
+  };
+  /* a scrap of torn paper: an uneven little quadrilateral, solid white */
+  cell('chip', (g, C) => {
+    g.fillStyle = '#fff'; g.beginPath();
+    g.moveTo(C * 0.18, C * 0.3); g.lineTo(C * 0.8, C * 0.16); g.lineTo(C * 0.86, C * 0.62); g.lineTo(C * 0.66, C * 0.7); g.lineTo(C * 0.26, C * 0.84);
+    g.closePath(); g.fill();
+  });
+  /* a round cartoon puff: three or four overlapping bumps, white, soft at its edge */
+  cell('cloudpuff', (g, C) => {
+    for (const [x, y, r] of [[0.5, 0.56, 0.3], [0.32, 0.6, 0.22], [0.68, 0.6, 0.22], [0.42, 0.4, 0.2], [0.6, 0.38, 0.18]]) {
+      const gr = g.createRadialGradient(x * C, y * C, 0, x * C, y * C, r * C);
+      gr.addColorStop(0, 'rgba(255,255,255,0.95)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.85)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.beginPath(); g.arc(x * C, y * C, r * C, 0, TAU); g.fill();
+    }
+  });
+  cell('boat0', (g, C) => boat(g, C, false));
+  cell('boat1', (g, C) => boat(g, C, true));
   ATLAS.canvas = c;
   return c;
 }
@@ -4802,6 +5002,7 @@ const Env = {
     const E = Scene.env;
     if (!E || !this.def) return;
     const W = Scene.W, H = Scene.H, SL = Scene.list, SP = Scene.particles;
+    Scene.orbHearts(SP);
     /* your picture layers: crisp (no light play), the same size on screen whatever their distance, so the way they
        slide past each other when the view moves tells how far they are; and the further back, the deeper in the
        haze of the water (the front one stays clear). Each can be mirrored either way */
@@ -5036,6 +5237,10 @@ const Sky = {
     this.moteCol = p.motes.n ? c(p.motes.col) : null;
     this.birdCol = p.birds.n ? c(p.birds.col) : null;
     this.shoot = null; this.shootT = 6 + rnd() * 10;
+    /* a few rowing boats far out at sea, the same ones each time in a scene */
+    this.boats = [];
+    const nb = 1 + Math.floor(rnd() * 2.6);
+    for (let i = 0; i < nb; i++) this.boats.push({ x: rnd(), d: lerp(0.15, 0.85, rnd()), kind: rnd() < 0.5 ? 0 : 1, dir: rnd() < 0.5 ? -1 : 1, sp: lerp(0.4, 1, rnd()), ph: rnd() * TAU, size: lerp(0.8, 1.2, rnd()) });
   },
   /* per frame: where the horizon and the sun are on screen */
   frame() {
@@ -5052,7 +5257,7 @@ const Sky = {
     const B = this.base, U = this.u, n = Daytime.night, gk = Daytime.gold * 0.85;
     if (B) {
       for (const k in this.goldC) for (let i = 0; i < 3; i++) U[k][i] = lerp(lerp(B[k][i], this.goldC[k][i], gk), this.nightC[k][i], n);
-      U.sun[1] = lerp(lerp(B.sun[1], 0.05, Daytime.gold), 0.4, n);
+      U.sun[1] = lerp(lerp(B.sun[1], 0.05, Daytime.gold), 0.18, n);
       U.sun[2] = lerp(B.sun[2], 0.028, n); U.sun[3] = lerp(B.sun[3], 0.85, n);
       U.P[2] = Math.max(B.P[2], n); U.ld[3] = Math.max(B.ld[3], Daytime.gold);
     }
@@ -5142,7 +5347,8 @@ const Sky = {
         SP.push({ uv: ATLAS.map['bird' + fr], x, y, w: b.size * b.dir, h: b.size * 0.5, rot: tilt, r: bc[0], g: bc[1], b: bc[2], a: 0.9, z: 9.96 });
       }
     }
-    if (this.moteCol) {
+    const mk = lightSpecks() * 2;
+    if (this.moteCol && mk > 0.01) {
       const mc = this.moteCol, sunX = this.u.sun[0];
       for (const m of this.motes) {
         m.x += dt * (0.004 + 0.004 * m.sp);
@@ -5153,30 +5359,71 @@ const Sky = {
         const near = Math.exp(-Math.pow((x - sunX) / (W * 0.3), 2));
         const a = (0.3 + 0.6 * near) * (0.4 + 0.6 * Math.max(0, Math.sin(t * 1.7 * m.sp + m.ph * 3))) * smoothstep(0, 18, yF - 14 - y);
         if (a < 0.03) continue;
-        SP.push({ uv: ATLAS.map.mote, x, y, w: m.sz * 2.2, h: m.sz * 2.2, r: mc[0], g: mc[1], b: mc[2], a, add: 1, z: 9.9 });
+        SP.push({ uv: ATLAS.map.mote, x, y, w: m.sz * 2.2, h: m.sz * 2.2, r: mc[0], g: mc[1], b: mc[2], a: Math.min(1, a * mk), add: 1, z: 9.9 });
       }
     }
     this.windTrails(dt, hz);
-    if (p.shooting) {
-      this.shootT -= dt;
-      if (!this.shoot && this.shootT <= 0) {
-        this.shoot = { x: Math.random() * W, y: Math.random() * hz * 0.5, dx: (Math.random() < 0.5 ? -1 : 1) * (0.7 + Math.random() * 0.3), dy: 0.35 + Math.random() * 0.2, len: 70 + Math.random() * 70, t: 0 };
-        this.shootT = 14 + Math.random() * 22;
+    this.drawBoats(dt, hz, yF);
+    this.shootingStar(dt, hz);
+  },
+  /* rowing boats far out at sea: small dark shapes on the sea below the horizon, the further the smaller and the
+     paler in the haze, rocking on the swell as they drift; each with its blurred reflection, and a lantern at night */
+  drawBoats(dt, hz, yF) {
+    if (!this.boats || this.seaH < 10) return;
+    const W = Scene.W, SP = Scene.particles, U = this.u, t = Scene.time, n = Daytime.night;
+    const sea = Math.max(0, yF - hz);
+    for (const b of this.boats) {
+      b.x += b.dir * b.sp * 0.0022 * dt;
+      if (b.x > 1.1) b.x = -0.1; else if (b.x < -0.1) b.x = 1.1;
+      const y = hz + 1.5 + sea * 0.42 * b.d, sz = (10 + 16 * b.d) * b.size * clamp(W / 1300, 0.7, 1.3);
+      const x = b.x * W, rock = Math.sin(t * 0.9 + b.ph) * 0.06, bob = Math.sin(t * 1.3 + b.ph * 2) * 0.5;
+      /* dark against the water, paler the further off */
+      const fog = lerp(0.62, 0.3, b.d), dark = lerp(0.1, 0.04, n);
+      const r = lerp(dark, U.hor[0], fog), g = lerp(dark + 0.01, U.hor[1], fog), bl = lerp(dark + 0.03, U.hor[2], fog);
+      const cy = y - sz * 0.15 + bob;
+      SP.push({ uv: ATLAS.map['boat' + b.kind], x, y: cy, w: sz * b.dir, h: sz, rot: rock, r, g, b: bl, a: 0.92, z: 9.965 });
+      SP.push({ uv: ATLAS.map['boat' + b.kind], x, y: y + sz * 0.33 + bob, w: sz * b.dir, h: -sz * 0.7, rot: -rock, r, g, b: bl, a: 0.16, z: 9.966 });
+      if (n > 0.3) {
+        const lx = x + b.dir * sz * 0.3, ly = cy - sz * 0.08, fl = (0.8 + 0.2 * Math.sin(t * 7 + b.ph * 5)) * smoothstep(0.3, 0.8, n);
+        SP.push({ uv: ATLAS.map.bokeh, x: lx, y: ly, w: sz * 0.42, h: sz * 0.42, r: 1, g: 0.78, b: 0.45, a: 0.9 * fl, add: 1, z: 9.964 });
+        SP.push({ uv: ATLAS.map.wline, x: lx, y: y + sz * 0.45, w: sz * 0.9, h: sz * 0.6, rot: Math.PI / 2, r: 1, g: 0.75, b: 0.45, a: 0.25 * fl, add: 1, z: 9.966 });
       }
-      const s = this.shoot;
-      if (s) {
-        s.t += dt;
-        const life = 0.8, k = s.t / life;
-        if (k >= 1) this.shoot = null;
-        else {
-          const hx = s.x + s.dx * s.len * k * 2, hy = s.y + s.dy * s.len * k * 2;
-          for (let i = 0; i < 12; i++) {
-            const q = i / 12, px = hx - s.dx * s.len * q * 0.6, py = hy - s.dy * s.len * q * 0.6;
-            if (py > hz - 6) continue;
-            SP.push({ uv: ATLAS.map.mote, x: px, y: py, w: 5 - q * 3, h: 5 - q * 3, r: 0.85, g: 0.9, b: 1, a: (1 - q) * Math.sin(k * Math.PI) * 0.9, add: 1, z: 9.97 });
-          }
-        }
-      }
+    }
+  },
+  /* shooting stars: at night (always in the starry scene), now and then a thin bright streak far off, quick, flaring
+     and fading, its trail lingering a moment after it; once in a while a big one, tinted */
+  shootingStar(dt, hz) {
+    const night = Math.max(this.p.shooting ? 1 : 0, smoothstep(0.55, 0.92, Daytime.night));
+    const W = Scene.W, SP = Scene.particles;
+    if (night < 0.01) { this.shoot = null; return; }
+    this.shootT -= dt * night;
+    if (!this.shoot && this.shootT <= 0) {
+      const big = Math.random() < 0.12, dir = Math.random() < 0.5 ? -1 : 1, ang = rand(0.22, 0.8);
+      this.shoot = { x: rand(0.08, 0.92) * W, y: rand(0.04, 0.4) * hz, dx: dir * Math.cos(ang), dy: Math.sin(ang), len: (big ? rand(170, 280) : rand(60, 150)) * clamp(W / 1400, 0.6, 1.3),
+        life: big ? rand(0.8, 1.2) : rand(0.3, 0.7), t: 0, big, col: big ? pick([[0.75, 1, 0.82], [1, 0.86, 0.62], [0.86, 0.9, 1]]) : [0.92, 0.95, 1] };
+      this.shootT = rand(7, 26);
+    }
+    const s = this.shoot;
+    if (!s) return;
+    s.t += dt;
+    const k = s.t / s.life;
+    if (k >= 1.45) { this.shoot = null; return; }
+    const head = Math.min(k, 1), flare = k < 1 ? Math.pow(Math.sin(Math.PI * Math.pow(k, 0.7)), 0.8) : 0;
+    const linger = k < 1 ? 1 : 0.45 * (1 - (k - 1) / 0.45);
+    const tail = Math.min(head, s.big ? 0.6 : 0.45), at = (q) => [s.x + s.dx * s.len * q, s.y + s.dy * s.len * q];
+    const N = 10, c = s.col;
+    for (let i = 0; i < N; i++) {
+      const q0 = i / N, a0 = head - tail * (i + 1) / N, a1 = head - tail * q0;
+      if (a0 < 0) continue;
+      const [x0, y0] = at(a0), [x1, y1] = at(a1);
+      if (Math.max(y0, y1) > hz - 6) continue;
+      const len = Math.hypot(x1 - x0, y1 - y0);
+      const a = Math.pow(1 - q0, 1.6) * (k < 1 ? 0.25 + 0.75 * flare : linger) * night;
+      SP.push({ uv: ATLAS.map.wline, x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: len + 0.6, h: (s.big ? 2.4 : 1.6) * (1 - q0 * 0.55) * 5, rot: Math.atan2(y1 - y0, x1 - x0), r: c[0], g: c[1], b: c[2], a, add: 1, z: 9.97 });
+    }
+    if (k < 1) {
+      const [hx, hy] = at(head);
+      if (hy < hz - 6) SP.push({ uv: ATLAS.map.glow, x: hx, y: hy, w: s.big ? 18 : 9, h: s.big ? 18 : 9, r: c[0], g: c[1], b: c[2], a: flare * 0.85 * night, add: 1, z: 9.97 });
     }
   },
 };
@@ -5234,8 +5481,38 @@ float swell(float x){
   }
   return y;
 }
+/* a fish breaking the surface at the front glass: x, age (s), height (px; below 0 a fish leaving the water, above 0
+   one falling back in), width (px). Scene.splashAt */
+uniform vec4 u_splash[4]; uniform int u_splashN;
+float splashY(float x){
+  float y = 0.;
+  for (int i = 0; i < 4; i++) {
+    if (i >= u_splashN) break;
+    vec4 S = u_splash[i];
+    float dx = x - S.x, ad = abs(dx), t = S.y, A = abs(S.z), w = S.w;
+    if (ad > w * 3. + 260. * t + 40.) continue;
+    float g = exp(-dx * dx / (w * w));
+    if (S.z < 0.) {
+      /* out: the water is drawn up after the fish in a hump that falls back into a hollow, which fills again */
+      y -= A * g * smoothstep(0., .05, t) * (1. - smoothstep(.1, .38, t));
+      y += A * .45 * g * smoothstep(.25, .4, t) * (1. - smoothstep(.45, .9, t));
+    } else {
+      /* in: a hollow opens where it falls, its rim thrown up all round in a crown that runs outward; then, as the
+         hollow closes, a column of water springs up from its middle and drops back */
+      y += A * .8 * exp(-dx * dx / (w * w * .5)) * smoothstep(0., .03, t) * (1. - smoothstep(.12, .34, t));
+      float rr = w * (.9 + 2.6 * t);
+      y -= A * .55 * exp(-pow((ad - rr) / (w * .32), 2.)) * smoothstep(0., .04, t) * (1. - smoothstep(.15, .45, t));
+      y -= A * 1.15 * exp(-dx * dx / (w * w * .07)) * smoothstep(.2, .3, t) * (1. - smoothstep(.36, .62, t));
+    }
+    /* then rings of small waves run away on both sides, spreading out and dying down */
+    float c = 230., r = c * t * .62;
+    float env = exp(-pow((ad - r) / (w * .6 + c * t * .32), 2.)) * smoothstep(0., .12, t) * exp(-t * 1.5);
+    y += A * .38 * env * cos((ad - c * t) * 6.2831 / max(w * 1.1, 18.));
+  }
+  return y;
+}
 /* how far below the still waterline the surface is here (px; a crest gives a negative value) */
-float waveY(float x, float wx){ return ripple(wx) + (u_crestN > 0 ? swell(x) : 0.); }
+float waveY(float x, float wx){ return ripple(wx) + (u_crestN > 0 ? swell(x) : 0.) + (u_splashN > 0 ? splashY(x) : 0.); }
 /* the same, only where the waves can reach (dy: how far the pixel is below the still waterline) */
 float waveNear(float x, float wx, float dy){ return abs(dy) < u_waveB ? waveY(x, wx) : 0.; }
 `;
@@ -5734,6 +6011,8 @@ uniform float u_time, u_wt; uniform float u_seed; uniform float u_murk; uniform 
 uniform float u_sil; uniform vec3 u_silCol; uniform float u_emit; uniform sampler2D u_causTex;
 /* your own picture layers: the haze of the water they stand in, more the further back (0..1) */
 uniform float u_haze;
+/* the fish you drew stand out from the water: their colours lifted (black stays black, white stays white) */
+uniform float u_pop;
 /* photographed scenery under water: red light is the first to go, the water's own hue takes over, tops catch the
    light from above and the foot sinks into shade */
 uniform float u_absorb;
@@ -5746,9 +6025,16 @@ uniform vec2 u_size; uniform float u_grow; uniform vec4 u_uvr; uniform float u_b
 uniform vec4 u_tear;
 in vec2 v_uv; in vec2 v_g; in vec2 v_scr; in float v_lit;
 out vec4 o;
-/* the ragged line of the rip, top to bottom across the drawing (Tank.tearX is the same line) */
+/* the rip, top to bottom across the drawing, drawn as in a cartoon: sharp teeth of uneven size down a gently
+   wavering line (Tank.tearX is the same line, without its teeth) */
+float zig(float n, float sd){
+  float i = floor(n), f = fract(n);
+  float a0 = (mod(i, 2.) < 1. ? -1. : 1.) * (.55 + .45 * hash12(vec2(i, sd)));
+  float a1 = (mod(i + 1., 2.) < 1. ? -1. : 1.) * (.55 + .45 * hash12(vec2(i + 1., sd)));
+  return mix(a0, a1, f);
+}
 float tearX(float y, float sd){
-  return .5 + .045 * sin(y * 8.7 + sd) + .028 * sin(y * 21.3 + sd * 2.3) + .014 * sin(y * 53. + sd * 4.1) + (y - .5) * .1 * sin(sd * 1.7);
+  return .5 + .035 * sin(y * 3.3 + sd) + (y - .5) * .08 * sin(sd * 1.7) + .034 * zig(y * 13. + fract(sd * .37) * 2., sd);
 }
 float silA(vec2 g){
   float inside = step(0., g.x) * step(0., g.y) * step(g.x, 1.) * step(g.y, 1.);
@@ -5759,17 +6045,25 @@ void main(){
   float above = u_clipMode > .5 ? sstep(u_clipY + u_clipS, u_clipY - u_clipS, v_scr.y) : 0.;
   bool cut = u_clipMode > .5 && u_clipMode < 1.5;
   if (cut && above > .995) discard;
-  /* torn: each half keeps its side of the rip; white paper fibres line its edge, a few sticking out past it */
-  float fib = 0.;
+  /* torn: each half keeps its side of the rip. Along it the white of the paper shows, cartoon-like: an even white
+     band following the teeth (wider on one of the two halves), clean-edged, with a thin grey line where the
+     colours start */
+  float fib = 0., fibS = 0.;
   if (u_tear.x != 0.) {
     float d = v_g.x - tearX(v_g.y, u_tear.y);
-    float wv = u_tear.w * (.6 + .8 * hash12(vec2(floor(v_g.y * 90.), u_tear.y)));
-    if (u_tear.x > 1.5) fib = step(v_g.y, u_tear.z) * (1. - smoothstep(wv * .35, wv * .8, abs(d)));
-    else {
+    float wv = u_tear.w, aa = max(fwidth(d) * .75, 1e-4);
+    if (u_tear.x > 1.5) {
+      /* still in one piece: the crack runs down from the top, a dark zigzag line between two white lips */
+      float ad = abs(d), run = step(v_g.y, u_tear.z);
+      if (run > 0. && ad < wv * .12 && u_sil <= 0.) discard;
+      fib = run * (1. - smoothstep(wv * .62 - aa, wv * .62 + aa, ad));
+      fibS = run * smoothstep(wv * .5, wv * .62, ad);
+    } else {
       float dd = d * u_tear.x;
-      float hair = step(.6, hash12(vec2(floor(v_g.y * 220.), u_tear.y * 3.1)));
-      if (dd < (u_sil > 0. ? 0. : -wv * .9 * hair)) discard;
-      fib = (1. - smoothstep(wv * .7, wv * 1.25, dd)) * (dd < 0. ? .85 : 1.);
+      wv *= u_tear.x * (fract(u_tear.y * .37) > .5 ? 1. : -1.) > 0. ? 1. : .55;
+      if (dd < 0.) discard;
+      fib = 1. - smoothstep(wv - aa, wv + aa, dd);
+      fibS = smoothstep(wv - aa * 3., wv, dd) * (1. - smoothstep(wv + aa, wv + aa * 3. + wv * .12, dd));
     }
   }
   /* outline: the drawing's shape grown a little, drawn just behind it */
@@ -5810,7 +6104,13 @@ void main(){
   }
   rgb = mix(rgb, vec3(1., .95, .85), u_flash * .55);
   rgb *= u_tint.rgb;
-  rgb = mix(rgb, vec3(.97, .96, .93) * v_lit, fib);
+  if (u_pop > 0.) {
+    rgb = clamp(rgb, 0., 1.);
+    rgb += u_pop * rgb * (1. - rgb);
+    rgb = clamp(mix(vec3(dot(rgb, vec3(.299, .587, .114))), rgb, 1. + u_pop * .25), 0., 1.);
+  }
+  rgb = mix(rgb, vec3(1., .99, .97) * max(v_lit, .96), fib);
+  rgb *= 1. - .38 * fibS;
   if (u_absorb > 0.) {
     vec3 wc = waterAt(v_scr);
     vec3 hue = wc / max(max(wc.r, max(wc.g, wc.b)), .05);
@@ -5868,12 +6168,13 @@ uniform vec4 u_rainT; uniform float u_flash;
 /* 0..1: the pointer is over the surface (it can be taken): its line brightens, or the top edge when it is above */
 uniform float u_lineHi;
 uniform vec3 u_rayCol; uniform vec3 u_raySrc; uniform float u_raySpread, u_bloomK, u_shimmer, u_expo, u_sat, u_con; uniform vec3 u_tint;
+/* the time of day: x the low sun (dawn, evening), y the night, z 1 at dawn and 0 in the evening */
+uniform vec3 u_tod;
 /* how much the Lumière setting brightens the water (the air a little) */
 uniform float u_litE;
 /* the dive at the start: x goes from 0 (above the sea) to 1 (in the tank), y = 1 while it plays */
 uniform vec2 u_dive;
-/* little lights in the scenery: xy position, radius, strength; their colours; how many */
-uniform vec4 u_orb[8]; uniform vec3 u_orbCol[8]; uniform int u_orbN; uniform float u_dust;
+uniform float u_dust;
 uniform sampler2D u_light0, u_light1;
 out vec4 o;
 vec2 toUV(vec2 p){ vec2 c = (p - u_cam.xy) * u_cam.z + u_res * .5; return vec2(c.x / u_res.x, 1. - c.y / u_res.y); }
@@ -5955,6 +6256,7 @@ void main(){
     vec2 w = vec2(gnoise(q + vec2(t * .45, 0.)), gnoise(q * 1.3 + vec2(5.2, -t * .38)));
     /* the slope of the swell bends what the underside mirrors */
     if (u_crestN > 0) w.x += clamp((swell(p.x + 12.) - swell(p.x - 12.)) / 24., -.35, .35) * 2.2 * (1. - k * .5);
+    if (u_splashN > 0) w.x += clamp((splashY(p.x + 6.) - splashY(p.x - 6.)) / 12., -.5, .5) * 2. * (1. - k * .5);
     /* where on the surface this pixel is (px across, px into the tank): rain rings are round there */
     float sZ = (p.y - u_vpY) / min(u_yF - u_vpY, -1.);
     float zz = (1. / max(sZ, .35) - 1.) / u_K;
@@ -6092,7 +6394,9 @@ void main(){
   float beam = 0.;
   if (p.y > yF && u_rays > 0.) {
     beam = L0.a * 2.;
-    col += u_rayCol * beam * u_rays * (1. - s.a) * u_lamp * (gk / max(wk, 1e-3));
+    /* the brightest shafts roll off a little instead of burning white where they cross */
+    float br = beam * u_rays;
+    col += u_rayCol * br / (1. + br * .35) * (1. - s.a) * u_lamp * (gk / max(wk, 1e-3));
   }
   /* specks of dust drifting through the water: almost invisible in the shade, they glint as they turn in a beam */
   if (u_dust > 0. && p.y > yF) {
@@ -6115,16 +6419,9 @@ void main(){
     col += mix(vec3(.85, .95, 1.), u_rayCol, .5) * dust * (beam * 3.5 + .01) * u_dust * u_lamp * (1. - s.a * .9);
   }
   /* small mysterious lights in the scenery: each one lights what is around it (from the light pass), behind
-     the fish; only their bright hearts are drawn here, sharp */
+     the fish; their hearts are sprites in the scene (Scene.orbHearts) */
   col += col * L0.rgb * 4. * (1. - s.a * .85);
   col += LA * (1. - s.a * .9);
-  for (int i = 0; i < 8; i++) {
-    if (i >= u_orbN) break;
-    vec2 d = (p - u_orb[i].xy) / u_orb[i].z;
-    float r2 = dot(d, d);
-    if (r2 > .04) continue;
-    col += u_orbCol[i] * exp(-r2 * 400.) * 1.6 * u_orb[i].w * (1. - s.a * .9);
-  }
   col += texture(u_bloomT, uv).rgb * u_bloomK;
   col = mix(col, u_murkCol * (.6 + .4 * dot(col, vec3(.33))), u_murk * .45 * (.7 + .3 * uv.y) * wk);
   /* lightning: everything lit up white-blue for an instant, the air most, the water a little */
@@ -6137,7 +6434,23 @@ void main(){
   float l = dot(col, vec3(.299, .587, .114));
   col = mix(vec3(l), col, u_sat);
   col = (col - .5) * u_con + .5;
+  /* a touch of clarity by day: midtones drawn apart a little, so the water does not look milky */
+  col = mix(col, clamp(col, 0., 1.) * clamp(col, 0., 1.) * (3. - 2. * clamp(col, 0., 1.)), .1 * (1. - u_tod.y));
   col *= u_tint;
+  /* the time of day, graded like a photograph. Dawn and evening: the deep water keeps its cool blue while what the
+     low sun lights turns warm (gold in the evening, peach at dawn), and its warm light pours in from above */
+  if (u_tod.x > .001) {
+    float lg = dot(col, vec3(.299, .587, .114));
+    vec3 warm = mix(vec3(1.14, .97, .80), vec3(1.12, .94, .93), u_tod.z), cool = mix(vec3(.9, .96, 1.07), vec3(.94, .95, 1.06), u_tod.z);
+    col *= mix(vec3(1.), mix(cool, warm, smoothstep(.2, .85, lg)), u_tod.x);
+    col += mix(vec3(.15, .075, .02), vec3(.13, .065, .075), u_tod.z) * u_tod.x * smoothstep(.3, 1., uv.y);
+  }
+  /* night: the shadows go deep indigo, the light a silvery moonlit grey-blue: dreamy */
+  if (u_tod.y > .001) {
+    float ln = dot(col, vec3(.299, .587, .114));
+    col = mix(col, col * vec3(.84, .86, 1.12) + vec3(.01, .004, .03), u_tod.y * (1. - smoothstep(.12, .5, ln)));
+    col = mix(col, mix(col, vec3(ln) * vec3(.92, .98, 1.08), .15), u_tod.y * smoothstep(.3, .9, ln));
+  }
   float v = length((uv - .5) * vec2(1.15, 1.)) * 1.3;
   col *= mix(1., .55, smoothstep(.5, 1.15, v) * u_vig);
   if (u_dive.y > 0.) {
@@ -6577,6 +6890,8 @@ const WOOD_PRESETS = [
   ['cave', .68, .6, .64, .74],
 ];
 
+/* the Particules de lumière slider (Weather window, 0..1, 0.5 as at first): the specks of dust glinting in the light */
+function lightSpecks() { const S = G.state && G.state.settings; return S && Number.isFinite(S.dust) ? clamp(S.dust, 0, 1) : 0.5; }
 const Scene = {
   ok: false,
   W: 1, H: 1, px: 1, scale: 1, quality: 1,
@@ -6689,7 +7004,7 @@ const Scene = {
   lightRays() { const k = this.lightK(); return 0.5 + 1.05 * k + 0.9 * Math.max(0, k - 1) ** 2; },
   lightExpo() { const k = this.lightK(); return k >= 1 ? 1 + 0.3 * (k - 1) : 1 - 0.14 * (1 - k); },
   /* the little lights of a scene: placed once per scene (the same each time), they drift and breathe slowly.
-     The Lights slider in the settings sets how bright they are (0 turns them off) */
+     The Petites lumières slider (Weather window) sets how bright they are (0 turns them off) */
   orbData(t, par) {
     const E = this.env || {}, k = G.state ? (G.state.settings.glow === undefined ? 0.5 : G.state.settings.glow) : 0.5;
     if (this.orbsFor !== E.id) {
@@ -6706,10 +7021,44 @@ const Scene = {
       const x = this.wrapX(o.x * this.W) + Math.sin(t * o.sp + o.ph) * 50 + par[0] * s;
       const y = o.y * this.H + Math.sin(t * o.sp * 1.3 + o.ph * 2) * 25 + par[1] * s;
       const breathe = 0.75 + 0.25 * Math.sin(t * o.pulse + o.ph) + 0.08 * Math.sin(t * 3.1 + o.ph * 5);
-      pos.set([x, y, o.r * (0.5 + s), k * 1.3 * breathe], i * 4);
+      pos.set([x, y, o.r * (0.5 + s), k * 1.3 * breathe * (1 + 0.6 * Daytime.night)], i * 4);
       col.set(o.col, i * 3);
     }
     return { pos, col, n };
+  },
+  /* the little lights' hearts, as they always were: a small hot point at each, breathing with it (its glow on the
+     water comes from the light pass). Round each, a few tiny specks out of focus (bokeh) circle slowly in its light,
+     twinkling, now and then one of them catching it in a glint; soft by day, at their most at night. All of it at
+     the light's depth, so whatever stands in front hides it */
+  orbHearts(SP) {
+    const E = this.env || {};
+    if (this.orbsFor !== E.id) this.orbData(this.time, [this.par.x, this.par.y]);
+    const k = G.state ? (G.state.settings.glow === undefined ? 0.5 : G.state.settings.glow) : 0.5;
+    if (k < 0.001 || !this.orbs) return;
+    const t = this.time, soft = lerp(0.35, 1, Daytime.night);
+    this.orbs.forEach((o, n) => {
+      const s = this.s(o.z), R = o.r * (0.5 + s);
+      const cx = this.wrapX(o.x * this.W) + Math.sin(t * o.sp + o.ph) * 50, cy = o.y * this.H + Math.sin(t * o.sp * 1.3 + o.ph * 2) * 25;
+      const breathe = 0.75 + 0.25 * Math.sin(t * o.pulse + o.ph) + 0.08 * Math.sin(t * 3.1 + o.ph * 5);
+      /* (a sprite carries at most 1: what the heart has more is laid again on top) */
+      for (let a = 1.6 * k * 1.3 * breathe; a > 0.01; a -= 1) SP.push({ uv: ATLAS.map.gauss, x: cx, y: cy, w: R * 0.3, h: R * 0.3, r: o.col[0], g: o.col[1], b: o.col[2], a: Math.min(1, a), add: 1, z: o.z });
+      if (!o.sat) {
+        const rnd = mulberry32(n * 7919 + 13);
+        o.sat = [];
+        for (let i = 0; i < 12; i++) o.sat.push({ a0: rnd() * TAU, dr: 0.3 + rnd() * 1.2, w: (rnd() < 0.5 ? -1 : 1) * (0.1 + rnd() * 0.28), ey: 0.45 + rnd() * 0.4, sz: 1.6 + rnd() * 3.8, tw: 0.5 + rnd() * 1.6, ph: rnd() * TAU, dz: (rnd() - 0.5) * 0.25, white: 0.3 + rnd() * 0.45 });
+      }
+      for (const q of o.sat) {
+        const ang = q.a0 + t * q.w, rr = q.dr * R * 0.55;
+        const x = cx + Math.cos(ang) * rr, y = cy + Math.sin(ang) * rr * q.ey + Math.sin(t * 0.7 + q.ph) * 6;
+        const tw = Math.pow(0.5 + 0.5 * Math.sin(t * q.tw + q.ph), 2);
+        const al = k * soft * breathe * (0.22 + 0.78 * tw) * (0.35 + 0.65 * Math.exp(-q.dr * 1.2));
+        const r = lerp(o.col[0], 1, q.white), g = lerp(o.col[1], 1, q.white), b = lerp(o.col[2], 1, q.white), d = q.sz * 2 * (0.6 + s);
+        SP.push({ uv: ATLAS.map.bokeh, x, y, w: d, h: d, r, g, b, a: Math.min(1, al * 2.4), add: 1, z: o.z + q.dz });
+        /* the rare glint */
+        const fl = Math.sin(t * q.tw * 0.37 + q.ph * 3);
+        if (fl > 0.9993) { const gk = (fl - 0.9993) / 0.0007; SP.push({ uv: ATLAS.map.glint, x, y, w: d * 3.2 * gk, h: d * 3.2 * gk, rot: q.ph, r, g, b, a: Math.min(1, gk * k * soft * 1.5), add: 1, z: o.z + q.dz - 0.001 }); }
+      }
+    });
   },
   fogAt(z) { return 1 - Math.exp(-Math.max(0, z) * this.fogK); },
   /* the seabed's relief lies on the scenery's circle, like the rocks and plants on it: wx is a place along the
@@ -6884,6 +7233,25 @@ const Scene = {
      gathers itself and breaks again. Worked out here once per frame for the shaders (u_crest) and for the spray
      and the sound of each wave as it lands */
   crestBuf: new Float32Array(32), crestN: 0, crestPh: new Map(),
+  /* a fish breaking the surface at the front glass (x on the scene, A height and w width in px; into: falling back
+     in): the surface heaves and craters there and sends rings of small waves along (SH.waves, splashY) */
+  splashes: [], splashBuf: new Float32Array(16),
+  splashAt(x, A, w, into) {
+    if (![x, A, w].every(Number.isFinite)) return;
+    this.splashes.push({ x, A: Math.min(A, 90), w, into, t: 0 });
+    if (this.splashes.length > 4) this.splashes.shift();
+  },
+  /* -> how far from the still line they reach (px) */
+  updateSplashes(dt) {
+    let reach = 0;
+    this.splashBuf.fill(0);
+    this.splashes = this.splashes.filter((S) => (S.t += dt) < 3);
+    this.splashes.forEach((S, i) => {
+      this.splashBuf[i * 4] = S.x; this.splashBuf[i * 4 + 1] = S.t; this.splashBuf[i * 4 + 2] = S.into ? S.A : -S.A; this.splashBuf[i * 4 + 3] = S.w;
+      reach = Math.max(reach, S.A * 1.3);
+    });
+    return reach;
+  },
   updateCrests(dt) {
     const S = this.seaState(), W = this.W, H = this.H, K = kindOf(SEA_KINDS, 'seaType', 'deferlantes');
     const A = H * 0.085 * smoothstep(0.5, 1.05, S) * K.A;
@@ -7156,7 +7524,7 @@ const Scene = {
     const seaU = [(G.state.env.sea === undefined ? 0.5 : G.state.env.sea) * SK.amp, this.surge, this.crestC || 62, SK.chop];
     let hcMax = 0;
     for (let i = 0; i < this.crestN; i++) hcMax = Math.max(hcMax, this.crestBuf[i * 4 + 1]);
-    const waveB = (4.4 + 0.6 * this.surge) * (0.4 + 3.6 * seaU[0]) * (1 + this.surge * 1.4) + hcMax * 1.6 + 8;
+    const waveB = (4.4 + 0.6 * this.surge) * (0.4 + 3.6 * seaU[0]) * (1 + this.surge * 1.4) + hcMax * 1.6 + 8 + this.updateSplashes(dt);
     /* shadows */
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.shadowFbo.fb);
     gl.viewport(0, 0, 512, 128);
@@ -7223,6 +7591,7 @@ const Scene = {
     gl.uniform1f(ub.u_yawX, this.yawX()); gl.uniform1f(ub.u_circ, this.circ());
     gl.uniform1f(ub.u_wt, wt); gl.uniform4fv(ub.u_seaS, seaU); gl.uniform1f(ub.u_waveB, waveB);
     gl.uniform4fv(ub['u_crest[0]'] || ub.u_crest, this.crestBuf); gl.uniform1i(ub.u_crestN, this.crestN);
+    gl.uniform4fv(ub['u_splash[0]'] || ub.u_splash, this.splashBuf); gl.uniform1i(ub.u_splashN, this.splashes.length);
     gl.bindVertexArray(this.tri);
     gl.drawArrays(gl.TRIANGLES, 0, 3); draws++;
     /* floor */
@@ -7346,6 +7715,7 @@ const Scene = {
       gl.uniform4f(us.u_tint, tn[0], tn[1], tn[2], tn[3]);
       gl.uniform1f(us.u_fog, d.fog === undefined ? this.fogAt(d.z) : d.fog);
       gl.uniform1f(us.u_haze, d.haze || 0);
+      gl.uniform1f(us.u_pop, d.pop || 0);
       gl.uniform1f(us.u_shade, d.light || 0);
       gl.uniform1f(us.u_caus, (d.caus || 0) * causK);
       gl.uniform1f(us.u_metal, d.metal || 0);
@@ -7467,16 +7837,17 @@ const Scene = {
     if (K) this.setSky(up, skyView);
     gl.uniform4fv(up.u_seaS, seaU); gl.uniform1f(up.u_waveB, waveB);
     gl.uniform4fv(up['u_crest[0]'] || up.u_crest, this.crestBuf); gl.uniform1i(up.u_crestN, this.crestN);
+    gl.uniform4fv(up['u_splash[0]'] || up.u_splash, this.splashBuf); gl.uniform1i(up.u_splashN, this.splashes.length);
     gl.uniform1f(up.u_vpY, g.vpY + par[1]); gl.uniform1f(up.u_K, g.K); gl.uniform1f(up.u_dLen, g.depthLen);
     gl.uniform1f(up.u_ca, G.state.settings.quality !== 'low' && this.quality >= 0.95 ? 1 : 0);
-    gl.uniform1f(up.u_expo, E.expo * lerp(1, 0.45, dn) * (1 - dg * 0.1) * (1 - wet * 0.18)); gl.uniform1f(up.u_litE, this.lightExpo()); gl.uniform1f(up.u_sat, E.sat); gl.uniform1f(up.u_con, E.con);
-    gl.uniform3f(up.u_tint, E.tint[0] * lerp(lerp(1, 1.1, dg), 0.72, dn), E.tint[1] * lerp(lerp(1, 0.95, dg), 0.86, dn), E.tint[2] * lerp(lerp(1, 0.82, dg), 1.12, dn));
+    gl.uniform1f(up.u_expo, E.expo * lerp(1, 0.56, dn) * (1 - dg * 0.1) * (1 - wet * 0.18)); gl.uniform1f(up.u_litE, this.lightExpo()); gl.uniform1f(up.u_sat, E.sat); gl.uniform1f(up.u_con, E.con);
+    gl.uniform3f(up.u_tint, E.tint[0] * lerp(1, 0.74, dn), E.tint[1] * lerp(1, 0.87, dn), E.tint[2] * lerp(1, 1.1, dn));
+    gl.uniform3f(up.u_tod, dg, dn, Daytime.hour() < 12 ? 1 : 0);
     gl.uniform1f(up.u_murk, this.murk);
     gl.uniform3f(up.u_murkCol, 0.25, 0.3, 0.16);
-    gl.uniform1f(up.u_vig, E.vig);
+    gl.uniform1f(up.u_vig, E.vig * (1 + dn * 0.4));
     gl.uniform2f(up.u_dive, this.dive ? this.dive[0] : 1, this.dive ? 1 : 0);
-    gl.uniform4fv(up['u_orb[0]'] || up.u_orb, orbs.pos); gl.uniform3fv(up['u_orbCol[0]'] || up.u_orbCol, orbs.col); gl.uniform1i(up.u_orbN, orbs.n);
-    gl.uniform1f(up.u_dust, G.state.settings.quality === 'low' ? 0 : 1);
+    gl.uniform1f(up.u_dust, G.state.settings.quality === 'low' ? 0 : lightSpecks() * 2);
     gl.bindVertexArray(this.tri);
     gl.drawArrays(gl.TRIANGLES, 0, 3); draws++;
     this.stats.draws = draws;
@@ -7538,8 +7909,16 @@ const TRICKS = {
 const LEAP_G = 1250, LEAP_Z = 0.05;
 /* a fish torn up (deleted): sad until RIP0, the rip runs down until RIP1, the halves are gone at END (seconds) */
 const TEAR_RIP0 = 0.6, TEAR_RIP1 = 1.05, TEAR_END = 2.8;
-/* the fish all swim in one thin layer just behind the glass: they never wander off into the scenery */
+/* the fish all swim in one thin layer just behind the glass: they never wander off into the scenery (now and then
+   one slips a little way behind a rock, and comes back) */
 const FISH_Z0 = 0.2, FISH_Z1 = 0.34;
+/* the Activity setting (0..1, 0.5 as at first) as a pace: 1 at first, calmer below, livelier and chattier above */
+function fishActivity() {
+  const S = G.state && G.state.settings, a = S && Number.isFinite(S.activity) ? clamp(S.activity, 0, 1) : 0.5;
+  return a < 0.5 ? lerp(0.35, 1, a / 0.5) : lerp(1, 1.9, (a - 0.5) / 0.5);
+}
+/* the Queue leu leu setting (0..1): how often the fish swim in a line */
+function congaSetting() { const S = G.state && G.state.settings; return S && Number.isFinite(S.conga) ? clamp(S.conga, 0, 1) : 0.4; }
 const NOFLIP_TRICKS = ['twirl', 'jelly', 'wiggle', 'bubble', 'jolt'];
 
 const QUOTES = {
@@ -7602,7 +7981,7 @@ const Ctl = {
   take(f) {
     if (!f || Tank.fish.indexOf(f) < 0 || f.mode === 'leave' || f.mode === 'enter') { UI.toast('Ce poisson ne peut pas être dirigé pour l\'instant.'); return; }
     if (this.fish && this.fish !== f) this.release();
-    this.fish = f; this.pick = f; this.dest = null; this.keys.clear();
+    this.fish = f; this.pick = f; this.dest = null; this.keys.clear(); this.enterHeld = false;
     if (f.trick && TRICKS[f.trick.type] && TRICKS[f.trick.type].own) Tank.endTrick(f);
     f.mode = 'control'; f.tgt = null;
     Tank.mouthBubbles(f);
@@ -7623,8 +8002,8 @@ const Ctl = {
   exit() { this.release(); },
   key(k, down) {
     if (k === ' ' || k === 'spacebar') { this.boost = !!down && !!this.fish; UI.flashPad(' ', down); return true; }
-    /* Enter: a pirouette on the way, the steering going on through it */
-    if (k === 'enter') { if (down && this.fish) Tank.pirouette(this.fish); UI.flashPad('enter', down); return true; }
+    /* Enter: one figure, any of them (holding the key does not repeat it) */
+    if (k === 'enter') { if (down && !this.enterHeld && this.fish) Tank.steerTrick(this.fish); this.enterHeld = !!down; UI.flashPad('enter', down); return true; }
     if (!/^arrow/.test(k)) return false;
     if (down) this.keys.add(k); else this.keys.delete(k);
     UI.flashPad(k, down);
@@ -7739,8 +8118,14 @@ const Tank = {
     f.z += (LEAP_Z - f.z) * (1 - Math.exp(-dt * 9));
     if (f.x < f.w * 0.35 || f.x > W - f.w * 0.35) { f.x = clamp(f.x, f.w * 0.35, W - f.w * 0.35); f.vx = -f.vx * 0.5; }
     /* breaking through the surface, on the way up and on the way down */
-    if (!L.out && f.y < surf) { L.out = true; this.leapSplash(f, 0.7); }
-    if (L.out && !L.back && f.vy > 0 && f.y > surf) { L.back = true; this.leapSplash(f, clamp(f.vy / 560, 0.45, 1)); }
+    if (!L.out && f.y < surf) { L.out = true; L.tOut = L.t; this.leapSplash(f, clamp(-f.vy / 700, 0.4, 1), false); }
+    if (L.out && !L.back && f.vy > 0 && f.y > surf) { L.back = true; this.leapSplash(f, clamp(f.vy / 560, 0.45, 1), true); }
+    /* in the air, water still runs off it: drops fall from its belly and tail, fewer and fewer */
+    if (L.out && !L.back && Math.random() < dt * 34 * Math.max(0, 1 - (L.t - L.tOut) / 0.7)) {
+      const z = Math.min(f.z, LEAP_Z), sc = Scene.s(z);
+      this.fx.push({ type: 'drop', x: f.x + (f.face || 1) * rand(-0.45, 0.1) * f.w * sc, y: Scene.projY(f.y, z) + rand(-0.1, 0.4) * f.h * sc, z: z - 0.004, t: 0, life: 2,
+        line: Scene.projY(surf, z), s: rand(1.2, 2.8), vx: f.vx * rand(0.5, 0.9), vy: f.vy * rand(0.1, 0.5) });
+    }
     /* back under the water: it brakes, leaving a trail of bubbles, and drifts back to its layer */
     const top = this.topY(f.z) + f.h * 0.3;
     if ((f.vy > 0 && f.y > top) || L.t > 3) {
@@ -7750,12 +8135,87 @@ const Tank = {
       for (let i = 0; i < 10; i++) this.bubbles.push({ x: f.x + rand(-f.w * 0.3, f.w * 0.3), y: f.y + rand(-f.h * 0.3, f.h * 0.4), z: f.z, r: rand(1.2, 3.4), vy: -rand(15, 45), ph: rand(TAU) });
     }
   },
-  /* splashes go on the waterline you see, just behind the glass */
-  leapSplash(f, k) { this.litterSplash({ x: f.x, z: Math.min(f.z, LEAP_Z), vx: f.vx }, k); },
+  /* a fish breaking the surface on the waterline you see, just behind the glass: out of the water, or back into it
+     (into), k 0..1 how hard. The surface itself heaves and craters and sends rings of small waves along
+     (Scene.splashAt); drops fly out in a crown and fall back one by one into the water, a fine mist with them;
+     coming down, a column of water springs from the middle after it, white water spreads where it went in and a
+     cloud of air is dragged down with it. Heard as it happens (Sound.leapSplash) */
+  leapSplash(f, k, into) {
+    const z = Math.min(f.z, LEAP_Z), s = Scene.s(z), P = Scene.par;
+    const line = Scene.projY(Scene.geo.surfY, z), w = f.w * s, hh = f.h * s, x = f.x;
+    Scene.splashAt(x + P.x * s, hh * (into ? 0.45 : 0.32) * (0.55 + 0.65 * k), Math.max(10, w * (into ? 0.26 : 0.2)), into);
+    const drop = (o) => this.fx.push(Object.assign({ type: 'drop', z: z - 0.004, t: 0, life: 2.5, line }, o));
+    const n = Math.round((into ? 30 : 18) * (0.6 + 0.6 * k));
+    for (let i = 0; i < n; i++) {
+      const side = i % 2 ? 1 : -1, big = Math.random() < 0.2;
+      if (into) {
+        /* the crown: thrown up and out from the rim of the hollow */
+        const a = rand(0.9, 1.4), v = rand(170, 430) * (0.5 + 0.7 * k) * (big ? 0.75 : 1);
+        drop({ x: x + side * rand(0.25, 0.6) * w * 0.5, y: line - rand(0, 3), s: big ? rand(3.4, 5.4) : rand(1.8, 3.4), vx: side * v * Math.cos(a) + f.vx * 0.12, vy: -v * Math.sin(a) });
+      } else {
+        /* out: drawn up after the fish, then falling back */
+        drop({ x: x + rand(-0.35, 0.35) * w, y: line - rand(0, 6), s: big ? rand(3.2, 4.8) : rand(1.7, 3.2), vx: f.vx * rand(0.15, 0.5) + rand(-60, 60), vy: f.vy * rand(0.3, 0.85) });
+      }
+    }
+    /* a fine mist */
+    for (let i = 0; i < 14 + 12 * k; i++) drop({ x: x + rand(-0.4, 0.4) * w, y: line - rand(0, 5), s: rand(1, 1.8), mist: true, life: rand(0.5, 1), vx: rand(-140, 140) * (0.5 + k), vy: -rand(60, 260) * (0.5 + k) });
+    if (into) {
+      /* the column from the middle, a moment later */
+      for (let i = 0; i < 6; i++) drop({ x: x + rand(-3, 3), y: line, t: -rand(0.19, 0.27), s: rand(2.8, 5), vx: rand(-25, 25), vy: -rand(260, 430) * (0.55 + 0.6 * k) });
+      /* white water where it went in, spreading and fading on the surface */
+      for (let i = 0; i < 5; i++) this.fx.push({ type: 'foam', x: x + rand(-0.4, 0.4) * w, y: line + rand(-1, 3), z, t: -i * 0.04, life: rand(1.1, 1.8), s: w * rand(0.4, 0.75), vx: rand(-30, 30), vy: 0 });
+      /* the air it drags down, rising back in a cloud of bubbles of every size */
+      for (let i = 0; i < 26 + 26 * k; i++) {
+        const big = Math.random() < 0.15;
+        this.bubbles.push({ x: x + rand(-0.45, 0.45) * f.w, y: Scene.geo.surfY + rand(4, 1.6 * f.h), z: f.z, r: big ? rand(3.2, 6) : rand(0.8, 3), vy: -rand(20, 90), ph: rand(TAU), drift: rand(-30, 30) });
+      }
+    } else for (let i = 0; i < 10; i++) this.bubbles.push({ x: x + rand(-0.3, 0.3) * f.w, y: Scene.geo.surfY + rand(4, 26), z: f.z, r: rand(1, 3), vy: -rand(15, 50), ph: rand(TAU) });
+    this.ripples.push({ x, y: Math.max(line, 20), z, t: 0, big: 1 });
+    Sound.leapSplash(f, k, into);
+  },
   /* the fish's layer behind the glass; one that came forward to leap drifts back into it */
   zKeep(f, dt) {
-    if (f.z > FISH_Z1) f.z = FISH_Z1;
+    /* (behind a rock it may go as deep as the visit takes it; back from it, it drifts forward into its layer) */
+    if (f.visit) { if (f.z > f.visit.z + 0.01) f.z = f.visit.z + 0.01; }
+    else if (f.z > FISH_Z1) f.z = f.zBack ? Math.max(FISH_Z1, f.z - (f.z - FISH_Z1) * (1 - Math.exp(-dt * 1.2)) - dt * 0.004) : FISH_Z1;
     else if (f.z < FISH_Z0) f.z = f.trick && f.trick.type === 'leap' ? Math.max(f.z, LEAP_Z) : Math.min(FISH_Z0, f.z + (FISH_Z0 - f.z) * (1 - Math.exp(-dt * 1.6)) + dt * 0.004);
+    if (f.zBack && f.z <= FISH_Z1 + 0.001) f.zBack = false;
+  },
+  /* now and then, as it passes behind the plants, a fish slips a little way behind a rock: round its side, along
+     behind it (half hidden, its back showing over it), and out at the other side, where it comes forward again.
+     Only rocks close behind the fish's layer and tall enough to hide part of it */
+  rockVisit(f) {
+    const z0 = f.z, cands = [];
+    for (const rk of Scene.decor) {
+      if (rk.kind !== 'rock' || rk.lift || rk.z < FISH_Z1 + 0.02 || rk.z > 0.5) continue;
+      const s = Scene.s(rk.z), rx = Scene.wrapX(rk.x), fs = Scene.s(rk.z + 0.035);
+      if (rx < rk.w * s * 0.5 || rx > Scene.W - rk.w * s * 0.5 || rk.h * s < f.h * Scene.s(z0) * 1.1 || rk.w * s < f.w * fs * 0.9) continue;
+      cands.push({ rk, rx, d: Math.abs(rx - f.x) });
+    }
+    if (!cands.length) return false;
+    cands.sort((a, b) => a.d - b.d);
+    const { rk, rx } = cands[Math.floor(Math.random() * Math.min(2, cands.length))];
+    const zb = rk.z + 0.035, s = Scene.s(rk.z);
+    /* at about two thirds of the rock's height: the rock hides its lower half */
+    const fy = Scene.baseFloorScreenY(rx, rk.z), y = Scene.unprojY(fy - rk.h * s * 0.62, zb);
+    const top = this.topY(zb) + f.h * 0.5, bot = this.floorY(rx, zb) - f.h * 0.6;
+    const fw = f.w * Scene.s(zb), side = f.x < rx ? -1 : 1, half = rk.w * s * 0.42 + fw * 0.65;
+    f.visit = { rk, z: zb, y: clamp(y, top, Math.max(top, bot)), a: rx + side * half, b: rx - side * half, out: rx - side * (half + fw * 1.4), step: 0, t: 0 };
+    f.mode = 'wander'; f.retarget = 1e6;
+    return true;
+  },
+  /* where a fish on its way behind a rock heads now (null: the visit is over) */
+  visitTarget(f, dt) {
+    const V = f.visit;
+    V.t += dt;
+    if (Scene.decor.indexOf(V.rk) < 0 || f.mode !== 'wander' || V.t > 30) { f.visit = null; f.zBack = true; f.retarget = 0; return null; }
+    const goal = V.step === 0 ? { x: V.a, y: V.y, z: V.z } : V.step === 1 ? { x: V.b, y: V.y, z: V.z } : { x: V.out, y: V.y, z: FISH_Z1 - 0.03 };
+    const d = Math.hypot(goal.x - f.x, goal.y - f.y, (goal.z - f.z) * this.depthPx());
+    if (d < 22) {
+      if (V.step < 2) V.step++;
+      else { f.visit = null; f.zBack = true; f.retarget = 0; return null; }
+    }
+    return goal;
   },
   /* touching down: a ring of silt runs out over the sand, a few grains jump and fall back, and a light haze rolls
      away on both sides, curling up as it goes like smoke in the wind (the water pushed out from under the fish
@@ -7778,34 +8238,46 @@ const Tank = {
     /* the haze starts from under the fish's belly and rolls out beyond its head and tail */
     for (const side of [-1, 1]) for (let i = 0; i < 8; i++) {
       this.fx.push({ type: 'curl', x: x + side * f.w * 0.15 * s, y: fy, z: z + (i % 2 ? 0.004 : -0.012), side, ph: rand(TAU), r0: rand(4, 14) * s, ss: s,
-        D: (f.w * 0.5 + rand(40, 110)) * s * (0.6 + 0.5 * k), rise: rand(24, 56) * s * size, t: -i * 0.04, life: rand(2.4, 3.6), s: rand(30, 52) * s * Math.max(0.85, size), k, vx: rand(-5, 5), vy: 0 });
+        D: (f.w * 0.5 + rand(40, 110)) * s * (0.6 + 0.5 * k), rise: rand(24, 56) * s * size, t: -i * 0.04, life: rand(3.8, 5.6), s: rand(30, 52) * s * Math.max(0.85, size), k, vx: rand(-5, 5), vy: 0 });
     }
     Sound.sandTouch(f, k);
   },
   /* a fish rushing along the bottom stirs up the sand behind it (the faster, the more) */
   sandKick(f, dt, bot) {
     const spd = Math.hypot(f.vx, f.vy);
-    if (f.y < bot - f.h * 0.3 || spd < 30) return;
-    if (f.y >= bot - 3 && f.kind !== 'bottom') this.sandRake(f, dt, spd);
+    if (f.y < bot - f.h * 0.35 || spd < 30) return;
+    /* low over the sand is enough, no need to press on it: the closer, the more it stirs */
+    const near = clamp(1 - (bot - f.y) / (f.h * 0.35), 0, 1);
+    if (near > 0.05 && f.kind !== 'bottom') this.sandRake(f, dt, spd, near);
     if (Math.random() > dt * Math.min(3, spd / 90) * 9) return;
     const dir = f.vx > 0 ? 1 : -1, s = Scene.s(f.z);
     const x = f.x - dir * f.w * rand(0.2, 0.5), fy = Scene.floorScreenY(x, f.z);
-    this.fx.push({ type: 'sand', x, y: fy - rand(1, 5), z: f.z, floor: fy - 1, t: 0, life: rand(1.3, 2.2), s: rand(10, 20) * s * Math.min(1.6, f.w / 120), vx: -dir * spd * rand(0.05, 0.2) + rand(-12, 12), vy: -rand(8, 30) - spd * 0.08 });
+    this.fx.push({ type: 'sand', x, y: fy - rand(1, 5), z: f.z, floor: fy - 1, t: 0, life: rand(2.6, 4), s: rand(10, 20) * s * Math.min(1.6, f.w / 120), vx: -dir * spd * rand(0.05, 0.2) + rand(-12, 12), vy: -rand(8, 30) - spd * 0.08 });
   },
   /* a fish swimming with its belly on the sand (not one of the bottom dwellers, who live there) rakes it: little
      whirls of silt curl up behind its tail, rolling back the way it came, a few grains are flicked up and the sand
      is heard sweeping. The faster it goes, the more */
-  sandRake(f, dt, spd) {
+  sandRake(f, dt, spd, near = 1) {
     if (Math.abs(f.vx) < 40) return;
     f.rakeT = (f.rakeT || 0) - dt;
     if (f.rakeT > 0) return;
-    const k = clamp(spd / 220, 0.25, 1), z = f.z, s = Scene.s(z), dir = f.vx > 0 ? 1 : -1;
+    const k = clamp(spd / 220, 0.25, 1) * (0.45 + 0.55 * near), z = f.z, s = Scene.s(z), dir = f.vx > 0 ? 1 : -1;
     f.rakeT = rand(0.09, 0.15) / (0.6 + k);
     const size = clamp(f.w / 130, 0.6, 1.4);
     const x = f.x - dir * f.w * 0.42 * s, fy = Scene.floorScreenY(x, z);
+    /* fine silt hangs in the water a good while, as it does, before it settles back */
     for (let i = 0; i < 2; i++) {
       this.fx.push({ type: 'curl', x: x + rand(-4, 4) * s, y: fy, z: z + (i ? 0.004 : -0.012), side: -dir, ph: rand(TAU), r0: rand(3, 9) * s, ss: s,
-        D: rand(26, 64) * s * (0.6 + 0.6 * k), rise: rand(14, 34) * s * size, t: -i * 0.05, life: rand(1.6, 2.4), s: rand(26, 42) * s * Math.max(0.8, size), k, al: 1.45, vx: 0, vy: 0 });
+        D: rand(26, 64) * s * (0.6 + 0.6 * k), rise: rand(14, 34) * s * size, t: -i * 0.05, life: rand(3.4, 5.2), s: rand(26, 42) * s * Math.max(0.8, size), k, al: 1.45, vx: 0, vy: 0 });
+    }
+    /* a lot of sand stirred up: the cloud climbs round the fish, in front of it and behind it */
+    f.silt = Math.min(2.5, (f.silt || 0) + k * 0.16);
+    const thick = smoothstep(0.7, 1.8, f.silt);
+    if (thick > 0.02 && Math.random() < 0.35 + 0.65 * thick) {
+      for (const front of [-1, 1]) {
+        this.fx.push({ type: 'curl', x: f.x + rand(-0.5, 0.3) * dir * f.w * s, y: fy, z: z + front * rand(0.014, 0.035), side: -dir, ph: rand(TAU), r0: rand(5, 12) * s, ss: s,
+          D: rand(8, 36) * s, rise: f.h * s * rand(0.45, 1.05), t: 0, life: rand(4, 6), s: rand(38, 62) * s * size * (0.75 + 0.45 * thick), k, al: 0.8 + 0.7 * thick, vx: 0, vy: 0 });
+      }
     }
     if (Math.random() < 0.7) {
       for (let i = 0; i < 2; i++) this.fx.push({ type: 'grain', x: x + rand(-6, 6) * s, y: fy - 1, z: z - 0.002, floor: fy - rand(0, 2.5), t: 0, life: rand(0.8, 1.3), s: rand(2, 3.4) * s, g: 300 * s,
@@ -8045,6 +8517,8 @@ const Tank = {
   poke(sx, sy) {
     const [rx, ry] = tankPoint(sx, sy, 0.35), [bx, by] = tankPoint(sx, sy, 0.25);
     this.ripples.push({ x: rx, y: ry, t: 0 });
+    /* at night the touch wakes the plankton: a little burst of living light */
+    if (Daytime.night > 0.5) for (let i = 0; i < 16; i++) { const a = rand(TAU), r = rand(4, 34); this.fx.push({ type: 'bio', x: bx + Math.cos(a) * r, y: by + Math.sin(a) * r * 0.8, z: 0.25 + rand(-0.02, 0.02), t: -rand(0, 0.15), life: rand(0.9, 1.8), s: rand(1.6, 3.4), vx: Math.cos(a) * rand(6, 18), vy: Math.sin(a) * rand(6, 18), hue: Math.random() }); }
     for (let i = 0; i < 6; i++) this.bubbles.push({ x: bx + rand(-12, 12), y: Scene.unprojY(by, 0.25) + rand(-6, 6), z: 0.25, r: rand(1.5, 4), vy: -rand(20, 55), ph: rand(TAU) });
     const P = Scene.par;
     for (const f of this.fish) {
@@ -8052,13 +8526,21 @@ const Tank = {
       const k = f.screen.s || 1;
       const d = Math.sqrt(dist2(f.screen.x + P.x * k, f.screen.y + P.y * k, sx, sy));
       if (d < 44) { f.curl = { type: 'flinch', t: 0, a: Math.random() < 0.5 ? -1.6 : 1.6 }; f.trick = null; f.vis = null; f.boost = 0; f.mode = 'flee'; f.modeT = 1.6; f.tgt = { x: f.x + (f.screen.x - sx) * 3, y: f.y + (f.screen.y - sy) * 2, z: f.z }; this.startTrick(f, 'jolt', { force: true }); this.fright(f); }
-      else if (d < 300 && f.mode !== 'food') {
-        if (f.traits.bold > 0.35) { const [cx, cy] = tankPoint(sx, sy, f.z); f.mode = 'curious'; f.modeT = rand(2.5, 4.5); f.tgt = { x: cx + rand(-30, 30), y: Scene.unprojY(cy, f.z), z: f.z }; }
+      else {
+        /* a curious fish notices the touch after a moment, the nearer the sooner: a small "!" over it, then it comes
+           to see (the Curiosity slider of its card: how far it notices, and how surely) */
+        const cur = f.curious === undefined ? 0.3 : f.curious;
+        if (cur > 0.02 && d < 180 + 520 * cur && Math.random() < 0.3 + 0.7 * cur && f.mode !== 'food' && f.mode !== 'sleep' && f.mode !== 'leave' && f.mode !== 'enter' && !this.still(f)) {
+          const [cx, cy] = tankPoint(sx, sy, f.z);
+          f.notice = { t: this.t + 0.12 + d / 1400 + rand(0.05, 0.35), x: cx, y: Scene.unprojY(cy, f.z) };
+        }
       }
     }
     Sound.play('bubble');
   },
   pet(f) {
+    /* woken up: awake a little while, then back to sleep */
+    if (f.mode === 'sleep') { f.wakeT = this.t + rand(8, 15); f.asleep = false; this.emote(f, 'excl'); }
     f.flash = 1; f.wig = 1.2;
     /* a touch tickles: the body shivers and curls, then settles */
     f.curl = { type: 'tickle', t: 0, a: Math.random() < 0.5 ? -1.1 : 1.1 };
@@ -8102,6 +8584,11 @@ const Tank = {
     if (t > 1.6) { f.curl = null; f.bendX = 0; }
   },
   /* the sad little face, over the fish (it follows it) */
+  /* a fish has noticed something: a small "!" that pops up over it and stays with it a moment */
+  noticeMark(f) {
+    this.fx.push({ type: 'excl', fish: f, follow: true, z: f.z, x: 0, y: 0, x0: 0, y0: 0, t: 0, life: 1.1, s: 17, vx: 0, vy: -12 });
+    this.sfx('blip', 0.7, f);
+  },
   sadFace(f, size, life) { this.fx.push({ type: 'sad', fish: f, follow: true, z: f.z, x: 0, y: 0, x0: 0, y0: 0, t: 0, life, s: size, vx: 0, vy: -10 }); },
   emote(f, type, n = 1) {
     for (let i = 0; i < n; i++) this.fx.push({ type, fish: f, z: f.z, x: f.screen.x + rand(-8, 8), y: f.screen.y - f.screen.h * 0.6 - 6, t: -i * 0.18, life: 1.6, s: type === 'heart' ? 22 : 20, vx: rand(-6, 6), vy: -26 });
@@ -8113,11 +8600,11 @@ const Tank = {
   update(dt) {
     this.t += dt;
     const W = Scene.W;
-    /* the time of day (Weather window): at night the light goes down and the fish sleep; dawn and evening a little dimmer */
+    /* the time of day (Weather window): at night the light goes down and some fish sleep; dawn and evening a little dimmer */
     Daytime.update(dt);
     const wasNight = this.night;
     this.night = Daytime.night > 0.6;
-    if (this.night && !wasNight && this.t > 2) this.fish.forEach((f) => FishVoice.queue(f, 'sleepy', rand(0.5, 9)));
+    if (this.night && !wasNight && this.t > 2) this.fish.forEach((f) => { if (this.sleeper(f)) FishVoice.queue(f, 'sleepy', rand(0.5, 9)); });
     this.lampTarget = lerp(1, 0.35, Daytime.night) * (1 - 0.12 * Daytime.gold);
     G.state.decor.water.lamp = lerp(G.state.decor.water.lamp === undefined ? 1 : G.state.decor.water.lamp, this.lampTarget, 1 - Math.exp(-dt * 0.5));
     /* each fish on its own: one whose step fails, or whose numbers go wrong, is put back whole where it can be
@@ -8134,6 +8621,7 @@ const Tank = {
     this.babyT += dt;
     if (this.babyT > 20) { this.babyT = 0; step(() => this.tryBabies()); step(() => this.tryReturns()); }
     step(() => this.groupTick(dt));
+    step(() => this.chatterTick(dt));
     const dirt = clamp((this.debris.length + this.food.filter((f) => f.rotten).length * 1.5) / 45, 0, 1);
     Scene.murk = lerp(Scene.murk, dirt * 0.85, 1 - Math.exp(-dt * 0.4));
   },
@@ -8144,7 +8632,7 @@ const Tank = {
   },
   healFish(f) {
     const ok = Number.isFinite, W = Scene.W;
-    f.trick = null; f.vis = null; f.curl = null; f.pir = null; f.leap = null; f.drag = null; f.boost = 0; f.tgt = null; f.dance = null;
+    f.trick = null; f.vis = null; f.curl = null; f.pir = null; f.leap = null; f.drag = null; f.boost = 0; f.tgt = null; f.dance = null; f.visit = null;
     if (f.mode !== 'control' && f.mode !== 'leave') { f.mode = 'wander'; f.retarget = 0; f.modeT = 0; }
     if (!ok(f.z)) f.z = (FISH_Z0 + FISH_Z1) / 2;
     if (!ok(f.x) || f.x < -W || f.x > W * 2) f.x = W * rand(0.2, 0.8);
@@ -8165,16 +8653,25 @@ const Tank = {
     f.satiety = Math.max(0, f.satiety - dt * this.hungerRate());
     [f.w, f.h] = this.sizeOf(f);
     /* tricks: some decorate normal swimming, others take over the movement for a moment */
-    if (f.trickT === undefined) f.trickT = rand(5, 18);
+    if (f.visit && f.mode !== 'wander') { f.visit = null; f.zBack = true; }
+    f.silt = (f.silt || 0) * Math.exp(-dt * 0.45);
+    if (f.trickT === undefined) f.trickT = rand(15, 70);
     f.trickT -= dt;
     let owned = false;
     /* calmed down to zero in the middle of a trick: it stops there */
     if (f.trick && this.still(f) && !f.trick.hand) { f.trick = null; f.vis = null; f.boost = 0; }
     if (f.trick) owned = this.trickStep(f, dt, K, dl);
     else if (f.trickT <= 0) {
-      f.trickT = rand(20, 48) / (0.55 + f.traits.energy * 0.9) * (K.mode === 5 ? 0.35 : 1);
-      if (f.mode === 'wander' && !this.night && !f.leap) this.startTrick(f, f.trickNext || (K.mode === 5 && Math.random() < 0.6 ? pick(['sift', 'scoot', 'rest']) : this.pickTrick(f, K)));
-      f.trickNext = null;
+      /* the sand dwellers' quiet habits come and go; a show is one at a time in the whole tank, with a pause between
+         two (a fish whose turn comes while another shows off waits a little) */
+      const habit = K.mode === 5 && Math.random() < 0.6;
+      if (!f.trickNext && !habit && this.showBusy()) f.trickT = rand(4, 10);
+      else {
+        f.trickT = rand(60, 130) / (0.55 + f.traits.energy * 0.9) / fishActivity() * (K.mode === 5 ? 0.35 : 1);
+        const go = f.mode === 'wander' && !this.night && !f.leap && this.startTrick(f, f.trickNext || (habit ? pick(['sift', 'scoot', 'rest']) : this.pickTrick(f, K)));
+        if (go && !habit) this.showT = this.t;
+        f.trickNext = null;
+      }
     }
     FishVoice.tick(f, dt, this.night);
     this.pirStep(f, dt);
@@ -8191,11 +8688,11 @@ const Tank = {
     } else if (f === Ctl.fish && f.mode === 'control') {
       this.controlStep(f, dt, K, dl);
     } else {
-    let speedMul = 0.5 + f.traits.energy * 1.1;
+    let speedMul = (0.5 + f.traits.energy * 1.1) * (0.75 + 0.25 * fishActivity());
     /* the calmer, the less it swims about (coming in and leaving are not up to it) */
     const still = this.still(f);
     if (f.mode !== 'enter' && f.mode !== 'leave') speedMul *= smoothstep(0, 0.15, f.traits.energy);
-    if (this.night) speedMul *= 0.45;
+    if (this.night) speedMul *= 0.6;
     if (f.mode === 'enter' && f.modeT <= 0) { f.mode = 'wander'; f.retarget = 0; }
     if (f.mode === 'leave') {
       const dir = f.leaveDir || (f.face < 0 ? -1 : 1);
@@ -8203,6 +8700,23 @@ const Tank = {
       if (f.x < -f.w * 1.2 || f.x > W + f.w * 1.2) { this.finishLeave(f); return; }
       speedMul = f.leaveCb ? 2.4 : 1.6;
     } else if (f.mode !== 'enter' && f.mode !== 'pet') {
+      if (f.notice && this.t >= f.notice.t) {
+        const N = f.notice;
+        f.notice = null;
+        if (this.t - N.t < 2.5 && (f.mode === 'wander' || f.mode === 'follow' || f.mode === 'curious')) {
+          this.noticeMark(f);
+          f.visit = null; f.mode = 'curious'; f.modeT = rand(2.8, 4.5);
+          f.tgt = { x: N.x + (f.x < N.x ? -1 : 1) * f.w * 0.5, y: N.y, z: f.z };
+        }
+      }
+      /* night: the sleepers among them find a quiet place and doze off; at daybreak, or woken, they swim again */
+      const sleepy = this.night && this.sleeper(f) && !still && !(f.wakeT > this.t);
+      if (sleepy && (f.mode === 'wander' || f.mode === 'follow' || f.mode === 'curious')) this.goSleep(f, K);
+      else if (!sleepy && f.mode === 'sleep') {
+        f.mode = 'wander'; f.retarget = 0; f.asleep = false;
+        /* (a little stretch on waking, one fish at a time) */
+        if (!this.night && !this.showBusy() && this.startTrick(f, 'wiggle', { force: true })) this.showT = this.t;
+      }
       if ((f.mode === 'flee' || f.mode === 'curious' || f.mode === 'chase' || f.mode === 'follow' || f.mode === 'conga' || f.mode === 'ring') && f.modeT <= 0) f.mode = 'wander';
       if (still && f.mode !== 'food' && f.mode !== 'wander') { f.mode = 'wander'; f.tgt = null; }
       /* curious fish come and look at the pointer while it hovers over the water */
@@ -8216,7 +8730,7 @@ const Tank = {
       }
       const wants = f.satiety < 0.93 || f.traits.appetite > 0.85;
       const dancing = (f.mode === 'conga' || f.mode === 'ring') && f.satiety > 0.45;
-      if (wants && f.mode !== 'flee' && !dancing && f.eatCool <= 0) {
+      if (wants && f.mode !== 'flee' && f.mode !== 'sleep' && !dancing && f.eatCool <= 0) {
         const food = this.nearestFood(f);
         if (food && (!still || Math.hypot(food.x - f.x, food.y - f.y) < f.w * 1.3)) { f.mode = 'food'; f.tgt = food; }
         else if (f.mode === 'food') f.mode = 'wander';
@@ -8229,7 +8743,10 @@ const Tank = {
     if (f.mode === 'follow' && f.tgt && f.tgt.fish) {
       const o = f.tgt.fish;
       if (this.fish.indexOf(o) < 0) { f.mode = 'wander'; f.retarget = 0; }
-      else { tx = o.x + f.tgt.ox; ty = o.y + f.tgt.oy; tz = clamp(o.z + f.tgt.oz, 0.04, 0.95); speedMul *= 1.05; }
+      else {
+        tx = o.x + f.tgt.ox; ty = o.y + f.tgt.oy; tz = clamp(o.z + f.tgt.oz, 0.04, 0.95); speedMul *= 1.05;
+        if (f.tgt.friend && (f.heartT = (f.heartT === undefined ? 1 : f.heartT) - dt) <= 0) { f.heartT = rand(1.8, 3.4); this.miniHearts(f, 1); }
+      }
     } else if (f.mode === 'conga' && f.tgt && f.tgt.fish) {
       /* line up behind the fish in front, whichever way it is heading */
       const o = f.tgt.fish;
@@ -8240,6 +8757,12 @@ const Tank = {
       const R = f.tgt, a = R.a0 + (this.t - R.t0) * R.w;
       tx = R.cx + R.rx * Math.cos(a); tz = R.cz + R.rz * Math.sin(a); ty = R.cy + 14 * Math.sin(a * 2 + R.a0);
       speedMul *= 3.4;
+    } else if (f.mode === 'sleep' && f.tgt) {
+      /* asleep: it hangs where it settled, rising and sinking a little as it breathes */
+      tx = f.tgt.x; ty = f.tgt.y; tz = f.tgt.z;
+      if (!f.asleep && Math.hypot(tx - f.x, ty - f.y) < 16) { f.asleep = true; f.emoteT = Math.min(f.emoteT, rand(1, 3)); }
+      if (f.asleep) ty += Math.sin(this.t * 0.8 + f.phase * 0.05) * 2.5;
+      speedMul *= f.asleep ? 0.12 : 0.45;
     } else if (f.mode === 'chase' && f.tgt && f.tgt.fish) {
       const o = f.tgt.fish; tx = o.x; ty = o.y; tz = o.z; speedMul *= 1.7;
     } else if (f.mode === 'food' && f.tgt) {
@@ -8248,6 +8771,9 @@ const Tank = {
       const fd = f.tgt;
       if (f.eatFood !== fd || Math.abs(fd.x - f.x) > f.w * 0.7) { f.eatFood = fd; f.eatSide = fd.x >= f.x ? 1 : -1; }
       tx = fd.x - f.eatSide * f.w * 0.36; ty = fd.y; tz = fd.z;
+    } else if (f.visit && f.mode === 'wander') {
+      const g = this.visitTarget(f, dt);
+      if (g) { tx = g.x; ty = g.y; tz = g.z; speedMul *= 0.85; }
     } else if (f.tgt && Number.isFinite(f.tgt.x) && Number.isFinite(f.tgt.y)) { tx = f.tgt.x; ty = f.tgt.y; tz = Number.isFinite(f.tgt.z) ? f.tgt.z : f.z; }
     /* food: a dash toward it, slowing only over the last stretch */
     if (f.mode === 'food') speedMul = still ? 0.5 : speedMul * (2.2 + (f.satiety < 0.35 ? 0.4 : 0) + f.traits.appetite * 0.3);
@@ -8257,13 +8783,13 @@ const Tank = {
     if (f.mode !== 'leave' && f.mode !== 'enter') {
       const mx = Math.min(f.w * 0.6 + 10, W * 0.4);
       tx = clamp(tx, mx, W - mx);
-      const tz2 = clamp(tz, FISH_Z0, FISH_Z1);
+      const tz2 = f.visit ? tz : clamp(tz, FISH_Z0, FISH_Z1);
       ty = clamp(ty, this.topY(tz2) + f.h * 0.5, Math.max(this.topY(tz2) + f.h * 0.5, this.floorY(tx, tz2) - f.h * 0.6));
     }
     speedMul *= 1 + (f.boost || 0);
     const dx = tx - f.x, dy = ty - f.y, dz = (tz - f.z) * dl;
     const d = Math.hypot(dx, dy, dz) || 1;
-    if (f.mode === 'wander' && d < 25) f.retarget = Math.min(f.retarget, rand(0.5, 2.5));
+    if (f.mode === 'wander' && d < 25 && !f.visit) f.retarget = Math.min(f.retarget, rand(0.5, 2.5));
     const keepUp = f.mode === 'conga' || f.mode === 'ring';
     const arrive = f.mode === 'food' ? Math.min(1, d / 70 + 0.2) : keepUp ? Math.min(1, d / 40 + 0.25) : Math.min(1, d / 110 + 0.12);
     let sp = K.speed * speedMul * arrive;
@@ -8280,7 +8806,7 @@ const Tank = {
     }
     /* rocks */
     for (const rk of Scene.decor) {
-      if (still || rk.kind !== 'rock' || Math.abs(rk.z - f.z) > 0.12) continue;
+      if (still || rk.kind !== 'rock' || Math.abs(rk.z - f.z) > 0.12 || (f.visit && f.visit.rk === rk)) continue;
       const rx = Scene.wrapX(rk.x);
       if (Math.abs(rx - f.x) > rk.w + f.w) continue;
       const fy = Scene.baseFloorScreenY(rx, rk.z);
@@ -8338,7 +8864,8 @@ const Tank = {
     if (f.emoteT <= 0) {
       f.emoteT = rand(12, 30);
       if (f.satiety < 0.22) this.emote(f, 'hungry');
-      else if (this.night) this.emote(f, 'zzz', 2);
+      else if (f.mode === 'sleep' && f.asleep) { this.emote(f, 'zzz', 2); f.emoteT = rand(6, 11); }
+      else if (this.night) { /* awake at night: quiet */ }
       else if (f.partner && Math.random() < 0.5) { const p = this.fish.find((o) => o.id === f.partner); if (p && Math.hypot(p.x - f.x, p.y - f.y) < 180) this.emote(f, 'heart'); }
       else if (Math.random() < 0.15) this.blowBubbles(f, 3);
     }
@@ -8385,6 +8912,8 @@ const Tank = {
     /* steered up fast (Space held), it leaps out */
     this.topStep(f, top, 230, true);
     this.sandFloor(f, bot, dt, false);
+    /* brought down low, it keeps close over the sand as the bottom rises and falls (unless steered up) */
+    if (!keys.has('arrowup') && f.y < bot && f.y > bot - f.h * 0.3) f.y += (bot - f.y) * (1 - Math.exp(-dt * 4));
     /* rushing at the others scatters them */
     if (Ctl.boost) {
       const v = Math.hypot(f.vx, f.vy);
@@ -8414,7 +8943,8 @@ const Tank = {
     const partner = f.partner ? this.fish.find((o) => o.id === f.partner) : null;
     const rival = this.fish.find((o) => o !== f && (f.rel[o.id] || 0) < -0.4);
     if (partner && r < 0.55) { f.mode = 'follow'; f.modeT = rand(6, 12); f.tgt = { fish: partner, ox: rand(-25, 25), oy: rand(-25, 25), oz: rand(-0.04, 0.04) }; if (Math.random() < 0.4) FishVoice.play(f, 'hello'); return; }
-    if (friends.length && r < f.traits.social * 0.5) { f.mode = 'follow'; f.modeT = rand(4, 9); f.tgt = { fish: pick(friends), ox: rand(-60, 60), oy: rand(-40, 40), oz: rand(-0.08, 0.08) }; if (Math.random() < 0.5) FishVoice.play(f, 'hello'); return; }
+    /* friends swim together now and then, little hearts rising as they go */
+    if (friends.length && r < 0.18 + f.traits.social * 0.3) { f.mode = 'follow'; f.modeT = rand(5, 10); f.tgt = { fish: pick(friends), ox: rand(-50, 50), oy: rand(-30, 30), oz: rand(-0.05, 0.05), friend: true }; f.heartT = rand(0.3, 1); if (Math.random() < 0.5) FishVoice.play(f, 'hello'); return; }
     if (rival && r > 0.85 && f.traits.temper > 0.5) {
       f.mode = 'chase'; f.modeT = rand(1.5, 2.5); f.tgt = { fish: rival };
       this.emote(f, 'anger');
@@ -8426,12 +8956,13 @@ const Tank = {
       if (mates.length) { f.mode = 'follow'; f.modeT = rand(4, 8); f.tgt = { fish: pick(mates), ox: rand(-40, 40), oy: rand(-30, 30), oz: rand(-0.05, 0.05) }; return; }
     }
     f.mode = 'wander';
+    if (!this.night && K.mode !== 5 && !K.noFlip && Math.random() < 0.04 && !this.fish.some((o) => o.visit) && this.rockVisit(f)) return;
     const z = rand(FISH_Z0, FISH_Z1);
     const x = rand(0.06, 0.94) * Scene.W;
     const top = this.topY(z), bot = this.floorY(x, z) - f.h * 0.7 - 4;
     let zn = rand(K.zone[0], K.zone[1]);
     if (f.traits.bold < 0.3) zn = lerp(zn, 0.9, 0.4);
-    if (this.night) zn = lerp(zn, 0.95, 0.6);
+    if (this.night) zn = lerp(zn, 0.92, 0.35);
     f.tgt = { x, y: lerp(top, bot, zn), z };
   },
   /* ----- tricks ----- */
@@ -8451,7 +8982,7 @@ const Tank = {
     return k;
   },
   /* opts.force: start even if the fish is busy (buttons, celebrations, chained moves) */
-  /* a fish whose Agitation (its card) is at zero stays where it is: no tricks, no running off, no dances, no
+  /* a fish whose Activité (its card) is at zero stays where it is: no tricks, no running off, no dances, no
      wandering, no being pushed about; its body still waves, it eats what comes within reach of its mouth, and
      steered it obeys */
   still(f) { return f !== Ctl.fish && !!f.traits && f.traits.energy < 0.04; },
@@ -8764,6 +9295,16 @@ const Tank = {
     this.sfx('wee', 1, f);
     FishVoice.play(f, 'trick');
   },
+  /* Enter while steering: one of the figures at random, never the same twice running (the wheel pirouette keeps the
+     steering going through it; the others take the fish a moment, then hand it back) */
+  steerTrick(f) {
+    if (f.trick || f.pir || f.leap || f.tear) return;
+    const pool = ['pir', 'loop', 'roll', 'spin', 'twirl', 'hop', 'wiggle', 'jelly', 'tailchase', 'dash', 'bubble', 'backstroke'].filter((t) => t !== f.lastSteer);
+    const type = pick(pool);
+    f.lastSteer = type;
+    if (type === 'pir') { this.pirouette(f); return; }
+    if (this.startTrick(f, type, { force: true, hand: true, count: 1 })) FishVoice.play(f, 'trick');
+  },
   pirStep(f, dt) {
     const P = f.pir;
     if (!P) return;
@@ -8791,7 +9332,7 @@ const Tank = {
        slows down; it spreads and thins out as it goes. Fine silt in the light: a pale haze, a little luminous */
     const ee = 1 - Math.exp(-e.t * 1.7), s = e.ss;
     const th = e.ph - e.side * 4 * 0.9 * (1 - Math.exp(-e.t / 0.9));
-    const cx = e.x + e.side * e.D * ee, cy = e.y - 6 * s - e.rise * ee;
+    const cx = e.x + e.side * e.D * ee, cy = e.y - 6 * s - e.rise * ee * (1 - 0.3 * smoothstep(0.35, 1, q));
     const r = e.r0 + 12 * s * ee;
     const w = e.s * (0.55 + 1.5 * ee);
     const a = smoothstep(0, 0.12, e.t) * (1 - smoothstep(0.25, 0.95, q)) * (0.42 + 0.22 * e.k) * (e.al || 1);
@@ -8821,31 +9362,72 @@ const Tank = {
         this.group = null;
         if (g.type === 'ring') {
           const crew = g.crew.filter((f) => this.fish.indexOf(f) >= 0 && f.mode === 'ring');
-          crew.forEach((f) => { f.mode = 'wander'; f.retarget = 0; this.startTrick(f, 'loop', { force: true }); this.sparkles(f.screen.x, f.screen.y, 8, [0.6, 1, 0.95]); });
+          /* (one of them ends it with a loop, the others just swim off) */
+          crew.forEach((f, i) => { f.mode = 'wander'; f.retarget = 0; if (!i) this.startTrick(f, 'loop', { force: true }); this.sparkles(f.screen.x, f.screen.y, 8, [0.6, 1, 0.95]); });
           if (crew.length) Sound.play('level');
         }
       }
       return;
     }
-    if (this.groupT === undefined) this.groupT = rand(50, 100);
+    if (this.groupT === undefined) this.groupT = this.showGap() * 0.6;
     this.groupT -= dt;
     if (this.groupT > 0 || this.night) return;
-    this.groupT = rand(120, 240);
-    this.startShow();
+    this.groupT = this.showGap();
+    if (!this.fish.some((o) => o.trick && TRICKS[o.trick.type].label)) this.startShow();
+  },
+  /* how long until the next line of fish: the Queue leu leu setting (never at 0) */
+  showGap() { const c = congaSetting(); return c < 0.02 ? 1e9 : rand(100, 190) / (0.2 + c * 1.6); },
+  /* a fish's show waits while another one is on, and for a few seconds after it */
+  showBusy() {
+    if (this.group || this.t - (this.showT || -99) < 14 / fishActivity()) return true;
+    return this.fish.some((o) => o.trick && TRICKS[o.trick.type].label && !o.trick.hand);
+  },
+  /* now and then one of the fish makes a small happy sound (its own "Nage joyeuse" if it has one), a few bubbles
+     from its mouth showing who it was: more often the livelier the tank (Activity setting); never at night */
+  chatterTick(dt) {
+    this.chatT = (this.chatT === undefined ? rand(6, 14) : this.chatT) - dt;
+    if (this.chatT > 0) return;
+    this.chatT = rand(10, 24) / fishActivity();
+    if (this.night) return;
+    const awake = this.fish.filter((f) => !this.still(f) && (f.mode === 'wander' || f.mode === 'follow' || f.mode === 'curious' || f.mode === 'conga' || f.mode === 'ring'));
+    if (!awake.length) return;
+    const f = pick(awake);
+    if (!FishVoice.play(f, 'happy')) Sound.play(pick(['chirp', 'coo', 'blip', 'giggle']), f);
+    this.blowBubbles(f, 2);
+  },
+  /* some fish sleep at night, not all: each one's own nature (the same every night) */
+  sleeper(f) {
+    if (f.kind === 'floater') return false;
+    if (f.sleepK === undefined) f.sleepK = (hashStr(String(f.id)) % 1000) / 1000;
+    return f.sleepK < 0.3 + 0.4 * (1 - f.traits.energy);
+  },
+  /* off to bed: a quiet place low in the water, by a plant if there is one near, and it stays there */
+  goSleep(f, K) {
+    if (f.trick && !f.trick.hand) this.endTrick(f);
+    const z = clamp(f.z, FISH_Z0, FISH_Z1);
+    let x = f.x + rand(-160, 160);
+    const near = this.plants.filter((p) => Math.abs(p.z - z) < 0.14);
+    if (near.length && Math.random() < 0.6) x = Scene.wrapX(pick(near).x) + rand(-0.5, 0.5) * f.w;
+    const m = Math.min(f.w * 0.6 + 10, Scene.W * 0.4);
+    x = clamp(x, m, Scene.W - m);
+    const top = this.topY(z), bot = this.floorY(x, z) - f.h * 0.75;
+    f.mode = 'sleep'; f.modeT = 1e6; f.asleep = false;
+    f.tgt = { x, y: lerp(top, bot, K.mode === 5 ? 1 : rand(0.82, 0.96)), z };
   },
   showCrew() {
     return this.fish.filter((f) => { const K = KINDS[f.kind] || KINDS.swimmer; return !K.noFlip && K.mode !== 5 && (f.mode === 'wander' || f.mode === 'follow') && (!f.trick || !TRICKS[f.trick.type].own); });
   },
   startShow(type) {
     const crew = this.showCrew();
-    if (!type) type = crew.length >= 4 && Math.random() < 0.5 ? 'ring' : 'conga';
+    /* mostly a line (the Queue leu leu setting), now and then a ring; never the whole tank at once */
+    if (!type) type = crew.length >= 4 && Math.random() < 0.15 ? 'ring' : 'conga';
     if (type === 'ring' && crew.length >= 3) return this.startRing(crew);
     if (crew.length >= 2) return this.startConga(crew);
     return false;
   },
   startConga(list) {
     const L = list.slice().sort((a, b) => b.traits.energy - a.traits.energy);
-    const lead = L[0], crew = L.slice(1, 7);
+    const lead = L[0], crew = L.slice(1).sort(() => Math.random() - 0.5).slice(0, 2 + Math.floor(Math.random() * 3));
     if (!crew.length) return false;
     if (lead.trick) this.endTrick(lead);
     lead.mode = 'wander';
@@ -8864,7 +9446,7 @@ const Tank = {
     return true;
   },
   startRing(list) {
-    const crew = list.slice(0, 8);
+    const crew = list.slice().sort(() => Math.random() - 0.5).slice(0, Math.random() < 0.5 ? 3 : 4);
     const W = Scene.W, cz = 0.45, cx = W / 2;
     const cy = lerp(this.topY(cz), this.floorY(cx, cz), 0.42);
     const rx = Math.min(W * 0.28, 300), rz = 0.26;
@@ -9140,6 +9722,28 @@ const Tank = {
       if (b.y < Scene.geo.surfY + 2 || Scene.projY(b.y, b.z) < -10 - b.r * 4) this.bubbles.splice(i, 1);
     }
     if (this.bubbles.length > 600) this.bubbles.splice(0, this.bubbles.length - 600);
+    /* at night the water is alive with light: tiny blue-green sparks flash where a fish swims and fade behind it
+       (bioluminescent plankton), and now and then one flickers on its own here and there */
+    const nb = smoothstep(0.5, 0.9, Daytime.night);
+    if (nb > 0.01 && this.fx.length < 900) {
+      for (const f of this.fish) {
+        const v = Math.hypot(f.vx, f.vy);
+        if (v < 35 || f.leap || f.tear || Math.random() > dt * v * 0.07 * nb) continue;
+        const s = Scene.s(f.z), back = -(f.face || 1);
+        this.fx.push({ type: 'bio', x: f.x + back * f.w * s * rand(0.25, 0.6), y: Scene.projY(f.y, f.z) + rand(-0.35, 0.35) * f.h * s, z: f.z + rand(-0.012, 0.012), t: 0, life: rand(0.9, 1.9), s: rand(1.5, 3.4) * s, vx: rand(-8, 8), vy: rand(-6, 4), hue: Math.random() });
+      }
+      if (Math.random() < dt * 3 * nb) {
+        const z = rand(0.1, 0.9), x = rand(0.03, 0.97) * W, top = Scene.projY(Scene.geo.surfY, z) + 10, bot = Scene.floorScreenY(x, z) - 6;
+        if (bot > top) this.fx.push({ type: 'bio', x, y: rand(top, bot), z, t: 0, life: rand(1.2, 2.4), s: rand(1.4, 3) * Scene.s(z), vx: rand(-4, 4), vy: rand(-4, 2), hue: Math.random() });
+      }
+    }
+    /* now and then (rarely) a tiny stone in the sand catches the light, like a speck of diamond, and is gone */
+    this.gemT = (this.gemT === undefined ? rand(5, 12) : this.gemT) - dt;
+    if (this.gemT <= 0) {
+      this.gemT = rand(9, 24);
+      const x = rand(0.06, 0.94) * W, z = rand(0.12, 0.85), y = Scene.floorScreenY(x, z) - 1;
+      if (y < H - 6 && y > Scene.projY(Scene.geo.surfY, z) + 30) this.fx.push({ type: 'gem', x, y, z: z - 0.003, t: 0, life: rand(0.55, 0.95), s: rand(12, 20) * Scene.s(z), rot: rand(-0.3, 0.3), hue: Math.random(), vx: 0, vy: 0 });
+    }
     /* rain: drops bursting on the surface leave small bubbles just under it */
     const rain = G.state.env.rain || 0;
     if (rain > 0 && Scene.geo.yF > -20 && Math.random() < dt * rain * 14) this.bubbles.push({ x: rand(W), y: Scene.geo.surfY + rand(4, 26), z: rand(0.05, 0.6), r: rand(0.8, 2.2), vy: -rand(15, 50), ph: rand(TAU), drift: rand(-20, 20) });
@@ -9164,10 +9768,19 @@ const Tank = {
       /* stirred sand hangs a moment, then sinks back and spreads; spray falls back into the water */
       if (e.type === 'sand') { e.vy += 38 * dt; e.vx *= Math.exp(-dt * 1.4); e.vy *= Math.exp(-dt * 0.8); }
       else if (e.type === 'spray') e.vy += 520 * dt;
+      else if (e.type === 'bit') { e.vy += 620 * dt; e.vx *= Math.exp(-dt * 1.8); e.rot += e.spin * dt; }
+      else if (e.type === 'drop') { e.vy += (e.mist ? 520 : 1150) * dt; e.vx *= Math.exp(-dt * (e.mist ? 2.6 : 0.25)); e.vy *= e.mist ? Math.exp(-dt * 1.4) : 1; }
+      else if (e.type === 'foam') { e.vx *= Math.exp(-dt * 2); }
       else if (e.type === 'grain') { e.vy += e.g * dt; e.vx *= Math.exp(-dt * 2.5); e.vy *= Math.exp(-dt * 1.3); }
       e.x += e.vx * dt; e.y += e.vy * dt;
       if (e.type === 'sand' && e.floor !== undefined && e.y > e.floor) { e.y = e.floor; e.vy = 0; }
       if (e.type === 'grain' && e.y > e.floor) { e.y = e.floor; e.vy = 0; e.vx = 0; }
+      /* a drop falling back into the water: gone, with a tiny ring where it landed */
+      if (e.type === 'drop' && e.vy > 0 && e.y > e.line) {
+        if (!e.mist && e.s > 1.6 && this.ripples.length < 80) this.ripples.push({ x: e.x, y: e.line, z: e.z, t: 0.15, big: 1, sz: 0.16 + e.s * 0.03 });
+        this.fx.splice(i, 1);
+        continue;
+      }
       if (e.t > e.life) this.fx.splice(i, 1);
     }
     for (let i = this.ripples.length - 1; i >= 0; i--) { const r = this.ripples[i]; r.t += dt; if (r.t > 1.1) this.ripples.splice(i, 1); }
@@ -9194,6 +9807,21 @@ const Tank = {
       if (before > -0.4 && v <= -0.4) { BUS.emit('rivals', [a, b]); this.emote(a, 'anger'); }
       if (v >= 0.78 && !a.partner && !b.partner && a.level >= 3 && b.level >= 3 && a.gen === b.gen) this.makeCouple(a, b);
     }
+  },
+  /* two fish made friends (the matchmaker): hearts, a happy sound, and the second one swims along with the first */
+  makeFriends(a, b) {
+    const was = Math.min(a.rel[b.id] || 0, b.rel[a.id] || 0);
+    a.rel[b.id] = b.rel[a.id] = Math.max(0.62, was);
+    this.miniHearts(a, 3); this.miniHearts(b, 3);
+    Sound.play('love', a);
+    if (b.mode !== 'leave' && b.mode !== 'enter' && b !== Ctl.fish && !this.still(b)) { if (b.trick && !b.trick.hand) this.endTrick(b); b.mode = 'follow'; b.modeT = rand(7, 11); b.tgt = { fish: a, ox: rand(-40, 40), oy: rand(-25, 25), oz: rand(-0.03, 0.03), friend: true }; b.heartT = 0.8; }
+    BUS.emit('friends', [a, b]);
+    if (was <= -0.4) UI.toast(escapeHtml(a.name) + ' et ' + escapeHtml(b.name) + ' ont fait la paix.');
+  },
+  /* small hearts rising from a fish, one after another */
+  miniHearts(f, n) {
+    if (!f.screen) return;
+    for (let i = 0; i < n; i++) this.fx.push({ type: 'heart', fish: f, z: f.z, x: f.screen.x + rand(-12, 12), y: f.screen.y - f.screen.h * 0.5, t: -i * 0.22, life: 1.4, s: rand(11, 15), vx: rand(-10, 10), vy: -rand(22, 34) });
   },
   makeCouple(a, b) {
     a.partner = b.id; b.partner = a.id;
@@ -9246,18 +9874,31 @@ const Tank = {
     f.vx *= k; f.vy *= k; f.vz = 0;
     f.x += f.vx * dt; f.y += f.vy * dt;
     if (!T.ripped && T.t >= TEAR_RIP0) { T.ripped = true; Sound.play('rip', f); }
+    /* the moment it comes apart: a little puff and scraps of paper flying out of the rip */
+    if (!T.burst && T.t >= TEAR_RIP1) {
+      T.burst = true;
+      const s = Scene.s(f.z), w = f.w * s, hh = f.h * s, cx = f.x, cy = Scene.projY(f.y, f.z), F = (f.flip || 1) < 0 ? -1 : 1;
+      for (let i = 0; i < 14; i++) {
+        const v = rand(0.05, 0.95), x = cx + (this.tearX(v, T.seed) - 0.5) * w * F, y = cy + (v - 0.5) * hh;
+        this.fx.push({ type: 'bit', x, y, z: f.z - 0.002, t: 0, life: rand(0.9, 1.5), s: rand(4, 8) * s, rot: rand(TAU), spin: rand(-14, 14), vx: rand(-160, 160), vy: -rand(60, 240) });
+      }
+      for (let i = 0; i < 3; i++) this.fx.push({ type: 'poof', x: cx + rand(-0.2, 0.2) * w, y: cy + rand(0.1, 0.5) * hh, z: f.z - 0.003, t: -i * 0.05, life: 0.5, s: rand(0.35, 0.55) * Math.max(w, hh), vx: 0, vy: 0 });
+    }
     if (T.t >= TEAR_END) { f.tear = null; this.despawn(f); if (T.cb) T.cb(); }
   },
+  /* how much the drawn fish's colours are lifted out of the water: a little by day, more in the evening and at night
+     (the whole picture darkens then, the fish less) */
+  fishPop() { return 0.25 + 0.3 * Daytime.night + 0.1 * Daytime.gold; },
   /* the ragged line of the rip, top (y 0) to bottom (y 1) across the drawing (the same as in the shader) */
-  tearX(y, sd) { return 0.5 + 0.045 * Math.sin(y * 8.7 + sd) + 0.028 * Math.sin(y * 21.3 + sd * 2.3) + 0.014 * Math.sin(y * 53 + sd * 4.1) + (y - 0.5) * 0.1 * Math.sin(sd * 1.7); },
+  tearX(y, sd) { return 0.5 + 0.035 * Math.sin(y * 3.3 + sd) + (y - 0.5) * 0.08 * Math.sin(sd * 1.7); },
   drawTear(f, rec, s, SL) {
     const T = f.tear, t = T.t, F = (f.flip || 1) < 0 ? -1 : 1;
     const w = f.w * s, hh = f.h * s, cx = f.x, cy = Scene.projY(f.y, f.z);
     f.screen.x = cx; f.screen.y = cy; f.screen.w = w; f.screen.h = hh; f.screen.s = s;
     const sil = IMAGES.silTex(rec), gw = 3.2 + 1.8 * s;
-    const piece = (o, a) => Object.assign({ tex: rec.tex, uvr: rec.uvr, w, h: hh, ax: 0.5, ay: 0.5, z: f.z, flip: F, mode: 0,
-      outline: { sil: a, grow: gw, col: [0.8, 0.8, 0.8], tex: sil, uvr: rec.silUvr } }, o);
-    const W0 = 0.03;
+    const piece = (o, a) => Object.assign({ tex: rec.tex, uvr: rec.uvr, w, h: hh, ax: 0.5, ay: 0.5, z: f.z, flip: F, mode: 0, pop: this.fishPop(),
+      outline: { sil: a, grow: gw, col: [0.93, 0.93, 0.93], tex: sil, uvr: rec.silUvr } }, o);
+    const W0 = 0.055;
     /* sad, trembling a little, then still whole while the rip runs down */
     if (t < TEAR_RIP1) {
       const prog = clamp((t - TEAR_RIP0) / (TEAR_RIP1 - TEAR_RIP0), 0, 1);
@@ -9265,16 +9906,17 @@ const Tank = {
       SL.push(piece({ x: cx, y: cy, rot: sh, tear: [2, T.seed, prog, W0] }, 1));
       return;
     }
-    /* apart: each half turns away from the other about the foot of the rip, then sinks turning, and fades */
-    const u = t - TEAR_RIP1, fall = Math.max(0, u - 0.25);
-    const open = 0.4 * (1 - Math.exp(-u * 5));
-    const a = 1 - smoothstep(TEAR_END - TEAR_RIP1 - 0.7, TEAR_END - TEAR_RIP1, u);
+    /* apart, cartoon-like: the halves spring away from each other about the foot of the rip, overshoot and wobble
+       back, hang there a moment, then drop away turning, faster and faster, out of the picture */
+    const u = t - TEAR_RIP1, fall = Math.max(0, u - 0.55);
+    const open = 0.5 * (1 - Math.exp(-u * 7) * Math.cos(u * 15));
+    const a = 1 - smoothstep(TEAR_END - TEAR_RIP1 - 0.3, TEAR_END - TEAR_RIP1, u);
     const hx = (this.tearX(1, T.seed) - 0.5) * w * F, hy = hh * 0.5;
     for (const side of [-1, 1]) {
       const scr = side * F;
-      const th = scr * (open * T.open[side < 0 ? 0 : 1] + fall * 0.55);
+      const th = scr * (open * T.open[side < 0 ? 0 : 1] + fall * fall * 1.8);
       const c = Math.cos(th), sn = Math.sin(th);
-      const ox = hx - (c * hx - sn * hy) + scr * (10 * u + 22 * fall), oy = hy - (sn * hx + c * hy) + 34 * fall * fall + 14 * fall;
+      const ox = hx - (c * hx - sn * hy) + scr * (16 * (1 - Math.exp(-u * 6)) + 40 * fall), oy = hy - (sn * hx + c * hy) + 520 * fall * fall;
       SL.push(piece({ x: cx + ox, y: cy + oy, rot: th, tint: [1, 1, 1, a], tear: [side, T.seed, 1, W0] }, a));
     }
   },
@@ -9327,7 +9969,7 @@ const Tank = {
   shaken(f) {
     this.startTrick(f, 'dizzy', { force: true, hand: true });
     this.sadFace(f, 28, 2.2);
-    if (!FishVoice.play(f, 'shaken', { urgent: true })) Sound.play('woozy', f);
+    if (!FishVoice.play(f, 'shaken', { urgent: true })) Sound.play('giggle', f);
   },
   dragEnd(f) {
     if (!f || !f.drag) return;
@@ -9422,11 +10064,14 @@ const Tank = {
            the drawing is solid), and its filled silhouette, which cuts the light shafts */
         entry.occ = { tex: IMAGES.silTex(rec), uvr: rec.silUvr };
         /* the fish you steer, follow with the magnifier or whose card is open grows a touch, smoothly; its line turns
-           pure white and thicker, a clean line with no glow (the others keep a greyer, thinner one) */
+           pure white and thicker, a clean line with no glow (the others keep a thinner, very slightly softer one) */
         const sel = f === Ctl.fish || f === this.selected || (G.mode === 'zoom' && G.modeData.follow === f);
         f.selK = lerp(f.selK || 0, sel ? 1 : 0, 0.15);
-        const lk = lerp(0.8, 1, f.selK), gw = 3.2 + 1.8 * s;
+        const lk = lerp(0.93, 1, f.selK), gw = 3.2 + 1.8 * s;
         entry.outline = { sil: 1, grow: gw * (1 + 0.55 * f.selK), col: [lk, lk, lk], tex: entry.occ.tex, uvr: entry.occ.uvr };
+        entry.pop = this.fishPop();
+        /* by day, the light the waves gather dances over its back, more the nearer it swims to the surface */
+        entry.caus = 0.4 * (1 - Daytime.night) * Math.exp(-Math.max(0, f.y - Scene.geo.surfY) / (H * 0.55));
         if (f.selK > 0.001) { const g = 1 + 0.07 * f.selK; entry.w *= g; entry.h *= g; }
         SL.push(entry);
         /* its shadow on the sand: small, darker and fairly sharp when it swims close to the bottom, spreading wide and
@@ -9472,9 +10117,11 @@ const Tank = {
       const lit = 0.82 + 0.3 * clamp(1 - y / Scene.H, 0, 1);
       SP.push({ tex: btex, uv: buv, x: b.x, y, w: D * Math.cbrt(chi), h: D / Math.pow(chi, 2 / 3), rot: tilt, r: lit, g: lit, b: lit * 1.04, a: (0.9 - b.z * 0.4) * (b.a || 1), add: 0.55, z: b.z });
     }
-    for (const m of this.motes) {
-      const s = Scene.s(m.z);
-      SP.push({ uv: ATLAS.map.mote, x: m.x, y: m.y, w: 5 * m.s * s, h: 5 * m.s * s, r: 0.85, g: 0.92, b: 1, a: m.a * 0.35 * (0.4 + 0.6 * s), add: 1, z: m.z });
+    /* specks drifting in the water: they keep below the surface wherever it is */
+    const mk = lightSpecks() * 2;
+    if (mk > 0.01) for (const m of this.motes) {
+      const s = Scene.s(m.z), top = Scene.projY(Scene.geo.surfY, m.z), y = top + clamp((m.y + 0.2 * Scene.H) / (1.25 * Scene.H), 0, 1) * (Scene.H - top);
+      SP.push({ uv: ATLAS.map.mote, x: m.x, y, w: 5 * m.s * s, h: 5 * m.s * s, r: 0.85, g: 0.92, b: 1, a: m.a * 0.35 * (0.4 + 0.6 * s) * mk, add: 1, z: m.z });
     }
     for (const d of this.drops) {
       const s = Scene.s(d.z);
@@ -9502,6 +10149,29 @@ const Tank = {
       if (e.type === 'sand') { const sc = Scene.env ? Scene.env.sand : [0.8, 0.76, 0.7], g2 = 1.4 + k * 2.2; SO.push({ uv: ATLAS.map.puff, x: e.x, y: e.y - e.s * k * 0.3, w: e.s * g2, h: e.s * g2 * 0.62, r: sc[0] * 0.8, g: sc[1] * 0.78, b: sc[2] * 0.74, a: (k < 0.1 ? k / 0.1 : 1 - (k - 0.1) / 0.9) * 0.62, z: e.z }); continue; }
       if (e.type === 'grain' || e.type === 'curl') { this.drawTouch(e, k, SP); continue; }
       if (e.type === 'spray') { SO.push({ uv: ATLAS.map.dot, x: e.x, y: e.y, w: e.s, h: e.s, r: 0.95, g: 0.98, b: 1, a: (1 - k) * 0.8, add: 0.5, z: e.z }); continue; }
+      /* a living spark at night: it flashes up at once, then fades slowly, blue-green */
+      if (e.type === 'bio') {
+        const fl = k < 0.05 ? k / 0.05 : Math.pow(1 - (k - 0.05) / 0.95, 1.7);
+        const c = e.hue < 0.65 ? [0.32, 0.92, 1] : [0.42, 1, 0.74];
+        SP.push({ uv: ATLAS.map.dot, x: e.x, y: e.y, w: e.s * 3.4, h: e.s * 3.4, r: c[0], g: c[1], b: c[2], a: fl, add: 1, z: e.z });
+        SP.push({ uv: ATLAS.map.glow, x: e.x, y: e.y, w: e.s * 11, h: e.s * 11, r: c[0], g: c[1], b: c[2], a: fl * 0.42, add: 1, z: e.z + 0.001 });
+        continue;
+      }
+      /* the speck of diamond in the sand: its rays open, twinkle and close, a hint of colour in its heart */
+      if (e.type === 'gem') {
+        const lamp = G.state.decor.water.lamp === undefined ? 1 : G.state.decor.water.lamp;
+        const tw = Math.sin(Math.PI * Math.pow(k, 0.6)) * (0.85 + 0.15 * Math.sin(e.t * 43)) * clamp(lamp * 1.2, 0.3, 1);
+        const hc = (o) => 0.8 + 0.2 * Math.cos(TAU * (e.hue + o));
+        SP.push({ uv: ATLAS.map.glint, x: e.x, y: e.y, w: e.s * tw, h: e.s * tw, rot: e.rot + k * 0.5, r: 1, g: 1, b: 1, a: tw, add: 1, z: e.z });
+        SP.push({ uv: ATLAS.map.dot, x: e.x, y: e.y, w: e.s * 0.4 * tw, h: e.s * 0.4 * tw, r: hc(0), g: hc(0.33), b: hc(0.67), a: tw * 0.9, add: 1, z: e.z });
+        continue;
+      }
+      /* drops of water in the air, drawn out along their way as they fly; white water spreading on the surface */
+      if (e.type === 'drop') { const v = Math.hypot(e.vx, e.vy), st = 1 + Math.min(2.4, v * 0.0045); SO.push({ uv: ATLAS.map.dot, x: e.x, y: e.y, w: e.s * st * 1.5, h: e.s * 1.5, rot: Math.atan2(e.vy, e.vx), r: 0.92, g: 0.97, b: 1, a: (e.mist ? 0.4 : 0.9) * (1 - smoothstep(0.75, 1, k)), add: 0.55, z: e.z }); continue; }
+      if (e.type === 'foam') { const g2 = 0.7 + 0.8 * Math.sqrt(k); SP.push({ uv: ATLAS.map.puff, x: e.x, y: e.y, w: e.s * g2 * 1.6, h: e.s * g2 * 0.32, r: 1.25, g: 1.28, b: 1.3, a: (1 - k) * 0.55 * a, z: e.z }); continue; }
+      /* scraps of a torn fish, and the puff it comes apart in */
+      if (e.type === 'bit') { SO.push({ uv: ATLAS.map.chip, x: e.x, y: e.y, w: e.s, h: e.s, rot: e.rot, r: 1, g: 1, b: 0.98, a: 1 - smoothstep(0.65, 1, k), z: e.z }); continue; }
+      if (e.type === 'poof') { const g2 = 0.55 + 0.75 * Math.sqrt(k); SO.push({ uv: ATLAS.map.cloudpuff, x: e.x, y: e.y - 10 * k, w: e.s * g2, h: e.s * g2 * 0.8, rot: e.x * 0.01, r: 1, g: 1, b: 1, a: (1 - k) * (1 - k) * 0.9, z: e.z }); continue; }
       if (e.type === 'puff') { SO.push({ uv: ATLAS.map.puff, x: e.x, y: e.y, w: e.s * (1 + k), h: e.s * (1 + k) * 0.7, r: 0.9, g: 0.88, b: 0.82, a: a * 0.6, z: e.z }); continue; }
       if (e.type === 'swish') { SO.push({ uv: ATLAS.map.streak, x: e.x, y: e.y, w: e.s * (1 - k * 0.3), h: Math.max(2, e.s * 0.16), rot: e.rot, r: 0.85, g: 0.97, b: 1, a: a * 0.5, add: 1 }); continue; }
       if (e.type === 'glint') { SO.push({ uv: ATLAS.map.ring, x: e.x, y: e.y, w: e.s * (0.6 + k), h: e.s * (0.6 + k) * 0.32, r: 0.9, g: 1, b: 0.98, a: (1 - k) * 0.7, add: 1, z: e.z }); SO.push({ uv: ATLAS.map.sparkle, x: e.x, y: e.y - e.s * 0.15, w: e.s * 0.5 * (1 - k), h: e.s * 0.5 * (1 - k), rot: k * 2, r: 1, g: 1, b: 1, a: (1 - k), add: 1, z: e.z }); continue; }
@@ -9525,7 +10195,7 @@ const Tank = {
     }
     for (const r of this.ripples) {
       const k = r.t / 1.1;
-      const R = (r.big ? 70 : 40) * (0.3 + k);
+      const R = (r.big ? 70 : 40) * (0.3 + k) * (r.sz || 1);
       SO.push({ uv: ATLAS.map.ring, x: r.x, y: r.y, w: R * 2, h: R * (r.big ? 0.6 : 2), r: 0.8, g: 0.9, b: 1, a: (1 - k) * 0.6, add: 1 });
     }
   },
@@ -9651,7 +10321,7 @@ function defaultState() {
     gameMode: null,
     unlocked: {},
     obj: { done: [], counters: {} },
-    settings: { sound: true, volume: 0.75, music: true, musicVol: 0.6, ambient: true, uiOn: true, uiVol: 0.8, fishOn: true, fishVol: 0.9, ambVol: 0.7, quality: 'auto', fps: false, hunger: 1, daynight: true, cloud: true, track: null, musicMode: 'one', mv2: true, glow: 0.5 },
+    settings: { sound: true, volume: 0.75, music: true, musicVol: 0.6, ambient: true, uiOn: true, uiVol: 0.8, fishOn: true, fishVol: 0.9, ambVol: 0.7, quality: 'auto', fps: false, hunger: 1, daynight: true, cloud: true, track: null, musicMode: 'one', mv2: true, glow: 0.5, activity: 0.5, conga: 0.4 },
     musicUser: [],
     /* null colours mean "Natural": the environment decides */
     decor: {
@@ -9903,7 +10573,8 @@ const G = {
   /* everything is open from the start: no currency, no locks */
   isUnlocked() { return true; },
   async unlock() { return true; },
-  guided() { return this.state.gameMode === 'guided'; },
+  /* the game with objectives is set aside for now: every tank is played freely */
+  guided() { return false; },
   setGameMode(m) {
     this.state.gameMode = m;
     UI.renderObjectives();
@@ -10104,7 +10775,7 @@ const UI = {
     su.addEventListener('click', () => this.setHidden(false));
     this.initOutside();
     this.initRanges();
-    BUS.on('levelUp', (f) => { UI.toast('<b>' + escapeHtml(f.name) + '</b> passe au niveau ' + f.level + ' !'); if (f.level === 5) UI.toast(escapeHtml(f.name) + ' commence à scintiller.'); G.checkObjectives('levelUp'); this.refreshCard(true); });
+    BUS.on('levelUp', () => { G.checkObjectives('levelUp'); });
     BUS.on('friends', ([a, b]) => { UI.toast('<b>' + escapeHtml(a.name) + '</b> et <b>' + escapeHtml(b.name) + '</b> sont maintenant amis.'); G.checkObjectives('friends'); });
     BUS.on('rivals', ([a, b]) => { UI.toast(escapeHtml(a.name) + ' et ' + escapeHtml(b.name) + ' ne s\'entendent pas.'); });
     BUS.on('couple', ([a, b]) => { UI.toast('<b>' + escapeHtml(a.name) + '</b> et <b>' + escapeHtml(b.name) + '</b> sont tombés amoureux !'); G.checkObjectives('couple'); });
@@ -10123,7 +10794,7 @@ const UI = {
     return b;
   },
   /* the whole interface is one bar at the bottom in the middle, where the thumb and the eye fall, each button with
-     its name under its picture: the + (it holds the creature tools), the magnifier, the scenery, the music; then,
+     its name under its picture: the + (it holds the creature tools), the scenery, the weather, the music; then,
      after a line, hiding the interface and the settings. The + opens a tray just above it (on hover with a mouse,
      on a tap otherwise) with the fish, food, plants, litter and the broom; a chosen tool takes the +'s place */
   buildDocks() {
@@ -10139,7 +10810,6 @@ const UI = {
     B('add', 'plus', 'Ajouter', 'Ajouter et nettoyer : poissons, nourriture, plantes, déchets, balai', () => this.pressAdd());
     /* its tray says it all: no bubble of help over it */
     delete this.b_add.dataset.tip;
-    B('zoom', 'magnifier', 'Loupe', 'Regarder de plus près', () => G.setMode(G.mode === 'zoom' ? 'normal' : 'zoom'), null, 'Z');
     B('env', 'scene', 'Paysage', 'Changer de paysage', () => this.togglePanel('env'));
     B('weather', 'weather', 'Météo', 'Météo et journée', () => this.togglePanel('weather'));
     B('music', 'music', 'Musique', 'Musique', () => this.togglePanel('music'), null, 'M');
@@ -10511,6 +11181,8 @@ const UI = {
       plant: plantText,
       cupid: 'Choisis le poisson à présenter à ' + (G.modeData.from ? G.modeData.from.name : 'ce poisson'),
       release: rel ? 'Touche l\'eau pour y déposer ' + (rel.name || 'ton poisson') : 'Choisis un poisson dans la liste',
+      /* looking closer has no button any more: the way back is said */
+      zoom: matchMedia('(pointer: coarse)').matches ? 'Touche l\'eau pour revoir tout l\'aquarium' : 'Clic sur l\'eau (ou molette) pour revoir tout l\'aquarium',
     };
     /* a quiet line just above the bar, near the tool that was touched; its own button ends the mode */
     hint.dataset.has = texts[mode] ? '1' : '';
@@ -10529,18 +11201,19 @@ const UI = {
     document.body.classList.toggle('steering', G.mode === 'control' && matchMedia('(pointer: coarse)').matches);
   },
   /* steering: on a computer a see-through keypad (arrows, Space to dash, Enter for a pirouette) shows for two seconds
-     when you take a fish; touch screens keep the arrows, a pirouette and a dash button on screen while a fish is steered */
+     when you take a fish, the keys drawn by their shape alone; touch screens keep the arrows, a pirouette and a dash
+     button on screen while a fish is steered */
   buildPad() {
     const pad = h('div', { id: 'keypad', 'aria-hidden': 'true' });
     const K = (k, ic, cls, kd) => {
-      const b = h('button', { class: 'key ' + (cls || ''), dataset: { k }, tabindex: -1, html: ic ? icon(ic) + (kd ? '<span class="kd">' + kd + '</span>' : '') : '<span class="kd">Espace : accélérer</span><span class="kt">Accélérer</span>' });
+      const b = h('button', { class: 'key ' + (cls || ''), dataset: { k }, tabindex: -1, html: ic ? icon(ic, kd ? 'kt' : '') + (kd ? icon(kd, 'kd') : '') : '<span class="kt">Accélérer</span>' });
       const on = (e) => { e.preventDefault(); e.stopPropagation(); try { b.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ } Ctl.key(k, true); };
       const off = () => Ctl.key(k, false);
       b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
       b.addEventListener('contextmenu', (e) => e.preventDefault());
       return b;
     };
-    pad.append(h('i'), K('arrowup', 'chevu'), K('enter', 'trick', 'pir', 'Entrée'), K('arrowleft', 'chevl'), K('arrowdown', 'chevd'), K('arrowright', 'chevr'), K(' ', null, 'space'));
+    pad.append(h('i'), K('arrowup', 'chevu'), K('enter', 'trick', 'pir', 'enterkey'), K('arrowleft', 'chevl'), K('arrowdown', 'chevd'), K('arrowright', 'chevr'), K(' ', null, 'space'));
     document.body.appendChild(pad);
     this.pad = pad;
   },
@@ -10611,6 +11284,7 @@ const UI = {
     /* an empty place shaped like the others, first, to draw a new one */
     if (onAdd) grid.appendChild(h('button', { class: 'pchip big add', 'aria-label': addTip, dataset: { tip: addTip }, html: icon('plus'), onclick: onAdd }));
     items.forEach((d) => {
+      if (d.hidden) return;
       const th = IMAGES.thumb(thumbOf ? thumbOf(d) : d.img, 64);
       const b = h('button', { class: 'pchip big' + (isOn(d) ? ' on' : ''), 'aria-label': d.name, dataset: { tip: d.name } });
       if (th) b.appendChild(th);
@@ -10659,7 +11333,8 @@ const UI = {
     mark();
   },
   /* the Fish menu: your saved fish to add to the tank, and the fish set aside, waiting to go back in the water */
-  savedFish() { return G.state.templates.filter((t) => t.mode === 'fish' && t.thumb && IMAGES.has(t.thumb)); },
+  /* (in the editor's order; the ones hidden there stay out of the menu) */
+  savedFish() { return G.state.templates.filter((t) => t.mode === 'fish' && !t.hidden && t.thumb && IMAGES.has(t.thumb)); },
   bagFish() { return G.state.fish.filter((f) => f.inBag && IMAGES.has(f.img)); },
   toggleFish() {
     if (G.mode === 'release') { G.setMode('normal'); return; }
@@ -10779,16 +11454,6 @@ const UI = {
     const nameEl = h('div', { class: 'fc-name', dataset: { tip: 'Clique pour le renommer' } });
     const sub = h('div', { class: 'fc-sub' });
     const rel = h('div', { class: 'fc-rel' });
-    const ringSvg = (col, bg) => '<svg class="r" viewBox="0 0 66 66"><circle cx="33" cy="33" r="29" fill="rgba(10,12,18,.55)" stroke="' + bg + '" stroke-width="5"/><circle class="arc" cx="33" cy="33" r="29" fill="none" stroke="' + col + '" stroke-width="5" stroke-linecap="round" stroke-dasharray="182.2" stroke-dashoffset="182.2"/></svg>';
-    const mk = (cls, inner, col, bg) => h('div', { class: 'ring ' + cls, html: ringSvg(col, bg) + '<div class="in">' + inner + '</div>' });
-    const r1 = mk('feedr', icon('burger'), '#ff5a4f', 'rgba(255,255,255,.12)');
-    const r2 = mk('lvlr', '1', 'var(--orange)', 'rgba(255,255,255,.12)');
-    const r3 = mk('ager', '0', '#cfd5de', 'rgba(255,255,255,.12)');
-    const l1 = h('div', { class: 'lbl' }), l2 = h('div', { class: 'lbl' }), l3 = h('div', { class: 'lbl' });
-    const stats = h('div', { class: 'fc-stats' },
-      h('div', { class: 'stat', dataset: { tip: 'Sa faim : la barre rouge monte quand il a faim' } }, r1, l1),
-      h('div', { class: 'stat', dataset: { tip: 'Son niveau. Il grandit en mangeant.' } }, r2, l2),
-      h('div', { class: 'stat', dataset: { tip: 'Son âge, en jours' } }, r3, l3));
     /* about this fish: your own words, a sad default until you write some */
     const aboutTx = h('span', { class: 'fc-about-t' });
     const about = h('div', { class: 'fc-quote fc-about', dataset: { tip: 'Clique pour le décrire' } }, h('small', { text: 'À propos de ce poisson' }), aboutTx);
@@ -10813,7 +11478,7 @@ const UI = {
     const A = (ic, label, tip, fn, cls) => acts.appendChild(h('button', { class: 'roundbtn ' + (cls || ''), dataset: { tip }, 'aria-label': tip, html: icon(ic) + '<span>' + label + '</span>', onclick: () => { Sound.play('click'); fn(); } }));
     A('fishbrush', 'Modifier', 'Modifier ce poisson', () => { this.closePanel('card'); Editor.openFor('fish', f); });
     A('bag', 'Mettre de côté', 'Le sortir de l\'aquarium pour un moment', () => this.setAside(f));
-    A('cupid', 'Entremetteur', 'Jouer les entremetteurs', () => this.startCupid(f));
+    A('cupid', 'Entremetteur', 'Lui présenter un ami', () => this.startCupid(f));
     A('trash', 'Supprimer', 'Supprimer ce poisson', () => this.deleteFish(f), 'danger');
     /* how it behaves, changed live: on the sand or not, how lively, how curious about the pointer */
     const bottomT = h('button', { class: 'toggle' + (f.kind === 'bottom' ? ' on' : ''), role: 'switch', 'aria-checked': String(f.kind === 'bottom'), 'aria-label': 'Poisson des fonds' });
@@ -10831,9 +11496,9 @@ const UI = {
     };
     const beh = h('div', { class: 'fc-behs' },
       h('div', { class: 'fc-beh' }, h('span', { text: 'Poisson des fonds' }), bottomT),
-      bslider('Agitation', 'Calme à gauche, très agité à droite', () => f.traits.energy, (v) => { f.traits.energy = v; }),
+      bslider('Activité', 'Calme à gauche, très actif à droite', () => f.traits.energy, (v) => { f.traits.energy = v; }),
       bslider('Curiosité', 'Plus il est curieux, plus il vient voir la souris', () => (f.curious === undefined ? 0.3 : f.curious), (v) => { f.curious = v; }));
-    b.append(h('div', { class: 'fc-col fc-info' }, nameEl, sub, rel, about, beh), h('div', { class: 'fc-col fc-side' }, stats, audio, acts));
+    b.append(h('div', { class: 'fc-col fc-info' }, nameEl, sub, rel, about), h('div', { class: 'fc-col fc-side' }, beh, audio, acts));
     nameEl.addEventListener('click', () => {
       if (nameEl.querySelector('input')) return;
       const inp = h('input', { value: f.name, maxlength: 40, 'aria-label': 'Nom du poisson' });
@@ -10842,7 +11507,7 @@ const UI = {
       inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') inp.blur(); e.stopPropagation(); });
       inp.addEventListener('blur', fin);
     });
-    P.refs = { nameEl, sub, rel, r1, r2, r3, l1, l2, l3, aboutTx, muteB, vol, voiceInfo };
+    P.refs = { nameEl, sub, rel, aboutTx, muteB, vol, voiceInfo };
     this.refreshCard(true);
     this.syncPad();
   },
@@ -10868,19 +11533,6 @@ const UI = {
     const rl = Tank.relationLine(f);
     R.rel.className = 'fc-rel' + (rl && rl.type === 'rival' ? ' rival' : '');
     R.rel.innerHTML = rl ? icon(rl.type === 'rival' ? 'bolt' : rl.type === 'love' ? 'cupid' : 'heart') + '<span>' + escapeHtml(rl.text) + '</span>' : '';
-    const C = 182.2;
-    /* hunger: the red bar fills up as the fish gets hungry */
-    R.r1.querySelector('.arc').setAttribute('stroke-dashoffset', String(C * clamp(f.satiety, 0, 1)));
-    R.l1.textContent = 'Faim';
-    R.r1.classList.toggle('hungry', f.satiety < 0.3);
-    const need = 3 + f.level * 2;
-    R.r2.querySelector('.in').textContent = f.level;
-    R.r2.querySelector('.arc').setAttribute('stroke-dashoffset', String(C * (1 - clamp(f.xp / need, 0, 1))));
-    R.l2.textContent = 'Niveau';
-    const days = Math.floor((now() - f.born) / 86400000);
-    R.r3.querySelector('.in').textContent = days;
-    R.r3.querySelector('.arc').setAttribute('stroke-dashoffset', String(C * (1 - clamp(days / 30, 0.02, 1))));
-    R.l3.textContent = days > 1 ? 'jours' : 'jour';
     const ab = f.about || 'Un poisson comme un autre, sans personnalité 😔';
     if (R.aboutTx.textContent !== ab) R.aboutTx.textContent = ab;
     R.aboutTx.classList.toggle('empty', !f.about);
@@ -10896,20 +11548,17 @@ const UI = {
     }
   },
   startCupid(f) {
-    if (f.partner) { const p = Tank.findAny(f.partner); this.toast(escapeHtml(f.name) + ' est déjà en couple avec <b>' + escapeHtml(p ? p.name : 'quelqu\'un') + '</b>.'); return; }
     if (Tank.fish.length < 2) { this.toast('Il faut au moins deux poissons dans l\'aquarium pour jouer les entremetteurs.'); return; }
     this.closePanel('card');
     G.setMode('cupid', { from: f });
   },
+  /* the matchmaker introduces two fish: they become friends (even rivals make it up), and from then on they swim
+     together now and then, with little hearts */
   tryMatch(a, b) {
     G.setMode('normal');
     if (a === b) return;
-    if (b.partner) { this.toast(escapeHtml(b.name) + ' est déjà en couple.'); return; }
-    if (a.level < 2 || b.level < 2) { this.toast('Ils sont un peu jeunes pour l\'amour. Nourris-les jusqu\'à ce qu\'ils atteignent le niveau 2.'); Sound.play('deny'); return; }
-    const aff = a.rel[b.id] || 0;
-    if (aff < -0.2) { Tank.emote(b, 'anger'); this.toast(escapeHtml(b.name) + ' ne supporte pas ' + escapeHtml(a.name) + ' : ce sont des rivaux.'); Sound.play('deny'); return; }
-    if (aff < 0.15 && Math.random() < 0.5) { Tank.emote(b, 'excl'); a.rel[b.id] = b.rel[a.id] = aff + 0.25; this.toast('Il y a de l\'étincelle, mais ils doivent d\'abord apprendre à se connaître. Réessaie un peu plus tard.'); return; }
-    Tank.makeCouple(a, b);
+    if ((a.rel[b.id] || 0) >= 0.45) { Tank.miniHearts(a, 2); Tank.miniHearts(b, 2); this.toast('<b>' + escapeHtml(a.name) + '</b> et <b>' + escapeHtml(b.name) + '</b> sont déjà amis.'); return; }
+    Tank.makeFriends(a, b);
   },
   /* ----- colour popover: presets, a no-tint swatch for the natural look, and a free picker ----- */
   colorPop(anchor, value, presets, onChange, ownerKey) {
@@ -10978,8 +11627,9 @@ const UI = {
     const cam = rng('Mouvement de la caméra', E, 'motion', 0, 1);
     cam.classList.add('wide');
     b.appendChild(h('section', { class: 'dsec' }, cam));
-    const presetRow = (n, obj, label, none) => {
-      const pg = h('div', { class: 'presets' });
+    /* each arrangement by its name (the shuffle keeps the arrangement and draws new shapes) */
+    const presetRow = (names, obj, none) => {
+      const pg = h('div', { class: 'presets named' });
       const chips = [];
       const mkChip = (val, content, tip) => {
         const c = h('button', { class: 'pchip' + (val === 'dot' ? ' dot' : ''), 'aria-label': tip, dataset: { tip }, html: content });
@@ -10991,12 +11641,12 @@ const UI = {
         pg.appendChild(c);
       };
       mkChip(0, icon('none'), none);
-      for (let i = 1; i <= n; i++) mkChip(i, String(i), label + ' ' + i);
-      mkChip('dot', icon('shuffle'), 'Mélanger les formes');
+      names.forEach((nm, i) => mkChip(i + 1, escapeHtml(nm), nm));
+      mkChip('dot', icon('shuffle'), 'D\'autres formes');
       return pg;
     };
-    sec('Bois flotté', presetRow(9, Wd, 'Bois flotté', 'Pas de bois flotté'));
-    sec('Rochers', presetRow(14, R, 'Rochers', 'Pas de rochers'));
+    sec('Bois flotté', presetRow(['Branches', 'Tronc couché', 'Racines', 'Arche', 'Souches', 'Arbre', 'Bonsaï', 'Tas de bois', 'Grotte'], Wd, 'Pas de bois flotté'));
+    sec('Rochers', presetRow(['Deux massifs', 'Monolithe', 'Arche', 'Galets', 'Muraille', 'Iwagumi', 'Dalles', 'Grotte', 'Montagne', 'Aiguilles', 'Pierres de rivière', 'Lave', 'Coin', 'Jardin de mousse'], R, 'Pas de rochers'));
     /* the scenes, last: pictures only; under them, the layers of "Ton image" when it is chosen */
     const pic = h('section', { class: 'dsec piclayers' });
     const grid = h('div', { class: 'envgrid' });
@@ -11143,19 +11793,28 @@ const UI = {
     const toggle = (label, get, set) => { const t = h('button', { class: 'toggle' + (get() ? ' on' : ''), role: 'switch', 'aria-checked': String(!!get()), 'aria-label': label }); t.onclick = () => { set(!get()); t.classList.toggle('on', !!get()); t.setAttribute('aria-checked', String(!!get())); G.save(); }; return h('div', { class: 'setrow' }, h('span', { text: label }), t); };
     const seg = (label, opts, get, set) => { const s = h('div', { class: 'seg' }); opts.forEach(([v, t]) => { const bb = h('button', { class: get() === v ? 'on' : '', text: t }); bb.onclick = () => { set(v); $$('button', s).forEach((x) => x.classList.remove('on')); bb.classList.add('on'); G.save(); }; s.appendChild(bb); }); return h('div', { class: 'setrow' }, h('span', { text: label }), s); };
     const head = (t) => h('div', { class: 'sethead', text: t });
-    list.append(head('JEU'),
-      seg('Type de jeu', [['guided', 'Avec objectifs'], ['free', 'Jeu libre']], () => st.gameMode || 'free', (v) => { G.setGameMode(v); }),
-      head('AQUARIUM'),
-      seg('Appétit des poissons', [[0.5, 'Petit'], [1, 'Normal'], [2, 'Gros']], () => S.hunger, (v) => { S.hunger = v; Tank.hungerMul = v; }),
+    /* a slider row (0..1), saved when let go */
+    const slide = (label, tip, get, set) => {
+      const r = h('input', { type: 'range', class: 'orange', min: 0, max: 1, step: 0.01, value: get(), 'aria-label': label });
+      r.oninput = () => set(Number(r.value));
+      r.onchange = () => G.save();
+      return h('div', { class: 'setrow chrow', dataset: { tip } }, h('span', { text: label }), h('div', { class: 'chctl' }, r));
+    };
+    /* the quality: Auto says which one it picked for this screen, and follows it as it changes */
+    const qRow = seg('Qualité', [['auto', 'Auto'], ['high', 'Haute'], ['low', 'Basse']], () => S.quality, (v) => { S.quality = v; applyQuality(); syncQ(); });
+    const qNote = h('small', { class: 'setnote', 'aria-live': 'polite' });
+    const syncQ = () => {
+      qNote.hidden = S.quality !== 'auto';
+      qNote.textContent = 'Auto a choisi : ' + autoQualityName();
+    };
+    qRow.firstChild.appendChild(qNote);
+    syncQ();
+    P.tick = syncQ;
+    list.append(head('AQUARIUM'),
+      slide('Activité des poissons', 'Calmes à gauche, très actifs à droite (et plus bavards)', () => (S.activity === undefined ? 0.5 : S.activity), (v) => { S.activity = v; }),
+      slide('Queue leu leu', 'Jamais à gauche, souvent à droite', () => (S.conga === undefined ? 0.4 : S.conga), (v) => { S.conga = v; Tank.groupT = Math.min(Tank.groupT || 0, Tank.showGap()); }),
       head('AFFICHAGE'),
-      seg('Qualité', [['auto', 'Auto'], ['high', 'Haute'], ['low', 'Basse']], () => S.quality, (v) => { S.quality = v; applyQuality(); }),
-      (() => {
-        /* the small lights glowing here and there in every scene: 0 turns them off */
-        const r = h('input', { type: 'range', class: 'orange', min: 0, max: 1, step: 0.01, value: S.glow === undefined ? 0.5 : S.glow, 'aria-label': 'Petites lumières' });
-        r.oninput = () => { S.glow = Number(r.value); };
-        r.onchange = () => G.save();
-        return h('div', { class: 'setrow chrow' }, h('span', { text: 'Petites lumières' }), h('div', { class: 'chctl' }, r));
-      })(),
+      qRow,
       toggle('Afficher les FPS', () => S.fps, (v) => { S.fps = v; }),
       head('SAUVEGARDE'));
     const cloudRow = h('div', { class: 'setrow' }, h('span', { text: 'Sauvegarde en ligne' }), h('span', { class: 'setval', text: '...' }));
@@ -11256,8 +11915,13 @@ const UI = {
     P.el.addEventListener('pointerdown', (e) => { if (menuOf && !menuOf.contains(e.target) && !(e.target.closest && e.target.closest('.wkind'))) closeMenu(); });
     P.el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOf) { e.stopPropagation(); closeMenu(); } });
     const { rng, sec } = this.kit(b);
+    const S = st.settings;
+    if (S.glow === undefined) S.glow = 0.5;
+    if (S.dust === undefined) S.dust = 0.5;
     sec('Lumière et eau',
       rng('Lumière', W, 'strength', 0, 2),
+      rng('Petites lumières', S, 'glow', 0, 1),
+      rng('Particules de lumière', S, 'dust', 0, 1),
       rng('Brume', E, 'haze', 0, 3.2),
       rng('Mouvement de l\'eau', W, 'speed', 0, 1));
   },
@@ -11540,6 +12204,7 @@ Object.assign(UI, {
       this._acc = 0;
       this.refreshCard();
       if (this.panels.lab && this.panels.lab.tick) this.panels.lab.tick();
+      if (this.panels.settings && this.panels.settings.tick) this.panels.settings.tick();
       if (this.cardFish && Tank.fish.indexOf(this.cardFish) < 0 && this.panels.card) this.closePanel('card');
     }
     this.updateLabels();
@@ -11816,10 +12481,15 @@ const TPL = {
    each lit in turn while the rest of the screen dims, with a small card to read ---------- */
 const TOUR_STEPS = [
   { title: 'Bienvenue !', text: 'Voici ton aquarium. Quelques gestes suffisent pour tout faire.' },
-  { at: 'fish', title: 'Les poissons', text: 'Touche un poisson : il réagit. Appuie longtemps : tu le diriges. Fais-le glisser : il te suit.' },
-  { at: 'add', title: 'Ajouter', text: 'Des poissons, à manger, des plantes… et tout ce que tu dessines.' },
+  { at: 'fish', title: 'Les poissons', text: 'Touche un poisson : il réagit. Appuie longtemps : tu le diriges avec les flèches, Entrée pour une figure. Fais-le glisser : il te suit.' },
+  { at: 'fish', title: 'De plus près', text: 'Clic droit sur un poisson : la vue s\'approche et le suit. La molette rapproche aussi ; un clic sur l\'eau revient.', touch: 'Écarte deux doigts pour t\'approcher ; touche l\'eau pour revenir.' },
+  { at: 'add', title: 'Ajouter', text: 'Des poissons, à manger, des plantes, des déchets à jeter, et le balai. Le + du menu dessine les tiens.' },
   { at: 'env', title: 'Le paysage', text: 'Change de décor, ou crée le tien avec tes images.' },
-  { at: 'weather', title: 'Météo et journée', text: 'Pluie, vent, vagues, oiseaux, et l\'heure qu\'il est.' },
+  { at: 'weather', title: 'Météo et journée', text: 'Pluie, vent, vagues, oiseaux, l\'heure du jour, et les petites lumières.' },
+  { at: 'music', title: 'La musique', text: 'Choisis ce qui joue, ou ajoute tes propres morceaux.' },
+  { at: 'sounds', title: 'Les sons', text: 'Le volume de chaque famille : musique, poissons, météo, eau, interface.' },
+  { at: 'hide', title: 'Masquer', text: 'Pour ne voir que l\'aquarium. Approche la souris du bas (ou touche l\'œil) pour retrouver les boutons.' },
+  { at: 'settings', title: 'Réglages', text: 'L\'activité des poissons, leurs queues leu leu, la qualité de l\'image, la sauvegarde.' },
   { at: 'surface', title: 'La surface', text: 'Attrape la ligne de l\'eau pour la monter ou la baisser.', hidden: 'Attrape le haut de l\'écran et tire vers le bas pour faire descendre l\'eau.' },
   { title: 'À toi de jouer !', text: 'Le bouton ? te remontre ce guide quand tu veux.' },
 ];
@@ -11884,7 +12554,7 @@ const Tour = {
   fill() {
     const S = this.steps[this.i], last = this.i === this.steps.length - 1;
     this.title.textContent = S.title;
-    this.text.textContent = S.hidden && !this.lineShows() ? S.hidden : S.text;
+    this.text.textContent = S.hidden && !this.lineShows() ? S.hidden : S.touch && matchMedia('(pointer: coarse)').matches ? S.touch : S.text;
     this.next.textContent = last ? 'C\'est parti' : this.i ? 'Suivant' : 'Commencer';
     this.back.hidden = this.i === 0;
     this.skip.hidden = last;
@@ -11969,6 +12639,9 @@ const Tour = {
    still works after layers are added, removed or reordered.
    Layout: the name across the top; saved creatures and file buttons on the left; the canvas, the fish
    type, its sounds and the save button in the middle; tools, layers, colours and brush on the right. */
+/* the size shown for a fish: a fish at 1 (as it was first drawn) reads 0,75, and the smallest 0,25 */
+const SIZE_SHOWN = 0.75;
+function sizeLabel(scale) { return String(Math.round(scale * SIZE_SHOWN * 100) / 100).replace('.', ','); }
 const ED_SIZE = 850;
 const MAX_PICTURES = 3;
 const TOOL_SETTINGS = {
@@ -12015,12 +12688,20 @@ const Editor = {
     this.savedTitle = h('h5', { class: 'edh' });
     this.savedEl = h('div', { class: 'savedgrid scroll' });
     left.appendChild(h('section', { class: 'edbox savedbox' }, this.savedTitle, this.savedEl));
+    if (!this.sortBound) {
+      this.sortBound = true;
+      addEventListener('pointermove', (e) => this.sortMove(e), { passive: false });
+      addEventListener('pointerup', (e) => this.sortEnd(e));
+      addEventListener('pointercancel', (e) => this.sortEnd(e));
+    }
+    /* while a drawing is carried, the finger does not scroll the list */
+    this.savedEl.addEventListener('touchmove', (e) => { if (this.sort && this.sort.on) e.preventDefault(); }, { passive: false });
     const FB = (ic, label, tip, fn) => h('button', { class: 'act', dataset: { tip }, onclick: () => { Sound.play('click'); fn(); } }, h('span', { class: 'ai', html: icon(ic) }), h('span', { class: 'at', text: label }));
-    this.impFishB = FB('upload', 'Importer un poisson', 'Un fichier .zip avec le dessin, les sons et le comportement', () => this.importTemplate());
-    this.expFishB = FB('download', 'Exporter le poisson', 'Enregistre ce poisson en fichier .zip, sons compris, pour le partager', () => this.exportFish());
+    this.impFishB = FB('download', 'Importer un poisson', 'Un fichier .zip avec le dessin, les sons et le comportement', () => this.importTemplate());
+    this.expFishB = FB('upload', 'Exporter le poisson', 'Enregistre ce poisson en fichier .zip, sons compris, pour le partager', () => this.exportFish());
     left.appendChild(h('section', { class: 'edbox filebox' },
-      FB('imgplus', 'Importer un dessin', 'Ajoute une image comme calque (3 au maximum)', () => this.importImage()),
-      FB('imgdown', 'Exporter le dessin', 'Enregistre ton dessin en image PNG', () => this.downloadImage()),
+      FB('imgdown', 'Importer un dessin', 'Ajoute une image comme calque (3 au maximum)', () => this.importImage()),
+      FB('imgup', 'Exporter le dessin', 'Enregistre ton dessin en image PNG', () => this.downloadImage()),
       this.impFishB, this.expFishB));
     /* middle: the canvas, then the fish type and its sounds, then the save button */
     const mid = h('div', { class: 'ed-mid' });
@@ -12052,7 +12733,7 @@ const Editor = {
        fish in it at that size (behaviour lives in the fish's card in the tank) */
     this.kindTiles = [];
     this.beh = { bottom: false, energy: 0.5, curious: 0.3, scale: 1 };
-    this.sizeIn = h('input', { type: 'range', class: 'orange', min: 0.5, max: 6, step: 0.01, value: 1, 'aria-label': 'Taille du poisson' });
+    this.sizeIn = h('input', { type: 'range', class: 'orange', min: 1 / 3, max: 6, step: 0.01, value: 1, 'aria-label': 'Taille du poisson' });
     this.sizeVal = h('span', { class: 'szval' });
     this.sizeIn.addEventListener('input', () => { this.beh.scale = Number(this.sizeIn.value); this.changed = true; this.showPreview(); });
     this.sizeIn.addEventListener('change', () => this.showPreview(250));
@@ -12067,8 +12748,10 @@ const Editor = {
     this.sndBox = h('section', { class: 'edbox sndbox' }, h('h5', { class: 'edh', text: 'Sons' }), this.sndEl);
     this.extraEl = h('div', { class: 'ed-extra' }, this.sndBox);
     mid.appendChild(this.extraEl);
+    /* at the bottom: leave without saving, or save */
     this.actB = h('button', { class: 'bigact', onclick: () => this.save() });
-    mid.appendChild(this.actB);
+    const cancelB = h('button', { class: 'bigact cancel', text: 'Annuler', dataset: { tip: 'Fermer sans enregistrer' }, onclick: () => { Sound.play('click'); this.tryClose(); } });
+    mid.appendChild(h('div', { class: 'actrow' }, cancelB, this.actB));
     /* right: undo and redo, the tools, the layers, the colours, the brush */
     const right = h('div', { class: 'ed-right scroll' });
     this.undoB = h('button', { class: 'ubtn', 'aria-label': 'Annuler', dataset: { tip: 'Annuler (Ctrl+Z)' }, html: icon('undo') + '<span>Annuler</span>', onclick: () => this.undo() });
@@ -12213,6 +12896,7 @@ const Editor = {
   /* the microphone is released and any playback stops: on close, on a new creature, on leaving */
   stopAllSound() {
     if (this.recSlot || MicRec.active || MicRec.stream) MicRec.cancel();
+    MicRec.drop();
     this.recSlot = null;
     FishVoice.stopListen();
   },
@@ -12671,24 +13355,135 @@ const Editor = {
     return this.defsList().filter((d) => d.img && IMAGES.has(d.img));
   },
   isCurrent(it) { return this.mode === 'fish' ? it === this.tplSource : it === this.target; },
+  /* in the order of the main menu, which is changed here by dragging them about (on a touch screen, after holding
+     one a moment); a + at the end starts a new one. One tap opens it on the canvas; two take it straight to the
+     tank, as if chosen in the main menu. The eye hides one from the main menu, and shows it again */
   renderSaved() {
     const fish = this.mode === 'fish';
     this.savedTitle.textContent = fish ? 'Poissons enregistrés' : this.mode === 'plant' ? 'Plantes enregistrées' : this.mode === 'litter' ? 'Déchets enregistrés' : 'Nourritures enregistrées';
     const g = this.savedEl;
     g.innerHTML = '';
-    const items = this.savedItems().slice().reverse();
+    const items = this.savedItems();
     items.forEach((it) => {
       const nm = it.name || 'Sans nom';
       const on = this.isCurrent(it);
-      const main = h('button', { class: 'smain', 'aria-label': (on ? 'Ouvert : ' : 'Ouvrir ') + nm, 'aria-pressed': String(on), dataset: { tip: on ? 'Ouvert dans l\'éditeur' : 'Ouvrir ' + nm } }, IMAGES.thumb(fish ? it.thumb : it.img, 120), h('span', { class: 'sn', text: nm }));
-      main.onclick = () => this.openSaved(it);
+      const main = h('button', { class: 'smain', 'aria-label': (on ? 'Ouvert : ' : 'Ouvrir ') + nm, 'aria-pressed': String(on), dataset: { tip: on ? 'Ouvert dans l\'éditeur' : 'Ouvrir · deux clics : dans l\'aquarium' } }, IMAGES.thumb(fish ? it.thumb : it.img, 120), h('span', { class: 'sn', text: nm }));
+      let clickT = 0;
+      main.onclick = () => {
+        if (performance.now() - (this.sortEnded || 0) < 350) return;
+        clearTimeout(clickT);
+        clickT = setTimeout(() => this.openSaved(it), 240);
+      };
+      main.ondblclick = (e) => { e.preventDefault(); clearTimeout(clickT); this.useSaved(it); };
       const B = (ic, label, fn, cls) => h('button', { class: 'sbt' + (cls ? ' ' + cls : ''), 'aria-label': label + ' : ' + nm, dataset: { tip: label }, html: icon(ic), onclick: (e) => { e.stopPropagation(); fn(); } });
       const tools = h('div', { class: 'stools' });
+      tools.appendChild(B(it.hidden ? 'eyeoff' : 'eye', it.hidden ? 'Montrer dans le menu' : 'Cacher du menu', () => this.hideSaved(it), it.hidden ? 'hid' : ''));
       tools.appendChild(B('copy', 'Dupliquer', () => this.duplicateSaved(it)));
       tools.appendChild(B('trash', 'Supprimer', () => this.removeSaved(it), 'del'));
-      g.appendChild(h('div', { class: 'saved' + (on ? ' on' : '') }, main, tools));
+      const card = h('div', { class: 'saved' + (on ? ' on' : '') + (it.hidden ? ' hidden' : ''), dataset: { id: it.id } }, main, tools);
+      if (it.hidden) card.appendChild(h('span', { class: 'shid', 'aria-hidden': 'true', html: icon('eyeoff') }));
+      this.bindSort(card, it);
+      g.appendChild(card);
     });
-    if (!items.length) g.appendChild(h('p', { class: 'empty', text: fish ? 'Tes poissons enregistrés apparaîtront ici.' : 'Rien ici pour le moment.' }));
+    const add = fish ? 'Dessiner un nouveau poisson' : this.mode === 'plant' ? 'Dessiner une nouvelle plante' : this.mode === 'litter' ? 'Dessiner un nouveau déchet' : 'Dessiner une nouvelle nourriture';
+    g.appendChild(h('button', { class: 'saved sadd', 'aria-label': add, dataset: { tip: add }, html: icon('plus'), onclick: () => this.newBlank() }));
+  },
+  /* the + of the list: a blank canvas for a new one of the same kind */
+  async newBlank() {
+    if (this.changed && !this.isEmpty()) {
+      const ok = await UI.confirm('Commencer un nouveau dessin ?', 'Ce que tu n\'as pas enregistré sera perdu.', 'Nouveau dessin', 'Rester ici');
+      if (!ok || !this.open) return;
+    }
+    Sound.play('click');
+    this.openFor(this.mode);
+  },
+  /* two taps on a saved one: the editor closes and it is ready to go in the tank, as when chosen in the main menu */
+  async useSaved(it) {
+    if (this.recSlot) this.stopRec(true);
+    if (this.changed && !this.isEmpty() && !this.isCurrent(it)) {
+      const ok = await UI.confirm('Quitter l\'éditeur ?', 'Ton dessin et ses nouveaux sons ne sont pas encore enregistrés.', 'Quitter', 'Continuer à dessiner');
+      if (!ok || !this.open) return;
+    }
+    const mode = this.mode, st = G.state;
+    this.close();
+    Sound.play('click');
+    if (mode === 'fish') { G.setMode('release', { tpl: it.id }); UI.showFishPop(); }
+    else if (mode === 'plant') { G.setMode('plant', { sub: 'plant', def: it.id }); UI.showPlantPop(); }
+    else if (mode === 'litter') { st.curLitter = it.id; G.save(); G.setMode('litter'); UI.showLitterPop(); }
+    else { st.curFood = it.id; G.save(); G.setMode('feed'); UI.showFeedPop(); }
+    UI.refreshCursor();
+  },
+  hideSaved(it) {
+    it.hidden = !it.hidden;
+    if (!it.hidden) delete it.hidden;
+    G.save();
+    Sound.play('click');
+    this.renderSaved();
+    UI.toast(it.hidden ? '<b>' + escapeHtml(it.name || 'Sans nom') + '</b> n\'apparaît plus dans le menu. Il reste ici.' : '<b>' + escapeHtml(it.name || 'Sans nom') + '</b> est de retour dans le menu.', 2600);
+  },
+  /* dragging a saved one to another place in the list; the main menu follows the same order */
+  bindSort(card, it) {
+    card.addEventListener('pointerdown', (e) => {
+      if ((e.button !== undefined && e.button > 0) || e.target.closest('.sbt') || this.sort) return;
+      const S = this.sort = { card, it, id: e.pointerId, x0: e.clientX, y0: e.clientY, on: false, touch: e.pointerType !== 'mouse' };
+      /* a finger scrolls the list: it has to hold the drawing a moment before moving it */
+      if (S.touch) S.hold = setTimeout(() => { if (this.sort === S) this.sortStart(S.x0, S.y0); }, 330);
+    });
+  },
+  sortStart(x, y) {
+    const S = this.sort;
+    S.on = true;
+    const r = S.card.getBoundingClientRect();
+    S.ox = x - r.left; S.oy = y - r.top;
+    S.card.classList.add('dragging');
+    this.savedEl.classList.add('sorting');
+    try { if (navigator.vibrate && S.touch) navigator.vibrate(12); } catch (e) { /* not allowed */ }
+  },
+  sortMove(e) {
+    const S = this.sort;
+    if (!S || e.pointerId !== S.id) return;
+    if (!S.on) {
+      const d = Math.hypot(e.clientX - S.x0, e.clientY - S.y0);
+      if (S.touch) { if (d > 9) { clearTimeout(S.hold); this.sort = null; } return; }
+      if (d < 6) return;
+      this.sortStart(S.x0, S.y0);
+    }
+    e.preventDefault();
+    const g = this.savedEl, card = S.card;
+    /* the place under the finger: before or after the drawing it is over */
+    const cards = $$('.saved[data-id]', g);
+    for (const o of cards) {
+      if (o === card) continue;
+      const r = o.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) continue;
+      const after = cards.indexOf(o) > cards.indexOf(card);
+      g.insertBefore(card, after ? o.nextSibling : o);
+      break;
+    }
+    /* near the top or bottom of the list, it scrolls */
+    const gr = g.getBoundingClientRect();
+    if (e.clientY < gr.top + 28) g.scrollTop -= 10; else if (e.clientY > gr.bottom - 28) g.scrollTop += 10;
+    card.style.transform = '';
+    const r = card.getBoundingClientRect();
+    card.style.transform = 'translate(' + (e.clientX - S.ox - r.left).toFixed(1) + 'px,' + (e.clientY - S.oy - r.top).toFixed(1) + 'px)';
+  },
+  sortEnd(e) {
+    const S = this.sort;
+    if (!S || (e && e.pointerId !== S.id)) return;
+    clearTimeout(S.hold);
+    this.sort = null;
+    if (!S.on) return;
+    this.sortEnded = performance.now();
+    S.card.classList.remove('dragging'); S.card.style.transform = '';
+    this.savedEl.classList.remove('sorting');
+    const ids = $$('.saved[data-id]', this.savedEl).map((c) => c.dataset.id);
+    const arr = this.mode === 'fish' ? G.state.templates : this.defsList();
+    const set = new Set(ids), byId = new Map(arr.map((x) => [x.id, x])), slots = [];
+    arr.forEach((x, i) => { if (set.has(x.id)) slots.push(i); });
+    if (slots.length === ids.length) ids.forEach((id, k) => { arr[slots[k]] = byId.get(id); });
+    G.save();
+    Sound.play('stamp');
+    this.renderSaved();
   },
   async openSaved(it) {
     if (this.isCurrent(it)) return;
@@ -12704,8 +13499,11 @@ const Editor = {
     const copy = JSON.parse(JSON.stringify(it));
     copy.name = (it.name || 'Sans nom') + ' (copie)';
     delete copy.starter;
-    if (this.mode === 'fish') { copy.id = 't_' + uid(); copy.created = now(); copy.updated = now(); G.state.templates.push(copy); }
-    else { copy.id = (this.mode === 'plant' ? 'pd_' : this.mode === 'litter' ? 'ld_' : 'fd_') + uid(); this.defsList().push(copy); }
+    delete copy.hidden;
+    const list = this.mode === 'fish' ? G.state.templates : this.defsList();
+    if (this.mode === 'fish') { copy.id = 't_' + uid(); copy.created = now(); copy.updated = now(); }
+    else copy.id = (this.mode === 'plant' ? 'pd_' : this.mode === 'litter' ? 'ld_' : 'fd_') + uid();
+    list.splice(list.indexOf(it) + 1, 0, copy);
     G.save();
     Sound.play('click');
     this.renderSaved();
@@ -13185,7 +13983,7 @@ const Editor = {
     if (this.recSlot || this.sndBusy) return;
     FishVoice.stopListen();
     if (!this.micAsked && !G.state.settings.micOk) {
-      const ok = await UI.confirm('Enregistrer avec ton micro ?', 'Doodle Tank n\'écoute que pendant que le point rouge est allumé (3,5 secondes au plus), pour créer un son pour ' + (this.name() || 'ton poisson') + '. L\'enregistrement reste dans ce navigateur, avec ton poisson. Ton navigateur va te demander l\'autorisation, une seule fois.', 'Continuer', 'Pas maintenant');
+      const ok = await UI.confirm('Enregistrer avec ton micro ?', 'Doodle Tank n\'écoute que pendant que le point rouge est allumé (3,5 secondes au plus), pour créer un son pour ' + (this.name() || 'ton poisson') + '. L\'enregistrement reste dans ce navigateur, avec ton poisson. Ton navigateur va te demander l\'autorisation.', 'Continuer', 'Pas maintenant');
       if (!ok || !this.open) return;
       this.micAsked = true;
     }
@@ -13250,7 +14048,7 @@ const Editor = {
     if (!this.sizeIn) return;
     this.sizeRow.hidden = this.mode !== 'fish';
     if (document.activeElement !== this.sizeIn) this.sizeIn.value = this.beh.scale;
-    this.sizeVal.textContent = 'x' + Number(this.beh.scale).toFixed(1).replace('.', ',');
+    this.sizeVal.textContent = 'x' + sizeLabel(this.beh.scale);
   },
   /* the tank as it is now, with this fish drawn in it at its grown-up size; ms: hide it after that long */
   showPreview(ms) {
@@ -13575,6 +14373,12 @@ function resize() {
   if (Editor.open) Editor.fit();
 }
 function applyQuality() { resize(); }
+/* what Auto chose, in words: the size the picture is drawn at, against what High would draw on this screen */
+function autoQualityName() {
+  const full = Math.min(window.devicePixelRatio || 1, 2, Math.max(1, Math.sqrt(4.5e6 / (innerWidth * innerHeight))));
+  const k = Scene.px / full;
+  return k > 0.93 ? 'haute' : k > 0.68 ? 'moyenne' : 'basse';
+}
 
 async function startCloud(userInitiated) {
   const ok = await Cloud.connect();
@@ -13589,7 +14393,7 @@ async function startCloud(userInitiated) {
     }
     G.state = mergeDefaults(migrateState(remote.state));
     for (const id of G.tankImages()) IMAGES.ensureTex(id);
-    Tank.hungerMul = G.state.settings.hunger || 1;
+    Tank.hungerMul = 1;
     G.syncCfg();
     await G.applyEnvironment();
     G.populateTank();
@@ -13627,7 +14431,12 @@ function bindTankInput() {
     if (UI.hidden) UI.peekShow();
     try { c.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
     touches.set(e.pointerId, [e.clientX, e.clientY]);
-    if (touches.size === 2 && G.mode === 'zoom') { const [a, b] = Array.from(touches.values()); pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: Scene.cam.tz }; down = null; return; }
+    /* two fingers spread apart look closer (no magnifier to pick first) */
+    if (touches.size === 2 && (G.mode === 'zoom' || G.mode === 'normal')) {
+      if (down) { clearTimeout(down.hold); clearInterval(down.bub); holdRing(null); }
+      if (G.mode !== 'zoom') G.setMode('zoom');
+      const [a, b] = Array.from(touches.values()); pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: Scene.cam.tz }; down = null; return;
+    }
     if (touches.size > 1) { down = null; return; }
     const [sx, sy] = Scene.screenToScene(e.clientX, e.clientY);
     down = { id: e.pointerId, x: e.clientX, y: e.clientY, sx, sy, moved: false, lastFeed: performance.now(), camx: Scene.cam.tx, camy: Scene.cam.ty };
@@ -13727,7 +14536,8 @@ function bindTankInput() {
   });
   const up = (e) => {
     touches.delete(e.pointerId);
-    if (touches.size < 2) pinch = null;
+    /* fingers let go with the view back to the whole tank: the tank as before */
+    if (touches.size < 2 && pinch) { pinch = null; if (Scene.cam.tz < 1.06 && G.mode === 'zoom' && !G.modeData.follow) zoomBack(); }
     if (!down || down.id !== e.pointerId) return;
     const d = down; down = null;
     clearTimeout(d.hold); clearInterval(d.bub); holdRing(null);
@@ -13775,12 +14585,16 @@ function bindTankInput() {
   c.addEventListener('pointerup', up);
   c.addEventListener('pointercancel', up);
   c.addEventListener('pointerleave', () => { UI._lastPtr = null; Main.hover = null; if (!down) Scene.lineHi = 0; });
+  /* the wheel looks closer where the pointer is, and back out to the whole tank */
   c.addEventListener('wheel', (e) => {
-    if (G.mode !== 'zoom') return;
+    if (G.mode !== 'zoom' && G.mode !== 'normal') return;
     e.preventDefault();
+    if (G.mode !== 'zoom') { if (e.deltaY >= 0) return; G.setMode('zoom'); }
     const cam = Scene.cam;
     const [px, py] = Scene.screenToScene(e.clientX, e.clientY);
     const nz = clamp(cam.tz * (e.deltaY > 0 ? 0.88 : 1.14), 1, 3.5);
+    if (nz <= 1.001 && e.deltaY > 0) { zoomBack(); return; }
+    G.modeData.follow = null;
     cam.tx = px - (px - cam.tx) * (cam.tz / nz);
     cam.ty = py - (py - cam.ty) * (cam.tz / nz);
     cam.tz = nz;
@@ -13839,7 +14653,7 @@ function zoomBack() {
   const cam = Scene.cam;
   cam.tx = Scene.W / 2; cam.ty = Scene.H / 2; cam.tz = 1;
   UI.closePanel('card', true);
-  if (G.modeData.viaRight) G.setMode('normal');
+  G.setMode('normal');
 }
 function clampCam() {
   const cam = Scene.cam, W = Scene.W, H = Scene.H;
@@ -13967,9 +14781,20 @@ function updateDive(dt) {
 function loop(tNow) {
   Main.raf = requestAnimationFrame(loop);
   Main.tick = performance.now();
-  /* at most 60 pictures a second: a 120 Hz screen would otherwise make the graphics card draw everything twice */
-  if (tNow - Main.last < 1000 / 64) return;
   if (Main.lost) return;
+  /* the screen's own pace, from the time between its refreshes: a running middle value, which the odd early or late
+     refresh does not move */
+  const d = tNow - (Main.rafLast || tNow);
+  Main.rafLast = tNow;
+  if (d > 1 && d < 100) {
+    const r = Main.rafD || (Main.rafD = []);
+    r.push(d); if (r.length > 61) r.shift();
+    if ((Main.rafN = (Main.rafN || 0) + 1) % 30 === 0) Main.vsync = r.slice().sort((a, b) => a - b)[r.length >> 1];
+  }
+  /* a screen faster than 100 Hz gets a picture every other refresh, a steady 60 a second (the graphics card would
+     otherwise draw everything twice); any other screen gets one at every refresh: none is ever dropped for coming
+     a little early, which made the motion stutter */
+  if (Main.vsync && Main.vsync < 10) { Main.odd = !Main.odd; if (Main.odd) return; }
   try { frame(tNow); } catch (e) { reportError(e); }
 }
 function stage(fn) { try { fn(); } catch (e) { reportError(e); } }
@@ -14074,7 +14899,7 @@ async function start() {
   if (!ok) { $('#fallback').hidden = false; return; }
   await G.load();
   G.startLevel();
-  Tank.hungerMul = G.state.settings.hunger || 1;
+  Tank.hungerMul = 1;
   if (G.fresh) G.starterContent();
   G.realStarterPlants();
   G.starterLitter();
@@ -14087,15 +14912,18 @@ async function start() {
   try { await G.applyEnvironment(); } catch (e) { console.error(e); try { await Env.select('classic', false); } catch (e2) { console.error(e2); } }
   Tank.init();
   G.populateTank();
+  /* each fish's outline is worked out from its drawing once (a few milliseconds each): done now, while loading,
+     rather than all in the first picture, which would hold the start of the dive */
+  for (const f of Tank.fish) { const rec = IMAGES.get(f.img); if (rec) try { IMAGES.silTex(rec); } catch (e) { /* drawn without it */ } }
   UI.init();
   Sound.configure(G.state.settings);
   bindTankInput();
   document.addEventListener('keydown', onKey);
   document.addEventListener('keyup', onKeyUp);
-  addEventListener('blur', () => { Ctl.keys.clear(); Ctl.boost = false; });
+  addEventListener('blur', () => { Ctl.keys.clear(); Ctl.boost = false; Ctl.enterHeld = false; });
   addEventListener('resize', debounce(() => { Main.qResize = true; }, 120));
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { G.saveNow(); Ctl.keys.clear(); if (Editor.open && Editor.recSlot) Editor.stopRec(true); }
+    if (document.hidden) { G.saveNow(); Ctl.keys.clear(); if (Editor.open && Editor.recSlot) Editor.stopRec(true); MicRec.drop(); }
     else if (Sound.ctx && Sound.ctx.state === 'suspended' && Sound.started) Sound.ctx.resume();
   });
   addEventListener('pagehide', () => { G.saveNow(); MicRec.cancel(); });
@@ -14108,12 +14936,7 @@ async function start() {
   if (!again) startDive();
   /* what the game has to say waits until the dive is over */
   const after = (fn, ms) => { const w = () => (Main.dive ? setTimeout(w, 150) : setTimeout(fn, ms)); setTimeout(w, 300); };
-  if (!G.state.gameMode) {
-    after(() => UI.chooseGameMode().then((m) => {
-      G.setGameMode(m);
-      if (G.fresh) UI.toast('Bienvenue ! Touche le <b>+</b> en bas, puis <b>Poissons</b>, pour dessiner ton premier poisson.', 6000);
-    }), 200);
-  } else if (G.fresh) after(() => UI.toast('Bienvenue ! Touche le <b>+</b> en bas, puis <b>Poissons</b>, pour dessiner ton premier poisson.', 6000), 400);
+  if (G.fresh) after(() => UI.toast('Bienvenue ! Touche le <b>+</b> en bas, puis <b>Poissons</b>, pour dessiner ton premier poisson.', 6000), 400);
   else if (G.awayMs && G.awayMs > 3600 * 1000) after(() => UI.toast('Te revoilà ! Déjà ' + Math.round(G.awayMs / 3600000) + ' heures sans toi. Tes poissons t\'attendaient.', 5000), 400);
   for (const f of Tank.fish) if (f._returned) { delete f._returned; after(() => UI.toast('<b>' + escapeHtml(f.name) + '</b> est de retour de voyage : "' + escapeHtml(f.quote || '') + '"'), 1300); }
   G.save();

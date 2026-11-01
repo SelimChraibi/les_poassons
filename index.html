@@ -244,6 +244,14 @@ input[type=range].vert::-webkit-slider-thumb { margin-top: 0; margin-left: -6px;
 .fc-about { cursor: text; margin-top: 10px; }
 .fc-about-t { display: block; white-space: pre-wrap; text-indent: 0; }
 .fc-behs { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+/* the fish's character in its card, a few words (it is set in the editor) */
+.fc-chars { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.fc-chars .chip { font-size: 13px; padding: 4px 11px; border-radius: 999px; background: rgba(230, 241, 255, .07); border: 1px solid var(--gbtn-line); color: var(--ink); }
+/* the character in the editor: label, then the slider with its two ends named under it, or a switch */
+.persgrid { display: flex; flex-direction: column; gap: 10px; }
+.persbox .behrow { grid-template-columns: 124px minmax(0, 1fr); }
+.behsl { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.behends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 .fc-beh { display: grid; grid-template-columns: 130px minmax(0, 1fr); align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
 .fc-beh .toggle { justify-self: start; }
 .fc-beh input[type=range] { width: 100%; min-width: 0; }
@@ -663,23 +671,33 @@ input.dim { opacity: .4; }
    real buttons at the bottom right on touch screens */
 #keypad { position: fixed; left: 50%; bottom: calc(var(--gutter-b) + var(--barh) + 18px); transform: translateX(-50%); z-index: 9; display: grid; grid-template-columns: repeat(3, 52px); grid-auto-rows: 52px; gap: 6px; opacity: 0; pointer-events: none; transition: opacity .45s ease; }
 #keypad.show { opacity: .78; transition-duration: .12s; }
-#keypad .key { border-radius: 14px; background: rgba(8, 24, 48, .38); border: 1px solid rgba(230, 241, 255, .45); box-shadow: 0 4px 14px rgba(0, 10, 30, .2); color: #eef6ff; display: grid; place-items: center; touch-action: none; -webkit-touch-callout: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .1s, box-shadow .1s, transform .1s; }
-#keypad .key .ic { width: 24px; height: 24px; stroke-width: 2.6; }
+#keypad .key, #actpad .key { border-radius: 14px; background: rgba(8, 24, 48, .38); border: 1px solid rgba(230, 241, 255, .45); box-shadow: 0 4px 14px rgba(0, 10, 30, .2); color: #eef6ff; display: grid; place-items: center; touch-action: none; -webkit-touch-callout: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .1s, box-shadow .1s, transform .1s; }
+#keypad .key .ic, #actpad .key .ic { width: 24px; height: 24px; stroke-width: 2.6; }
 #keypad .key.space { grid-column: 1 / span 3; height: 40px; font-size: 13px; letter-spacing: .04em; }
-#keypad .key.pir { grid-auto-flow: row; gap: 1px; align-content: center; }
-#keypad .key.pir .ic { width: 22px; height: 22px; stroke-width: 2.2; }
-#keypad .key.pir .ic.kd { width: 26px; height: 26px; stroke-width: 2.1; }
-#keypad .key.on { background: rgba(124, 247, 234, .35); border-color: rgba(124, 247, 234, .8); box-shadow: 0 0 18px rgba(124, 247, 234, .45); transform: scale(.96); }
+/* F and Enter on a keyboard: what the key does over the key's own shape */
+#keypad .key.fig, #keypad .key.shot { grid-auto-flow: row; gap: 1px; align-content: center; }
+#keypad .key.fig .ic, #keypad .key.shot .ic { width: 21px; height: 21px; stroke-width: 2.2; }
+#keypad .key.fig .ic.kd, #keypad .key.shot .ic.kd { width: 22px; height: 22px; stroke-width: 2.1; }
+#keypad .key.on, #actpad .key.on { background: rgba(124, 247, 234, .35); border-color: rgba(124, 247, 234, .8); box-shadow: 0 0 18px rgba(124, 247, 234, .45); transform: scale(.96); }
 #keypad.touch { left: auto; right: calc(var(--gutter-r) + 8px); transform: none; bottom: calc(var(--gutter-b) + 12px); grid-template-columns: repeat(3, 58px); grid-auto-rows: 58px; }
 #keypad.touch.show { opacity: .92; pointer-events: auto; }
-#keypad.touch .key.space { height: 46px; }
-#keypad.touch .kd, #keypad:not(.touch) .kt { display: none; }
+#keypad.touch .kd, #keypad:not(.touch) .kt, #actpad .kd { display: none; }
+/* the left hand on a touch screen: Accélérer on the left, the big round bubble shot beside it, a figure above */
+#actpad { position: fixed; z-index: 9; left: calc(var(--gutter-l) + 10px); bottom: calc(var(--gutter-b) + 12px); display: none; grid-template-columns: 74px 84px; grid-template-rows: 52px 84px; gap: 10px; opacity: 0; pointer-events: none; transition: opacity .45s ease; }
+#actpad.touch { display: grid; }
+#actpad.touch.show { opacity: .92; pointer-events: auto; }
+#actpad .key.space { grid-column: 1; grid-row: 2; border-radius: 22px; font-size: 13px; letter-spacing: .02em; }
+#actpad .key.shot { grid-column: 2; grid-row: 1 / span 2; align-self: end; height: 84px; border-radius: 50%; }
+#actpad .key.shot .ic { width: 34px; height: 34px; stroke-width: 2.2; }
+#actpad .key.fig { grid-column: 1; grid-row: 1; border-radius: 16px; }
 
 @media (max-width: 920px) {
   #editor:not([hidden]) ~ #toasts { top: auto; bottom: calc(max(12px, env(safe-area-inset-bottom, 0px)) + 78px); flex-direction: column-reverse; }
 }
 @media (max-width: 720px) {
   #keypad.touch { grid-template-columns: repeat(3, 50px); grid-auto-rows: 50px; }
+  #actpad { grid-template-columns: 66px 76px; grid-template-rows: 48px 76px; gap: 8px; }
+  #actpad .key.shot { height: 76px; }
 }
 
 /* ---------- drawing editor ---------- */
@@ -1541,6 +1559,10 @@ const LN = {
   chevu: '<path d="M6 14.5l6-6 6 6"/>',
   /* the Enter key: its arrow coming down and back to the left */
   enterkey: '<path d="M18.5 5v6.5a3 3 0 0 1-3 3H6"/><path d="M9.5 11l-3.5 3.5L9.5 18"/>',
+  /* the F key, by its letter */
+  fkey: '<path d="M9 18.5v-13h7.5M9 12h5.5"/>',
+  /* a bubble shot: a round bubble with its glint, speed lines behind it */
+  shoot: '<circle cx="14.5" cy="12" r="5.8"/><path d="M12.2 9.6a3 3 0 0 1 2.6-1.3"/><path d="M2.5 8.8h4.5M2 12h4.6M2.5 15.2h4.5"/>',
   wave: '<path d="M3 9c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0M3 15c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>',
   copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
   addfish: '<path d="M2.5 12c2.3-3.8 7.1-4.6 10.4-2l3.6-2.6v9.2l-3.6-2.6C9.6 16.6 4.8 15.8 2.5 12z"/><path d="M19.5 3.5v5M17 6h5"/>',
@@ -1704,7 +1726,7 @@ function embedUrl(b64) {
   try { const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return URL.createObjectURL(new Blob([u], { type: 'audio/mpeg' })); } catch (e) { return null; }
 }
 /* sounds that belong to a fish (eating, tricks, love...) go through the fish channel; the rest are interface sounds */
-const FISH_SFX = new Set(['nom', 'pet', 'love', 'level', 'bubble', 'whoosh', 'wee', 'spin', 'boing', 'pop', 'thud', 'giggle', 'party', 'fright', 'rip', 'sad', 'woozy', 'chirp', 'coo', 'blip']);
+const FISH_SFX = new Set(['nom', 'pet', 'love', 'level', 'bubble', 'whoosh', 'wee', 'spin', 'boing', 'pop', 'thud', 'giggle', 'party', 'fright', 'rip', 'sad', 'woozy', 'chirp', 'coo', 'blip', 'shot', 'thup']);
 /* each fish has its own voice: the same sounds a little higher or lower (smaller fish higher), always the same for it */
 function fishPitch(f) {
   if (!f || !f.id) return 1;
@@ -1988,6 +2010,31 @@ const Sound = {
     n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t); n.stop(t + 0.76); nodes.push(n, bp, ng);
     setTimeout(() => { for (const nd of nodes) { try { nd.disconnect(); } catch (e) { /* gone */ } } }, 1700);
   },
+  /* a bubble shot bursting where it struck the sand, the surface or a side: a crisp pop, the round tone of the
+     bubble's walls, and a few tiny bubbles after it, heard where it burst (HRTF); k: its size (1 for a middling one) */
+  burst(x01, up, k) {
+    const c = this.ctx;
+    if (!c || c.state !== 'running' || !this.on || !this.uiOn) return;
+    const t = c.currentTime, nodes = [], g0 = clamp(0.6 + 0.4 * (k || 1), 0.5, 1.3);
+    const p = c.createPanner();
+    p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.4;
+    Ambience.pos(p, clamp(x01 - 0.5, -0.7, 0.7) * 6, -1 + 2 * up, -2.5);
+    p.connect(this.sfx); nodes.push(p);
+    const n = c.createBufferSource(); n.buffer = this.noiseBuf(0.12);
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 1.1;
+    const ng = c.createGain(); ng.gain.setValueAtTime(0.11 * g0, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+    n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t); n.stop(t + 0.1); nodes.push(n, bp, ng);
+    const tone = (f0, f1, d, a, dl) => {
+      const o = c.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(f0, t + dl); o.frequency.exponentialRampToValueAtTime(f1, t + dl + d);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t + dl); g.gain.exponentialRampToValueAtTime(a * g0, t + dl + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dl + d);
+      const w = c.createGain(); w.gain.value = 0.35 * this.uiVol;
+      o.connect(g); g.connect(p); g.connect(w); w.connect(this.rev); o.start(t + dl); o.stop(t + dl + d + 0.02); nodes.push(o, g, w);
+    };
+    tone(780, 240, 0.09, 0.09, 0);
+    for (let i = 0; i < 3; i++) { const f0 = 1300 + Math.random() * 1100; tone(f0, f0 * 1.5, 0.05, 0.025, 0.04 + i * 0.04 + Math.random() * 0.03); }
+    setTimeout(() => { for (const nd of nodes) { try { nd.disconnect(); } catch (e) { /* gone */ } } }, 600);
+  },
   /* sand pattering down: sparse tiny ticks, thick at first, thinning out */
   makeGrains(sec) {
     const c = this.ctx, len = Math.floor(c.sampleRate * sec), b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0);
@@ -2040,6 +2087,11 @@ const Sound = {
       case 'sad': T(660, 0.44, 'sine', 0.07, { to: 430, glide: 0.4, wet: 0.35 }); T(520, 0.5, 'triangle', 0.03, { to: 330, delay: 0.18, glide: 0.45, wet: 0.35 }); break;
       /* small happy sounds a fish makes now and then: a double pip, a soft coo, a round bubbly bloop */
       case 'chirp': T(1150, 0.06, 'sine', 0.045, { to: 1650 }); T(1300, 0.075, 'sine', 0.04, { to: 1900, delay: 0.09 }); break;
+      /* a bubble shot: a round "bloop" falling in pitch as the bubble leaves the mouth, a breath of water, a little
+         gulp after it (heard where the fish is) */
+      case 'shot': { const k = 0.92 + Math.random() * 0.16; T(430 * k, 0.16, 'sine', 0.1, { to: 165 * k, glide: 0.12 }); T(1020 * k, 0.05, 'sine', 0.035, { to: 640 * k }); this.noise(0.08, 1250, 1.3, 0.05); T(250 * k, 0.08, 'triangle', 0.03, { to: 340 * k, delay: 0.07 }); break; }
+      /* a bubble shot passing through a fish: a soft, round knock */
+      case 'thup': T(250, 0.08, 'sine', 0.06, { to: 175 }); this.noise(0.05, 850, 1, 0.03); break;
       case 'coo': T(560, 0.2, 'sine', 0.05, { to: 820, glide: 0.13, wet: 0.25 }); T(820, 0.2, 'triangle', 0.025, { to: 690, delay: 0.17, wet: 0.25 }); break;
       case 'blip': T(360, 0.12, 'sine', 0.06, { to: 980, glide: 0.09 }); T(990, 0.05, 'sine', 0.02, { to: 1300, delay: 0.1 }); break;
       /* shaken too hard: a woozy wobble up and down */
@@ -6405,6 +6457,12 @@ uniform sampler2D u_light0, u_light1;
 /* the fish whose card is open: the rest of the tank dims round a living light on it, the guided tour's light
    (Tour.drawSpot) drawn here: centre and half size (screen px), how far it has come (0..1) and its clock */
 uniform vec4 u_cardC; uniform vec2 u_cardK;
+/* the drawings (the scene picture's alpha at 1, everything else in front of the water at OBJ_A = .8) keep their own
+   colours: their own exposure (not the Lumière setting's; by night darker and a little cool, but readable) and tint,
+   and only a touch of the tone curve and of the time of day's grading */
+uniform float u_drawE; uniform vec3 u_drawTint;
+/* bubble shots (Tank.bubbleShot), at most four: centre (scene px, with the drifting camera), radius, strength */
+uniform vec4 u_shot[4]; uniform int u_shotN;
 out vec4 o;
 /* a rounded shape (a superellipse) round the fish, its outline breathing in three slow waves: a soft opening a
    little wider, blurred, and inside it a clean core whose edge comes in on one side and reaches the soft one on the
@@ -6444,10 +6502,21 @@ void main(){
   vec2 wob = vec2(0.);
   if (u_dive.y > 0.) wob += vec2(gnoise(p * .006 + u_time * .8), gnoise(p * .006 - u_time * .7)) * 26. * (1. - smoothstep(.4, .95, u_dive.x));
   vec2 suv = uv + vec2(wob.x / u_res.x, -wob.y / u_res.y);
+  /* the water seen through a bubble shot: an air bubble in water spreads the light (a diverging lens), so what lies
+     behind it shows a little smaller, drawn out toward its rim */
+  for (int i = 0; i < 4; i++) {
+    if (i >= u_shotN) break;
+    vec4 B = u_shot[i];
+    vec2 d = p - B.xy;
+    float q = dot(d, d) / (B.z * B.z);
+    if (q < 1.) suv += vec2(d.x, -d.y) * (1. - q) * .45 * B.w * u_cam.z / u_res;
+  }
   vec4 s = texture(u_scene, suv);
   /* a real lens: toward the edges of the picture the colours part very slightly */
   if (u_ca > 0.) { vec2 ca = (suv - .5) * .0016 * u_ca; s.r = texture(u_scene, suv + ca).r; s.b = texture(u_scene, suv - ca).b; }
   vec3 col = s.rgb;
+  /* oa: something stands in front of the water here; dm: it is a drawing */
+  float oa = min(s.a / .8, 1.), dm = smoothstep(.86, .97, s.a);
   /* the surface at the front glass turns with the view (wx: the place on the 360° circle) */
   float wx = p.x + u_yawX;
   float surge = u_wea.y, rain = u_wea.z, wind = u_wea.x;
@@ -6566,11 +6635,11 @@ void main(){
     float fade = smoothstep(0., .06, (u_yB + 2. - p.y) / max(u_yB - yS, 1.));
     /* the body of a crest risen above the swell is plain water lit through, not part of the mirror */
     fade *= smoothstep(yS - 14., yS + 6., p.y);
-    col = mix(col, surf, (1. - s.a) * fade);
+    col = mix(col, surf, (1. - oa) * fade);
   }
   /* the thin top of a big wave lets the light through; under a breaking one, a milky cloud of bubbles */
-  col += vec3(.1, .36, .33) * glow * u_lamp * .45 * (1. - s.a);
-  col = mix(col, vec3(.84, .94, .96), clamp(bub * .5, 0., .6) * (1. - s.a));
+  col += vec3(.1, .36, .33) * glow * u_lamp * .45 * (1. - oa);
+  col = mix(col, vec3(.84, .94, .96), clamp(bub * .5, 0., .6) * (1. - oa));
   col = mix(col, vec3(.95, .98, 1.), clamp(spray, 0., 1.) * .85);
   /* foam: white lace, thicker where the water is most broken */
   if (foam > .01) {
@@ -6637,7 +6706,7 @@ void main(){
   vec2 lp = (p - vec2(u_light.x, max(u_yF, 0.) + u_res.y * .035)) / u_res.y;
   /* the sun's glow just under the surface; a crest rising into it keeps its colour */
   float gk = wk * (1. - clamp((u_yF - p.y) / max(u_waveB, 1.), 0., 1.) * .65);
-  col += vec3(1., .97, .9) * exp(-dot(lp * vec2(1., 1.8), lp * vec2(1., 1.8)) * 90.) * .22 * u_lamp * (1. - s.a * .8) * gk;
+  col += vec3(1., .97, .9) * exp(-dot(lp * vec2(1., 1.8), lp * vec2(1., 1.8)) * 90.) * .22 * u_lamp * (1. - oa * .8) * gk;
   col += vec3(.6, .7, .8) * exp(-dot(lp * vec2(.7, 1.4), lp * vec2(.7, 1.4)) * 14.) * .1 * u_lamp * gk;
   /* the light in the water was worked out at half size (SH.lightFS): the shafts of sunlight with the fish's
      shadows across them, and the glow of the small lights */
@@ -6647,7 +6716,7 @@ void main(){
     beam = L0.a * 2.;
     /* the brightest shafts roll off a little instead of burning white where they cross */
     float br = beam * u_rays;
-    col += u_rayCol * br / (1. + br * .35) * (1. - s.a) * u_lamp * (gk / max(wk, 1e-3));
+    col += u_rayCol * br / (1. + br * .35) * (1. - oa) * u_lamp * (gk / max(wk, 1e-3));
   }
   /* specks of dust drifting through the water: almost invisible in the shade, they glint as they turn in a beam */
   if (u_dust > 0. && p.y > yF) {
@@ -6670,42 +6739,42 @@ void main(){
       float tw = .5 + .5 * sin(t * (1.5 + 4. * h.y) + h.x * 40.);
       dust += exp(-dot(d, d) / (sz * sz)) * (.25 + tw * tw * tw * 1.4) * (.7 + fl * .25);
     }
-    col += mix(vec3(.85, .95, 1.), u_rayCol, .5) * dust * (beam * 3.5 + .01) * u_dust * u_lamp * (1. - s.a * .9);
+    col += mix(vec3(.85, .95, 1.), u_rayCol, .5) * dust * (beam * 3.5 + .01) * u_dust * u_lamp * (1. - oa * .9);
   }
   /* small mysterious lights in the scenery: each one lights what is around it (from the light pass), behind
      the fish; their hearts are sprites in the scene (Scene.orbHearts) */
-  col += col * L0.rgb * 4. * (1. - s.a * .85);
-  col += LA * (1. - s.a * .9);
+  col += col * L0.rgb * 4. * (1. - oa * .85);
+  col += LA * (1. - oa * .9);
   col += texture(u_bloomT, uv).rgb * u_bloomK;
   col = mix(col, u_murkCol * (.6 + .4 * dot(col, vec3(.33))), u_murk * .45 * (.7 + .3 * uv.y) * wk);
   /* lightning: everything lit up white-blue for an instant, the air most, the water a little */
   if (u_flash > 0.) col = mix(col, col * 1.6 + vec3(.24, .27, .34), u_flash * (p.y < yF ? 1. : .4));
   /* the Lumière setting brightens the water only: the air and the sky keep their own light */
-  col *= u_expo * mix(1., u_litE, wk);
+  col *= mix(u_expo * mix(1., u_litE, wk), u_drawE, dm);
   /* filmic shoulder in linear light: midtones stay, bright water and light roll off softly instead of clipping */
   vec3 fc = pow(max(col, 0.), vec3(2.2)) * 1.1;
   fc = clamp((fc * (2.51 * fc + .03)) / (fc * (2.43 * fc + .59) + .14), 0., 1.);
-  col = mix(col, pow(fc, vec3(1. / 2.2)), .7);
+  col = mix(col, pow(fc, vec3(1. / 2.2)), .7 * (1. - .9 * dm));
   float l = dot(col, vec3(.299, .587, .114));
   col = mix(vec3(l), col, u_sat);
   col = (col - .5) * u_con + .5;
   /* a touch of clarity by day: midtones drawn apart a little, so the water does not look milky */
-  col = mix(col, clamp(col, 0., 1.) * clamp(col, 0., 1.) * (3. - 2. * clamp(col, 0., 1.)), .1 * (1. - u_tod.y));
-  col *= u_tint;
+  col = mix(col, clamp(col, 0., 1.) * clamp(col, 0., 1.) * (3. - 2. * clamp(col, 0., 1.)), .1 * (1. - u_tod.y) * (1. - dm));
+  col *= mix(u_tint, u_drawTint, dm);
   /* the time of day, graded like a photograph. Dawn and evening: the deep water keeps its cool blue while what the
      low sun lights turns warm (a rosy gold in the evening, its shadows a little mauve; peach at dawn), and its warm
      light pours in from above */
   if (u_tod.x > .001) {
     float lg = dot(col, vec3(.299, .587, .114));
     vec3 warm = mix(vec3(1.15, .95, .84), vec3(1.12, .94, .93), u_tod.z), cool = mix(vec3(.92, .94, 1.07), vec3(.94, .95, 1.06), u_tod.z);
-    col *= mix(vec3(1.), mix(cool, warm, smoothstep(.2, .85, lg)), u_tod.x);
-    col += mix(vec3(.16, .068, .055), vec3(.13, .065, .075), u_tod.z) * u_tod.x * smoothstep(.3, 1., uv.y);
+    col *= mix(vec3(1.), mix(cool, warm, smoothstep(.2, .85, lg)), u_tod.x * (1. - .5 * dm));
+    col += mix(vec3(.16, .068, .055), vec3(.13, .065, .075), u_tod.z) * u_tod.x * smoothstep(.3, 1., uv.y) * (1. - .5 * dm);
   }
   /* night: the shadows go deep indigo, the light a silvery moonlit grey-blue: dreamy */
   if (u_tod.y > .001) {
     float ln = dot(col, vec3(.299, .587, .114));
-    col = mix(col, col * vec3(.84, .86, 1.12) + vec3(.01, .004, .03), u_tod.y * (1. - smoothstep(.12, .5, ln)));
-    col = mix(col, mix(col, vec3(ln) * vec3(.92, .98, 1.08), .15), u_tod.y * smoothstep(.3, .9, ln));
+    col = mix(col, col * vec3(.84, .86, 1.12) + vec3(.01, .004, .03), u_tod.y * (1. - smoothstep(.12, .5, ln)) * (1. - .7 * dm));
+    col = mix(col, mix(col, vec3(ln) * vec3(.92, .98, 1.08), .15), u_tod.y * smoothstep(.3, .9, ln) * (1. - .7 * dm));
   }
   float v = length((uv - .5) * vec2(1.15, 1.)) * 1.3;
   col *= mix(1., .55, smoothstep(.5, 1.15, v) * u_vig);
@@ -7064,6 +7133,8 @@ in vec2 v_uv; in vec4 v_col; in float v_add;
 out vec4 o;
 void main(){ float a = texture(u_tex, v_uv).a * v_col.a; o = vec4(a, a, a, a); }`;
 
+/* what the scene picture's alpha holds for anything in front of the water that is not a drawing (SH.postFS) */
+const OBJ_A = 0.8;
 /* ---------- batch of textured quads ---------- */
 class QuadBatch {
   constructor(gl, max) {
@@ -7936,7 +8007,10 @@ const Scene = {
     gl.disable(gl.BLEND);
     /* sprites and particles, back to front */
     gl.depthMask(false); gl.depthFunc(gl.LEQUAL);
-    gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    /* the picture's alpha tells the last pass what lies in front of the water: OBJ_A for scenery, plants, specks and
+       lines, 1 for the drawings themselves (fish, your pictures), whose colours it then keeps (SH.postFS dm) */
+    gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.CONSTANT_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.blendColor(0, 0, 0, OBJ_A);
     const list = this.list;
     list.sort((a, b) => b.z - a.z);
     /* each fish gets a slice of depth of its own, in the order they are drawn (far to near): its sheet still covers
@@ -7976,6 +8050,7 @@ const Scene = {
     const flushParts = (zLimit) => {
       if (pi >= parts.length || parts[pi].z < zLimit) return false;
       useBatch();
+      gl.blendColor(0, 0, 0, OBJ_A);
       let curTex = this.atlas;
       while (pi < parts.length && parts[pi].z >= zLimit) {
         const q = parts[pi++];
@@ -8036,6 +8111,7 @@ const Scene = {
       const cm = d.clip || 0;
       gl.uniform1f(us.u_clipMode, cm);
       gl.uniform1f(us.u_clipY, this.surfLineY(d.z) + par[1] * this.s(clamp(d.z, 0, 1)));
+      gl.blendColor(0, 0, 0, OBJ_A);
       if (d.outline) {
         const O = d.outline;
         if (O.tex) { gl.bindTexture(gl.TEXTURE_2D, O.tex.t); gl.uniform4f(us.u_uvr, O.uvr[0], O.uvr[1], O.uvr[2], O.uvr[3]); }
@@ -8045,6 +8121,7 @@ const Scene = {
         gl.uniform1f(us.u_grow, 0); gl.uniform1f(us.u_sil, 0);
       }
       if (d.occ) occ.push(d);
+      if (d.dry && !d.sil) gl.blendColor(0, 0, 0, 1);
       const own = d3 && !d.sil;
       if (own) gl.depthMask(true);
       gl.drawElements(gl.TRIANGLES, this.grid.count, gl.UNSIGNED_SHORT, 0); draws++;
@@ -8066,6 +8143,7 @@ const Scene = {
     gl.disable(gl.DEPTH_TEST);
     if (this.overlay.length) {
       useBatch();
+      gl.blendColor(0, 0, 0, OBJ_A);
       let curTex = this.atlas;
       for (const q of this.overlay) {
         const tex = q.tex || this.atlas;
@@ -8147,6 +8225,10 @@ const Scene = {
     gl.uniform1f(up.u_vpY, g.vpY + par[1]); gl.uniform1f(up.u_K, g.K); gl.uniform1f(up.u_dLen, g.depthLen);
     gl.uniform1f(up.u_ca, G.state.settings.quality !== 'low' && this.quality >= 0.95 ? 1 : 0);
     const expo = E.expo * lerp(1, 0.56, dn) * (1 - dg * 0.1) * (1 - wet * 0.18);
+    /* the drawings' own light: whole by day, whatever the Lumière setting; by night darker (not lit up: they belong to
+       the night) and a little cool, but their colours and lines still read; a part of the scene's own tint */
+    gl.uniform1f(up.u_drawE, lerp(1, 0.68, dn) * (1 - dg * 0.05) * (1 - wet * 0.1));
+    gl.uniform3f(up.u_drawTint, Math.pow(E.tint[0], 0.4) * lerp(1, 0.9, dn), Math.pow(E.tint[1], 0.4) * lerp(1, 0.95, dn), Math.pow(E.tint[2], 0.4) * lerp(1, 1.06, dn));
     gl.uniform1f(up.u_expo, expo); gl.uniform1f(up.u_litE, this.lightExpo()); gl.uniform1f(up.u_sat, E.sat); gl.uniform1f(up.u_con, E.con);
     gl.uniform3f(up.u_tint, E.tint[0] * lerp(1, 0.74, dn), E.tint[1] * lerp(1, 0.87, dn), E.tint[2] * lerp(1, 1.1, dn));
     gl.uniform3f(up.u_tod, dg, dn, Daytime.hour() < 12 ? 1 : 0);
@@ -8157,6 +8239,8 @@ const Scene = {
     gl.uniform1f(up.u_dust, G.state.settings.quality === 'low' ? 0 : lightSpecks() * 2);
     const cs = this.cardSpot;
     gl.uniform4f(up.u_cardC, cs ? cs.x : 0, cs ? cs.y : 0, cs ? cs.w / 2 : 0, cs ? cs.h / 2 : 0);
+    gl.uniform1i(up.u_shotN, this.shotN || 0);
+    if (this.shotN) gl.uniform4fv(up.u_shot, this.shotBuf);
     gl.uniform2f(up.u_cardK, cs ? cs.k : 0, this.stillMotion() ? 0 : this.time);
     gl.bindVertexArray(this.tri);
     gl.drawArrays(gl.TRIANGLES, 0, 3); draws++;
@@ -8234,6 +8318,9 @@ const TRICKS = {
 const LEAP_G = 1250, LEAP_Z = 0.05;
 /* the signs over the fish, by kind: their colours over dark and over bright water are in SH.marksFS's tables */
 const MARK_KIND = { heart: 0, excl: 1, sad: 2, zzz: 3, note: 4, anger: 5, hungry: 6, star: 7 };
+/* the bubble shot: how fast it goes (screen px/s at the front glass), how soon a fish may shoot again (s), how long the
+   bubble takes to leave the mouth (s) */
+const SHOT_SPEED = 620, SHOT_GAP = 0.34, SHOT_BIRTH = 0.09;
 /* how long the stirred water behind a dashing fish shows (s): Tank.wakeStep */
 const WAKE_LIFE = 0.6;
 /* a fish torn up (deleted): sad until RIP0, the rip runs down until RIP1, the halves are gone at END (seconds) */
@@ -8302,7 +8389,7 @@ function newFishRecord(o) {
     sounds: {}, vol: 1, muted: false, layers: null, tpl: null, about: null, curious: 0.3, scale: 1,
   }, o || {});
 }
-const FISH_SAVE_KEYS = ['id', 'name', 'kind', 'img', 'art', 'sizeHint', 'born', 'satiety', 'xp', 'level', 'traits', 'rel', 'partner', 'quote', 'gen', 'parents', 'lastBaby', 'inBag', 'travelUntil', 'trips', 'eaten', 'sounds', 'vol', 'muted', 'layers', 'tpl', 'about', 'curious', 'scale'];
+const FISH_SAVE_KEYS = ['id', 'name', 'kind', 'kindBefore', 'img', 'art', 'sizeHint', 'born', 'satiety', 'xp', 'level', 'traits', 'rel', 'partner', 'quote', 'gen', 'parents', 'lastBaby', 'inBag', 'travelUntil', 'trips', 'eaten', 'sounds', 'vol', 'muted', 'layers', 'tpl', 'about', 'curious', 'scale', 'matchmaker'];
 
 /* steering one fish by hand with the arrow keys (or the arrows on screen), Space held to dash */
 const Ctl = {
@@ -8310,7 +8397,7 @@ const Ctl = {
   take(f) {
     if (!f || Tank.fish.indexOf(f) < 0 || f.mode === 'leave' || f.mode === 'enter') { UI.toast('Ce poisson ne peut pas être dirigé pour l\'instant.'); return; }
     if (this.fish && this.fish !== f) this.release();
-    this.fish = f; this.pick = f; this.dest = null; this.keys.clear(); this.enterHeld = false;
+    this.fish = f; this.pick = f; this.dest = null; this.keys.clear(); this.enterHeld = false; this.figHeld = false;
     if (f.trick && TRICKS[f.trick.type] && TRICKS[f.trick.type].own) Tank.endTrick(f);
     f.mode = 'control'; f.tgt = null;
     Tank.mouthBubbles(f);
@@ -8331,8 +8418,10 @@ const Ctl = {
   exit() { this.release(); },
   key(k, down) {
     if (k === ' ' || k === 'spacebar') { this.boost = !!down && !!this.fish; UI.flashPad(' ', down); return true; }
-    /* Enter: one figure, any of them (holding the key does not repeat it) */
-    if (k === 'enter') { if (down && !this.enterHeld && this.fish) Tank.steerTrick(this.fish); this.enterHeld = !!down; UI.flashPad('enter', down); return true; }
+    /* Enter: a bubble shot, at once (holding the key does not repeat it) */
+    if (k === 'enter') { if (down && !this.enterHeld && this.fish) Tank.bubbleShot(this.fish); this.enterHeld = !!down; UI.flashPad('enter', down); return true; }
+    /* F (or Shift): one figure, any of them */
+    if (k === 'f' || k === 'shift') { if (down && !this.figHeld && this.fish) Tank.steerTrick(this.fish); this.figHeld = !!down; UI.flashPad('f', down); return true; }
     if (!/^arrow/.test(k)) return false;
     if (down) this.keys.add(k); else this.keys.delete(k);
     UI.flashPad(k, down);
@@ -8341,7 +8430,7 @@ const Ctl = {
 };
 
 const Tank = {
-  fish: [], plants: [], food: [], debris: [], bubbles: [], motes: [], drops: [], fx: [], ripples: [], sucks: [], wakes: [],
+  fish: [], plants: [], food: [], debris: [], bubbles: [], motes: [], drops: [], fx: [], ripples: [], sucks: [], wakes: [], shots: [],
   t: 0, relT: 0, babyT: 0, selected: null, hover: null, vacuum: null, night: false, lampTarget: 1,
   hungerMul: 1,
   init() {
@@ -8920,6 +9009,129 @@ const Tank = {
     this.sfx('blip', 0.7, f);
   },
   sadFace(f, size, life) { this.fx.push({ type: 'sad', fish: f, follow: true, z: f.z, x: 0, y: 0, x0: 0, y0: 0, t: 0, life, s: size, vx: 0, vy: -10 }); },
+  /* the matchmaker at work: it swims to one of two fish who are not friends yet, which then follows it to the other;
+     when the three meet, the two become friends (hearts) and the matchmaker is pleased */
+  startMatch(f) {
+    f.matchNext = this.t + rand(30, 60) / fishActivity();
+    const free = this.fish.filter((o) => o !== f && o !== Ctl.fish && !this.still(o) && !o.tear && !o.leap && !o.drag && (o.mode === 'wander' || o.mode === 'follow'));
+    const pairs = [];
+    for (let i = 0; i < free.length; i++) for (let j = i + 1; j < free.length; j++) {
+      const a = free[i], b = free[j];
+      if (Math.min(a.rel[b.id] || 0, b.rel[a.id] || 0) < 0.45) pairs.push([a, b]);
+    }
+    if (!pairs.length) return false;
+    const [a, b] = pick(pairs);
+    if (f.trick && !f.trick.hand) this.endTrick(f);
+    f.mode = 'match'; f.modeT = 24; f.tgt = { a, b, stage: 0 };
+    return true;
+  },
+  matchStep(f) {
+    const M = f.tgt, o = M.stage ? M.b : M.a;
+    if (this.fish.indexOf(M.a) < 0 || this.fish.indexOf(M.b) < 0 || f.modeT <= 0 || M.a.tear || M.b.tear) { f.mode = 'wander'; f.retarget = 0; f.tgt = null; return null; }
+    const near = Math.hypot(o.x - f.x, o.y - f.y) < f.w * 0.55 + o.w * 0.6 && Math.abs(o.z - f.z) < 0.22;
+    if (near && !M.stage) {
+      M.stage = 1; this.emote(f, 'note');
+      const a = M.a;
+      if (a.mode !== 'leave' && a.mode !== 'enter' && a !== Ctl.fish && !a.drag) { if (a.trick && !a.trick.hand) this.endTrick(a); a.mode = 'follow'; a.modeT = 16; a.tgt = { fish: f, ox: -(f.face || 1) * f.w * 0.75, oy: rand(-14, 14), oz: 0 }; }
+    } else if (near && M.stage === 1 && Math.hypot(M.a.x - o.x, M.a.y - o.y) < M.a.w * 1.4 + o.w) {
+      this.makeFriends(M.a, M.b); this.emote(f, 'heart');
+      f.mode = 'wander'; f.retarget = 0; f.tgt = null; return null;
+    }
+    /* it comes alongside the one it is after, not into it */
+    return [o.x + (o.x < f.x ? 1 : -1) * (o.w * 0.5 + f.w * 0.45), o.y, o.z];
+  },
+  /* a fish frightened by something rushing at it from (-dx, -dy): it jumps and flees the other way */
+  scare(o, dx, dy) {
+    if (o.trick) { o.trick = null; o.vis = null; o.boost = 0; }
+    if (o.mode === 'sleep') o.asleep = false;
+    o.mode = 'flee'; o.modeT = 1.4; o.scared = this.t + 1.4;
+    o.tgt = { x: clamp(o.x + dx * 260, 40, Scene.W - 40), y: o.y + dy * 160, z: o.z };
+    o.vx += dx * 260; o.vy += dy * 160;
+    this.startTrick(o, 'jolt', { force: true });
+    this.fright(o);
+  },
+  /* ----- the bubble shot (Play mode: Enter, or the bubble button) ----- */
+  /* the fish puffs and a big bubble leaves its mouth at once, straight ahead the way its head points (as drawn). It
+     keeps that line at an even speed whatever the fish does next, passes through the fish it meets (each one jumps,
+     a "!" over it, and flees), and bursts against the sand, the surface or a side of the tank. All in screen space at
+     the shooter's depth (x as drawn, y on screen) */
+  bubbleShot(f) {
+    if (!f || this.fish.indexOf(f) < 0 || f.tear || (f.leap && f.leap.out) || !f.screen || !f.screen.w) return false;
+    if (this.t - (f.shotT || -9) < SHOT_GAP) return false;
+    f.shotT = this.t;
+    const S = f.screen, hd = f.headDir || [f.face || 1, 0], s = S.s || 1;
+    const r = clamp(S.h * 0.5, 14, 54);
+    const mx = S.x + hd[0] * S.w * 0.46, my = S.y + hd[1] * S.w * 0.46;
+    /* a part of the fish's own speed along the shot, so a dashing fish never catches its bubble; never sideways */
+    const along = Math.max(0, f.vx * hd[0] + f.vy * s * hd[1]) * 0.45;
+    const sp = SHOT_SPEED * (0.55 + 0.45 * s) + along;
+    if (this.shots.length >= 4) this.shots.shift();
+    this.shots.push({ x: mx, y: my, z: f.z - 0.004, dx: hd[0], dy: hd[1], sp, r, t: 0, from: f, hit: new Set(), wob: 0, trailT: 0, burst: null });
+    /* the puff and a little recoil (drawn: pushing it back would turn it round) */
+    f.puffT = this.t;
+    Sound.play('shot', f);
+    return true;
+  },
+  /* the shots move on, meet fish, and burst at the edges of the water */
+  shotStep(dt) {
+    const W = Scene.W;
+    for (let i = this.shots.length - 1; i >= 0; i--) {
+      const B = this.shots[i];
+      B.t += dt;
+      if (B.burst) { B.burst += dt; if (B.burst > 0.45) this.shots.splice(i, 1); continue; }
+      /* it leaves the mouth over the first tenth of a second, swelling, then goes at full speed */
+      const go = B.t < SHOT_BIRTH ? 0.35 + 0.65 * (B.t / SHOT_BIRTH) : 1;
+      B.x += B.dx * B.sp * go * dt; B.y += B.dy * B.sp * go * dt;
+      B.wob *= Math.exp(-dt * 5);
+      const R = B.r * Math.min(1, 0.4 + 0.6 * B.t / SHOT_BIRTH);
+      /* a thin stream of tiny bubbles behind it */
+      B.trailT -= dt;
+      if (B.trailT <= 0 && B.t > SHOT_BIRTH) {
+        B.trailT = 0.035;
+        const bx = B.x - B.dx * R * 0.9 + rand(-R, R) * 0.3, by = B.y - B.dy * R * 0.9 + rand(-R, R) * 0.3;
+        this.bubbles.push({ x: bx, y: Scene.unprojY(by, B.z), z: B.z, r: rand(0.6, 1.5), vy: -rand(8, 26), ph: rand(TAU), a: 0.8 });
+      }
+      /* every fish it passes through jumps and flees, once */
+      for (const o of this.fish) {
+        if (o === B.from || B.hit.has(o) || o.mode === 'leave' || o.mode === 'enter' || o.tear || o.drag || !o.screen || !o.screen.w) continue;
+        if (Math.abs(o.z - B.z) > 0.32) continue;
+        const ex = (o.screen.x - B.x) / (o.screen.w * 0.5 + R * 0.75), ey = (o.screen.y - B.y) / (o.screen.h * 0.5 + R * 0.75);
+        if (ex * ex + ey * ey > 1) continue;
+        B.hit.add(o);
+        B.wob = 1;
+        /* (its jolt says "!") */
+        this.scare(o, B.dx, B.dy / Math.max(0.3, Scene.s(o.z)));
+        /* a little ring of water where it struck */
+        const cx = lerp(B.x, o.screen.x, 0.5), cy = lerp(B.y, o.screen.y, 0.5);
+        this.fx.push({ type: 'shothit', x: cx, y: cy, z: Math.min(o.z, B.z) - 0.003, t: 0, life: 0.38, s: R * 1.6, vx: 0, vy: 0 });
+        Sound.play('thup', o);
+      }
+      /* the edges of the water: the sand, the surface, the sides */
+      const floor = Scene.floorScreenY(clamp(B.x, 0, W), B.z), surf = Scene.surfLineY(B.z);
+      let where = null;
+      if (B.y + R * 0.55 > floor) where = 'sand';
+      else if (B.y - R * 0.4 < surf) where = 'surface';
+      else if (B.x < R * 0.5 || B.x > W - R * 0.5) where = 'side';
+      else if (B.t > 5) where = 'side';
+      if (where) this.burstShot(B, where, R);
+    }
+  },
+  burstShot(B, where, R) {
+    B.burst = 0.0001; B.where = where;
+    const wy = Scene.unprojY(B.y, B.z);
+    /* small bubbles thrown out all round, then rising */
+    for (let i = 0; i < 12; i++) {
+      const a = rand(TAU), v = rand(40, 130);
+      this.bubbles.push({ x: B.x + Math.cos(a) * R * 0.6, y: wy + Math.sin(a) * R * 0.6, z: B.z, r: rand(0.8, 2.6), drift: Math.cos(a) * v, vy: Math.sin(a) * v * 0.6 - rand(20, 50), ph: rand(TAU) });
+    }
+    for (let i = 0; i < 7; i++) this.fx.push({ type: 'sparkle', x: B.x + rand(-R, R) * 0.6, y: B.y + rand(-R, R) * 0.6, t: -rand(0.05), life: rand(0.3, 0.55), s: rand(5, 10), vx: rand(-60, 60), vy: rand(-70, 20), col: [0.85, 0.95, 1] });
+    if (where === 'sand') {
+      const s = Scene.s(B.z), fy = Scene.floorScreenY(clamp(B.x, 0, Scene.W), B.z);
+      for (let i = 0; i < 4; i++) this.fx.push({ type: 'sand', x: B.x + rand(-16, 16) * s, y: fy - rand(1, 6), z: B.z, floor: fy - 1, t: 0, life: rand(1.2, 2), s: rand(10, 20) * s, vx: rand(-40, 40), vy: -rand(14, 44) });
+    }
+    if (where === 'surface') this.ripples.push({ x: B.x, y: Math.max(B.y, 20), z: B.z, t: 0.05, big: 1, sz: 0.5 });
+    Sound.burst(B.x / Scene.W, clamp(1 - B.y / Scene.H, 0, 1), R / 30);
+  },
   /* a fish dashing (Space held): the water parts round it and closes behind it. Two fine lines of stirred water
      peel off its back and its belly and stay where they were laid, spreading and fading (when it turns they curve
      with its path), with a faint broad trail of troubled water between them; little whirls curl off its tail, one
@@ -9101,7 +9313,10 @@ const Tank = {
     }
     if (f.mode === 'pet' && f.modeT <= 0) { f.mode = 'wander'; f.retarget = 0; }
     let tx = f.x, ty = f.y, tz = f.z;
-    if (f.mode === 'follow' && f.tgt && f.tgt.fish) {
+    if (f.mode === 'match' && f.tgt) {
+      const T = this.matchStep(f);
+      if (T) { [tx, ty, tz] = T; speedMul *= 1.7; }
+    } else if (f.mode === 'follow' && f.tgt && f.tgt.fish) {
       const o = f.tgt.fish;
       if (this.fish.indexOf(o) < 0) { f.mode = 'wander'; f.retarget = 0; }
       else {
@@ -9284,14 +9499,7 @@ const Tank = {
       for (const o of this.fish) {
         if (o === f || o.mode === 'leave' || o.mode === 'enter' || (o.mode === 'flee' && o.modeT > 0.5) || this.still(o)) continue;
         const dx = o.x - f.x, dy = o.y - f.y, d = Math.hypot(dx, dy) || 1;
-        if (Math.hypot(d, (o.z - f.z) * dl) < 55 + f.w * 0.5 && v > 80 && (dx * f.vx + dy * f.vy) / (d * v) > 0.3) {
-          if (o.trick) { o.trick = null; o.vis = null; o.boost = 0; }
-          o.mode = 'flee'; o.modeT = 1.4; o.scared = this.t + 1.4;
-          o.tgt = { x: clamp(o.x + dx / d * 260, 40, W - 40), y: o.y + dy / d * 160, z: o.z };
-          o.vx += dx / d * 260; o.vy += dy / d * 160;
-          this.startTrick(o, 'jolt', { force: true });
-          this.fright(o);
-        }
+        if (Math.hypot(d, (o.z - f.z) * dl) < 55 + f.w * 0.5 && v > 80 && (dx * f.vx + dy * f.vy) / (d * v) > 0.3) this.scare(o, dx / d, dy / d);
       }
     }
     /* food in front of the mouth gets eaten, so you can steer a fish to its dinner */
@@ -9302,6 +9510,8 @@ const Tank = {
   },
   chooseActivity(f, K) {
     f.retarget = rand(3, 8);
+    /* a matchmaker, now and then, brings two fish who do not know each other together */
+    if (f.matchmaker && !this.night && this.t > (f.matchNext || 20) && this.startMatch(f)) return;
     const r = Math.random();
     const friends = this.fish.filter((o) => o !== f && (f.rel[o.id] || 0) > 0.45);
     const partner = f.partner ? this.fish.find((o) => o.id === f.partner) : null;
@@ -10151,6 +10361,7 @@ const Tank = {
       if (e.t > e.life) this.fx.splice(i, 1);
     }
     for (let i = this.ripples.length - 1; i >= 0; i--) { const r = this.ripples[i]; r.t += dt; if (r.t > 1.1) this.ripples.splice(i, 1); }
+    this.shotStep(dt);
     for (let i = this.wakes.length - 1; i >= 0; i--) {
       const w = this.wakes[i];
       let left = 0;
@@ -10258,9 +10469,9 @@ const Tank = {
     }
     if (T.t >= TEAR_END) { f.tear = null; this.despawn(f); if (T.cb) T.cb(); }
   },
-  /* how much the drawn fish's colours are lifted out of the water: a little by day, more in the evening and at night
-     (the whole picture darkens then, the fish less) */
-  fishPop() { return 0.25 + 0.3 * Daytime.night + 0.1 * Daytime.gold; },
+  /* how much the drawn fish's colours are lifted out of the water: barely (the drawing keeps its own colours: see
+     SH.spriteFS u_drawK), a little more at night */
+  fishPop() { return 0.03 + 0.1 * Daytime.night + 0.04 * Daytime.gold; },
   /* the ragged line of the rip, top (y 0) to bottom (y 1) across the drawing (the same as in the shader) */
   tearX(y, sd) { return 0.5 + 0.035 * Math.sin(y * 3.3 + sd) + (y - 0.5) * 0.08 * Math.sin(sd * 1.7); },
   drawTear(f, rec, s, SL) {
@@ -10433,6 +10644,9 @@ const Tank = {
         if (K.mode === 5) rot += Math.sin(f.phase) * 0.04;
         rot = rotAbs ? vrot : rot + vrot;
         if (f.pir) rot += f.pir.dir * TAU * easeInOut(clamp(f.pir.t / f.pir.dur, 0, 1));
+        /* where its head points, as drawn: a bubble shot leaves that way (the drawing's head is on its left) */
+        const hdS = Math.abs(f.flip) > 0.3 ? -Math.sign(f.flip) : (f.face || 1);
+        f.headDir = [hdS * Math.cos(rot), hdS * Math.sin(rot)];
         const amp = K.amp * (1 + f.wig * 1.5);
         const metal = clamp((f.level - 4) / 4, 0, 1);
         /* 3D: the sheet waves toward you as it swims (more when excited), turns with its yaw and curls with the turn */
@@ -10449,12 +10663,20 @@ const Tank = {
            pure white and thicker, a clean line with no glow (the others keep a thinner, very slightly softer one) */
         const sel = f === Ctl.fish || f === this.selected || (G.mode === 'zoom' && G.modeData.follow === f);
         f.selK = lerp(f.selK || 0, sel ? 1 : 0, 0.15);
-        const lk = lerp(0.93, 1, f.selK), gw = 3.2 + 1.8 * s;
+        /* (by night the line is softer: a bright ring round every fish would make them look like stickers) */
+        const lk = lerp(0.93, 1, f.selK) * lerp(1, 0.72, Daytime.night * (1 - f.selK)), gw = 3.2 + 1.8 * s;
         entry.outline = { sil: 1, grow: gw * (1 + 0.55 * f.selK), col: [lk, lk, lk], tex: entry.occ.tex, uvr: entry.occ.uvr };
         entry.pop = this.fishPop();
         /* by day, the light the waves gather dances over its back, more the nearer it swims to the surface */
-        entry.caus = 0.4 * (1 - Daytime.night) * Math.exp(-Math.max(0, f.y - Scene.geo.surfY) / (H * 0.55));
+        entry.caus = 0.24 * (1 - Daytime.night) * Math.exp(-Math.max(0, f.y - Scene.geo.surfY) / (H * 0.55));
         if (f.selK > 0.001) { const g = 1 + 0.07 * f.selK; entry.w *= g; entry.h *= g; }
+        /* a bubble shot: it swells for a blink as the bubble leaves, then springs back */
+        const pk = f.puffT === undefined ? 9 : this.t - f.puffT;
+        if (pk < 0.3) {
+          const e = pk < 0.06 ? Math.sin(pk / 0.06 * Math.PI / 2) : Math.exp(-(pk - 0.06) * 13) * Math.cos((pk - 0.06) * 28);
+          const hd = f.headDir || [0, 0], back = Math.max(0, e) * f.w * s * 0.05;
+          entry.w *= 1 - 0.06 * e; entry.h *= 1 + 0.13 * e; entry.x -= hd[0] * back; entry.y -= hd[1] * back;
+        }
         SL.push(entry);
         /* its shadow on the sand: small, darker and fairly sharp when it swims close to the bottom, spreading wide and
            fading to almost nothing as it rises */
@@ -10554,10 +10776,41 @@ const Tank = {
         }
       }
     }
+    /* the bubble shots: the bubble itself (its silvery rim and glints; the last pass bends the water seen through it),
+       the neck of water that ties it to the mouth while it leaves, its wobble when it strikes, and its burst */
+    const SB = Scene.shotBuf || (Scene.shotBuf = new Float32Array(16));
+    Scene.shotN = 0;
+    for (const B of this.shots) {
+      const R0 = B.r * Math.min(1, 0.4 + 0.6 * B.t / SHOT_BIRTH), ps = Scene.s(B.z);
+      if (B.burst) {
+        const k = B.burst / 0.45;
+        SP.push({ uv: ATLAS.map.ring, x: B.x, y: B.y, w: R0 * 2 * (1 + k * 1.5), h: R0 * 2 * (1 + k * 1.5), r: 0.86, g: 0.96, b: 1, a: (1 - k) * (1 - k) * 0.75, add: 1, z: B.z });
+        if (k < 0.25) SP.push({ uv: ATLAS.map.glow, x: B.x, y: B.y, w: R0 * 3, h: R0 * 3, r: 0.8, g: 0.95, b: 1, a: (1 - k / 0.25) * 0.35, add: 1, z: B.z });
+        continue;
+      }
+      const wb = 0.09 * B.wob * Math.sin(B.t * 42) + 0.035 * Math.sin(B.t * 15);
+      SP.push({ uv: ATLAS.map.glow, x: B.x, y: B.y, w: R0 * 2.6, h: R0 * 2.6, r: 0.75, g: 0.92, b: 1, a: 0.16, add: 1, z: B.z + 0.0005 });
+      SP.push({ tex: btex, uv: buv, x: B.x, y: B.y, w: R0 * 2 * (1 + wb), h: R0 * 2 * (1 - wb), rot: Math.atan2(B.dy, B.dx), r: 1.05, g: 1.08, b: 1.12, a: 1, add: 0.45, z: B.z });
+      SP.push({ uv: ATLAS.map.sparkle, x: B.x - R0 * 0.38, y: B.y - R0 * 0.42, w: R0 * 0.55, h: R0 * 0.55, rot: B.t * 1.5, r: 1, g: 1, b: 1, a: 0.55 + 0.25 * Math.sin(B.t * 9), add: 1, z: B.z - 0.0005 });
+      if (B.t < SHOT_BIRTH + 0.06 && B.from && B.from.screen && this.fish.indexOf(B.from) >= 0) {
+        const S = B.from.screen, hd = B.from.headDir || [B.dx, B.dy];
+        const mx = S.x + hd[0] * S.w * 0.46, my = S.y + hd[1] * S.w * 0.46, dx = B.x - mx, dy = B.y - my, len = Math.hypot(dx, dy);
+        const nk = 1 - smoothstep(SHOT_BIRTH - 0.02, SHOT_BIRTH + 0.06, B.t);
+        if (len > 1) SP.push({ uv: ATLAS.map.band, x: (mx + B.x) / 2, y: (my + B.y) / 2, w: len + R0 * 0.4, h: (R0 * 0.8 + 2) * nk, rot: Math.atan2(dy, dx), r: 0.85, g: 0.95, b: 1, a: 0.5 * nk, add: 0.5, z: B.z + 0.001 });
+      }
+      /* for the lens in the last pass: where it shows on screen (with the drifting camera), how big, how strong */
+      if (Scene.shotN < 4) { const o = Scene.shotN++ * 4; SB[o] = B.x + Scene.par.x * ps; SB[o + 1] = B.y + Scene.par.y * ps; SB[o + 2] = R0; SB[o + 3] = Math.min(1, B.t / SHOT_BIRTH); }
+    }
     for (const e of this.fx) {
       if (e.t < 0) continue;
       const k = e.t / e.life;
       const a = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.6) / 0.4);
+      /* where a bubble shot struck a fish: a small ring of water and a glint */
+      if (e.type === 'shothit') {
+        SP.push({ uv: ATLAS.map.ring, x: e.x, y: e.y, w: e.s * (0.5 + k * 1.2), h: e.s * (0.5 + k * 1.2), r: 0.9, g: 0.97, b: 1, a: (1 - k) * 0.6, add: 1, z: e.z });
+        if (k < 0.4) SP.push({ uv: ATLAS.map.sparkle, x: e.x, y: e.y, w: e.s * 0.5 * (1 - k), h: e.s * 0.5 * (1 - k), rot: k * 3, r: 1, g: 1, b: 1, a: (1 - k / 0.4) * 0.8, add: 1, z: e.z });
+        continue;
+      }
       /* a little whirl curled off a dashing fish's tail: it opens out, turning, and fades */
       if (e.type === 'whirl') {
         const nt = Daytime.night, g2 = 0.5 + 0.9 * Math.sqrt(k);
@@ -11617,28 +11870,40 @@ const UI = {
     /* steering on a touch screen: the arrows take the place of the bar */
     document.body.classList.toggle('steering', G.mode === 'control' && matchMedia('(pointer: coarse)').matches);
   },
-  /* steering: on a computer a see-through keypad (arrows, Space to dash, Enter for a pirouette) shows for two seconds
-     when you take a fish, the keys drawn by their shape alone; touch screens keep the arrows, a pirouette and a dash
-     button on screen while a fish is steered */
+  /* steering: on a computer a see-through keypad shows for two seconds when you take a fish, the keys drawn by their
+     shape with what they do (F a figure, the arrows, Enter a bubble shot, the space bar to dash); a touch screen gets
+     real buttons for two hands while a fish is steered: the arrows on the right, and on the left Accélérer, the bubble
+     shot and a figure */
   buildPad() {
-    const pad = h('div', { id: 'keypad', 'aria-hidden': 'true' });
-    const K = (k, ic, cls, kd) => {
-      const b = h('button', { class: 'key ' + (cls || ''), dataset: { k }, tabindex: -1, html: ic ? icon(ic, kd ? 'kt' : '') + (kd ? icon(kd, 'kd') : '') : '<span class="kt">Accélérer</span>' });
+    const pad = h('div', { id: 'keypad', 'aria-hidden': 'true' }), acts = h('div', { id: 'actpad', 'aria-hidden': 'true' });
+    /* (kb: shown everywhere, kd: on a keyboard, kt: on a touch screen) */
+    const K = (k, ic, cls, kd, label) => {
+      const b = h('button', { class: 'key ' + (cls || ''), dataset: { k }, tabindex: -1, html: (ic ? icon(ic, kd ? 'kb' : '') : '') + (kd ? icon(kd, 'kd') : '') + (label ? '<span class="kt">' + label + '</span>' : '') });
       const on = (e) => { e.preventDefault(); e.stopPropagation(); try { b.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ } Ctl.key(k, true); };
       const off = () => Ctl.key(k, false);
       b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
       b.addEventListener('contextmenu', (e) => e.preventDefault());
       return b;
     };
-    pad.append(h('i'), K('arrowup', 'chevu'), K('enter', 'trick', 'pir', 'enterkey'), K('arrowleft', 'chevl'), K('arrowdown', 'chevd'), K('arrowright', 'chevr'), K(' ', null, 'space'));
-    document.body.appendChild(pad);
-    this.pad = pad;
+    this.padKeys = { f: K('f', 'trick', 'fig', 'fkey'), up: K('arrowup', 'chevu'), enter: K('enter', 'shoot', 'shot', 'enterkey'), left: K('arrowleft', 'chevl'), down: K('arrowdown', 'chevd'), right: K('arrowright', 'chevr'), space: K(' ', null, 'space', null, 'Accélérer') };
+    document.body.append(pad, acts);
+    this.pad = pad; this.actPad = acts; this.padTouch = null;
+  },
+  /* the buttons go where they belong for this kind of screen */
+  layPad(touch) {
+    if (this.padTouch === touch) return;
+    this.padTouch = touch;
+    const P = this.padKeys;
+    this.pad.replaceChildren(...(touch ? [h('i'), P.up, h('i'), P.left, P.down, P.right] : [P.f, P.up, P.enter, P.left, P.down, P.right, P.space]));
+    this.actPad.replaceChildren(...(touch ? [P.f, P.space, P.enter] : []));
   },
   syncPad(show) {
     if (!this.pad) this.buildPad();
     const touch = matchMedia('(pointer: coarse)').matches;
     const on = G.mode === 'control' && !!Ctl.fish && !UI.hidden && !(touch && this.panels.card);
-    this.pad.classList.toggle('touch', touch);
+    this.layPad(touch);
+    this.pad.classList.toggle('touch', touch); this.actPad.classList.toggle('touch', touch);
+    this.actPad.classList.toggle('show', touch && on);
     if (touch) this.pad.classList.toggle('show', on);
     else if (!on) { clearTimeout(this._padT); this.pad.classList.remove('show'); }
     else if (show) {
@@ -11650,7 +11915,7 @@ const UI = {
   /* a pressed key lights up on the keypad while it is visible; it never brings the keypad back */
   flashPad(k, down) {
     if (!this.pad) this.buildPad();
-    const b = this.pad.querySelector('[data-k="' + k + '"]');
+    const b = this.pad.querySelector('[data-k="' + k + '"]') || this.actPad.querySelector('[data-k="' + k + '"]');
     if (b) b.classList.toggle('on', down !== false);
   },
   cursorFor(sx, sy) {
@@ -11897,25 +12162,9 @@ const UI = {
     A('bag', 'Mettre de côté', 'Le sortir de l\'aquarium pour un moment', () => this.setAside(f));
     A('cupid', 'Entremetteur', 'Lui présenter un ami', () => this.startCupid(f));
     A('trash', 'Supprimer', 'Supprimer ce poisson', () => this.deleteFish(f), 'danger');
-    /* how it behaves, changed live: on the sand or not, how lively, how curious about the pointer */
-    const bottomT = h('button', { class: 'toggle' + (f.kind === 'bottom' ? ' on' : ''), role: 'switch', 'aria-checked': String(f.kind === 'bottom'), 'aria-label': 'Poisson des fonds' });
-    bottomT.onclick = () => {
-      const on = f.kind !== 'bottom';
-      if (on) { f.kindBefore = f.kind; f.kind = 'bottom'; } else f.kind = f.kindBefore && f.kindBefore !== 'bottom' ? f.kindBefore : 'swimmer';
-      bottomT.classList.toggle('on', on); bottomT.setAttribute('aria-checked', String(on));
-      [f.w, f.h] = Tank.sizeOf(f); f.retarget = 0; Sound.play('click'); G.save(); this.refreshCard(true);
-    };
-    const bslider = (label, tip, get, set) => {
-      const r = h('input', { type: 'range', class: 'orange', min: 0, max: 1, step: 0.01, value: get(), 'aria-label': label });
-      r.oninput = () => set(Number(r.value));
-      r.onchange = () => G.save();
-      return h('label', { class: 'fc-beh', dataset: { tip } }, h('span', { text: label }), r);
-    };
-    const beh = h('div', { class: 'fc-behs' },
-      h('div', { class: 'fc-beh' }, h('span', { text: 'Poisson des fonds' }), bottomT),
-      bslider('Activité', 'Calme à gauche, très actif à droite', () => f.traits.energy, (v) => { f.traits.energy = v; }),
-      bslider('Curiosité', 'Plus il est curieux, plus il vient voir la souris', () => (f.curious === undefined ? 0.3 : f.curious), (v) => { f.curious = v; }));
-    b.append(h('div', { class: 'fc-col fc-info' }, nameEl, sub, rel, about), h('div', { class: 'fc-col fc-side' }, beh, audio, acts));
+    /* its character in a few words: it is chosen in the editor (Modifier), where the fish is drawn */
+    const chars = h('div', { class: 'fc-chars', dataset: { tip: 'Son caractère se règle avec Modifier' } });
+    b.append(h('div', { class: 'fc-col fc-info' }, nameEl, sub, rel, about), h('div', { class: 'fc-col fc-side' }, chars, audio, acts));
     nameEl.addEventListener('click', () => {
       if (nameEl.querySelector('input')) return;
       const inp = h('input', { value: f.name, maxlength: 40, 'aria-label': 'Nom du poisson' });
@@ -11924,7 +12173,7 @@ const UI = {
       inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') inp.blur(); e.stopPropagation(); });
       inp.addEventListener('blur', fin);
     });
-    P.refs = { nameEl, sub, rel, aboutTx, muteB, vol, voiceInfo };
+    P.refs = { nameEl, sub, rel, aboutTx, muteB, vol, voiceInfo, chars };
     this.refreshCard(true);
     this.syncPad();
   },
@@ -11972,6 +12221,7 @@ const UI = {
     if (R.aboutTx.textContent !== ab) R.aboutTx.textContent = ab;
     R.aboutTx.classList.toggle('empty', !f.about);
     if (force) {
+      R.chars.replaceChildren(...this.charWords(f).map((w) => h('span', { class: 'chip', text: w })));
       const muted = !!f.muted;
       R.muteB.innerHTML = icon(muted ? 'mute' : 'speaker');
       R.muteB.classList.toggle('on', muted);
@@ -11981,6 +12231,14 @@ const UI = {
       const n = FishVoice.count(f);
       R.voiceInfo.textContent = muted ? 'Muet' : 'Volume' + (n ? ' (' + n + ' son' + (n > 1 ? 's' : '') + ' enregistré' + (n > 1 ? 's' : '') + ')' : '');
     }
+  },
+  /* a fish's character, as it shows in its card */
+  charWords(f) {
+    const e = f.traits ? f.traits.energy : 0.5, c = f.curious === undefined ? 0.3 : f.curious;
+    const out = [e < 0.25 ? 'Calme' : e > 0.72 ? 'Très actif' : 'Actif', c < 0.2 ? 'Discret' : c > 0.65 ? 'Très curieux' : 'Curieux'];
+    if (f.kind === 'bottom') out.push('Poisson des fonds');
+    if (f.matchmaker) out.push('Entremetteur');
+    return out;
   },
   startCupid(f) {
     if (Tank.fish.length < 2) { this.toast('Il faut au moins deux poissons dans l\'aquarium pour jouer les entremetteurs.'); return; }
@@ -12695,7 +12953,8 @@ const TPL = {
   /* ----- from the tank ----- */
   saveFromFish(f) {
     const layers = f.layers && f.layers.length ? JSON.parse(JSON.stringify(f.layers)) : [{ type: 'paint', img: f.img, x: f.art ? f.art.x : null, y: f.art ? f.art.y : null }];
-    const t = { id: 't_' + uid(), v: 2, mode: 'fish', name: f.name, kind: f.kind || null, sizeHint: f.sizeHint || 1, created: now(), updated: now(),
+    const t = { id: 't_' + uid(), v: 2, mode: 'fish', name: f.name, kind: f.kind || null, kindBefore: f.kind === 'bottom' ? f.kindBefore : undefined, sizeHint: f.sizeHint || 1, created: now(), updated: now(),
+      energy: f.traits ? f.traits.energy : undefined, curious: f.curious, scale: f.scale || 1, matchmaker: !!f.matchmaker,
       art: f.art ? { x: f.art.x, y: f.art.y } : null, layers, sounds: Object.assign({}, f.sounds || {}), thumb: f.img };
     G.state.templates.push(t);
     G.save();
@@ -12709,7 +12968,7 @@ const TPL = {
     if (t.mode !== 'fish') return null;
     if (!t.thumb || !IMAGES.has(t.thumb)) { UI.toast('Le dessin de ce poisson est introuvable.'); return null; }
     const rec = newFishRecord({ name: t.name || randomFishName(), kind: KINDS[t.kind] ? t.kind : 'swimmer', img: t.thumb, art: t.art ? { x: t.art.x, y: t.art.y } : null,
-      curious: t.curious === undefined ? 0.3 : t.curious, scale: t.scale || 1,
+      curious: t.curious === undefined ? 0.3 : t.curious, scale: t.scale || 1, matchmaker: !!t.matchmaker, kindBefore: KINDS[t.kindBefore] ? t.kindBefore : undefined,
       sizeHint: t.sizeHint || 1, layers: JSON.parse(JSON.stringify(t.layers || [])), sounds: Object.assign({}, t.sounds || {}), tpl: t.id });
     if (t.energy !== undefined && t.energy !== null) rec.traits.energy = t.energy;
     G.state.fish.push(rec);
@@ -12762,7 +13021,7 @@ const TPL = {
       id: src.id, name: src.name || 'Sans nom', mode: src.mode, kind: src.mode === 'fish' ? (src.kind || null) : null,
       sizeHint: src.sizeHint || null, created: src.created || now(), updated: src.updated || now(), canvas: ED_SIZE,
       art: src.art || null, preview: 'preview.png', layers: [], sounds: {},
-      energy: src.energy === undefined ? null : src.energy, curious: src.curious === undefined ? null : src.curious, scale: src.scale || 1,
+      energy: src.energy === undefined ? null : src.energy, curious: src.curious === undefined ? null : src.curious, scale: src.scale || 1, matchmaker: !!src.matchmaker,
       movement: K ? { kind: src.kind, label: K.label, speed: K.speed, wave: K.wave, amplitude: K.amp } : null,
     };
     let n = 0;
@@ -12860,7 +13119,7 @@ const TPL = {
     const id = typeof m.id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(m.id) ? m.id : 't_' + uid();
     return { id, name, mode, kind: mode === 'fish' && KINDS[m.kind] ? m.kind : null, sizeHint: mode === 'fish' ? num(m.sizeHint, 0.6, 1.6, this.sizeHintFor(flat)) : null,
       created: num(m.created, 0, 4e12, now()), layers, flat, sounds, skipped,
-      energy: m.energy == null ? undefined : num(m.energy, 0, 1, 0.5), curious: m.curious == null ? undefined : num(m.curious, 0, 1, 0.3), scale: num(m.scale, 0.5, 4, 1) };
+      energy: m.energy == null ? undefined : num(m.energy, 0, 1, 0.5), curious: m.curious == null ? undefined : num(m.curious, 0, 1, 0.3), scale: num(m.scale, 0.5, 4, 1), matchmaker: m.matchmaker === true };
   },
   async image(entries, path, maxSide) {
     if (typeof path !== 'string' || !path) this.fail('Une image du fichier n\'a pas de nom.');
@@ -12898,7 +13157,7 @@ const TPL = {
     const sounds = {};
     for (const k of Object.keys(p.sounds)) { const sid = await SOUNDS.importWav(p.sounds[k]); if (sid) sounds[k] = sid; else p.skipped.push(k); }
     const thumb = G.registerImage(p.flat.canvas, 850, { noTex: true });
-    const t = { id, v: 2, mode: p.mode, name: p.name, kind: p.kind, sizeHint: p.sizeHint, created: p.created, updated: now(), art: { x: p.flat.x, y: p.flat.y }, layers, sounds, thumb, energy: p.energy, curious: p.curious, scale: p.scale };
+    const t = { id, v: 2, mode: p.mode, name: p.name, kind: p.kind, sizeHint: p.sizeHint, created: p.created, updated: now(), art: { x: p.flat.x, y: p.flat.y }, layers, sounds, thumb, energy: p.energy, curious: p.curious, scale: p.scale, matchmaker: p.matchmaker };
     let out = t;
     if (existing && id === existing.id) { Object.keys(existing).forEach((k) => delete existing[k]); Object.assign(existing, t); out = existing; }
     else st.templates.push(t);
@@ -12923,7 +13182,7 @@ const TPL = {
    each lit in turn while the rest of the screen dims, with a small card to read ---------- */
 const TOUR_STEPS = [
   { title: 'Bienvenue !', text: 'Voici ton aquarium. Quelques gestes suffisent pour tout faire.' },
-  { at: 'fish', title: 'Les poissons', text: 'Touche un poisson : il réagit. Appuie longtemps : tu le diriges avec les flèches, Entrée pour une figure. Fais-le glisser : il te suit.' },
+  { at: 'fish', title: 'Les poissons', text: 'Touche un poisson : il réagit. Appuie longtemps : tu le diriges avec les flèches, Espace pour foncer, Entrée pour lancer une bulle qui fait peur aux autres, F pour une figure. Fais-le glisser : il te suit.', touch: 'Touche un poisson : il réagit. Appuie longtemps : les flèches à droite le dirigent ; à gauche, Accélérer, la bulle qui fait peur aux autres et une figure. Fais-le glisser : il te suit.' },
   { at: 'fish', title: 'De plus près', text: 'Clic droit sur un poisson : la vue s\'approche et le suit ; clique-le encore pour voir sa fiche. La molette rapproche aussi ; un clic sur l\'eau revient.', touch: 'Écarte deux doigts pour t\'approcher ; touche un poisson pour le suivre, encore une fois pour sa fiche ; touche l\'eau pour revenir.' },
   { at: 'add', title: 'Ajouter', text: 'Des poissons, à manger, des plantes, des déchets à jeter, et le balai. Le + du menu dessine les tiens.' },
   { at: 'env', title: 'Le paysage', text: 'Change de décor, ou crée le tien avec tes images.' },
@@ -13217,9 +13476,9 @@ const Editor = {
     this.wrapEl.appendChild(this.box);
     mid.appendChild(this.wrapEl);
     /* the fish's size, right under the drawing: while you move it, the drawing gives way to the whole tank with the
-       fish in it at that size (behaviour lives in the fish's card in the tank) */
+       fish in it at that size; its character is set beside its sounds */
     this.kindTiles = [];
-    this.beh = { bottom: false, energy: 0.5, curious: 0.3, scale: 1 };
+    this.beh = { bottom: false, energy: 0.5, curious: 0.3, scale: 1, match: false };
     this.sizeIn = h('input', { type: 'range', class: 'orange', min: 1 / 3, max: 6, step: 0.01, value: 1, 'aria-label': 'Taille du poisson' });
     this.sizeVal = h('span', { class: 'szval' });
     this.sizeIn.addEventListener('input', () => { this.beh.scale = Number(this.sizeIn.value); this.changed = true; this.showPreview(); });
@@ -13233,7 +13492,11 @@ const Editor = {
     this.wrapEl.appendChild(this.sizeRow);
     this.sndEl = h('div', { class: 'sndgrid' });
     this.sndBox = h('section', { class: 'edbox sndbox' }, h('h5', { class: 'edh', text: 'Sons' }), this.sndEl);
-    this.extraEl = h('div', { class: 'ed-extra' }, this.sndBox);
+    /* its character, chosen as it is drawn (and changed with Modifier): how lively, how curious, whether it lives on
+       the sand, whether it brings the others together; kept with it, in your saved fish and in its file */
+    this.persEl = h('div', { class: 'persgrid' });
+    this.persBox = h('section', { class: 'edbox kindbox persbox' }, h('h5', { class: 'edh', text: 'Caractère' }), this.persEl);
+    this.extraEl = h('div', { class: 'ed-extra' }, this.sndBox, this.persBox);
     mid.appendChild(this.extraEl);
     /* at the bottom: leave without saving, or save */
     this.actB = h('button', { class: 'bigact', onclick: () => this.save() });
@@ -13332,7 +13595,10 @@ const Editor = {
     const sv = (v, d) => (v === undefined || v === null ? d : v);
     Main.snapReq = true;
     if (this.prevC) this.prevC.classList.remove('on');
-    this.beh = { bottom: this.kind === 'bottom', energy: sv(src && (src.energy !== undefined ? src.energy : src.traits && src.traits.energy), 0.5), curious: sv(src && src.curious, 0.3), scale: sv(src && src.scale, 1) };
+    this.beh = { bottom: this.kind === 'bottom', energy: sv(src && (src.energy !== undefined ? src.energy : src.traits && src.traits.energy), 0.5), curious: sv(src && src.curious, 0.3), scale: sv(src && src.scale, 1), match: !!(src && src.matchmaker) };
+    /* the way it swims when it is not a bottom fish (a bottom fish keeps the one it had before) */
+    this.kindPrev = this.kind === 'bottom' ? ((src && KINDS[src.kindBefore] && src.kindBefore !== 'bottom' && src.kindBefore) || 'swimmer') : this.kind;
+    if (mode === 'fish') this.renderPersonality();
     this.voice = new VoiceDraft(mode === 'fish' && src ? src.sounds : null);
     if (!src) this.setColor(mode === 'plant' ? '#4FAE5A' : mode === 'food' ? '#E58B3A' : mode === 'litter' ? '#7FB4D0' : '#DDD8D8');
     this.renderSwatches();
@@ -14405,6 +14671,28 @@ const Editor = {
     Sound.play('stamp');
   },
   name() { const v = (this.nameIn.value || '').trim(); return v || (this.mode === 'fish' ? '' : this.mode === 'litter' ? 'Déchet' : this.randomName()); },
+  /* the character: two sliders and two switches, the same as everywhere in the game */
+  renderPersonality() {
+    const B = this.beh, el = this.persEl;
+    el.replaceChildren();
+    const slider = (label, tip, key, lo, hi) => {
+      const r = h('input', { type: 'range', class: 'orange', min: 0, max: 1, step: 0.01, value: B[key], 'aria-label': label });
+      r.addEventListener('input', () => { B[key] = Number(r.value); this.changed = true; });
+      return h('label', { class: 'behrow', dataset: { tip } }, h('span', { text: label }), h('div', { class: 'behsl' }, r, h('div', { class: 'behends' }, h('small', { text: lo }), h('small', { text: hi }))));
+    };
+    const toggle = (label, tip, key) => {
+      const t = h('button', { class: 'toggle' + (B[key] ? ' on' : ''), role: 'switch', 'aria-checked': String(!!B[key]), 'aria-label': label });
+      t.onclick = () => { B[key] = !B[key]; t.classList.toggle('on', B[key]); t.setAttribute('aria-checked', String(B[key])); this.changed = true; Sound.play('click'); };
+      return h('div', { class: 'behrow', dataset: { tip } }, h('span', { text: label }), t);
+    };
+    el.append(
+      slider('Activité', 'Combien il bouge, fait des figures et des petits bruits', 'energy', 'calme', 'très actif'),
+      slider('Curiosité', 'S\'il vient voir la souris et ce qu\'on touche dans l\'eau', 'curious', 'discret', 'curieux'),
+      toggle('Poisson des fonds', 'Il vit au ras du sable', 'bottom'),
+      toggle('Entremetteur', 'De lui-même, il présente les poissons qui ne se connaissent pas encore', 'match'));
+  },
+  /* the way it swims, with the bottom switch */
+  kindOut() { return this.beh.bottom ? 'bottom' : (this.kind === 'bottom' ? this.kindPrev || 'swimmer' : this.kind || 'swimmer'); },
   async downloadImage() {
     this.endDrag();
     const flat = trimCanvas(this.merged(), 2);
@@ -14416,8 +14704,8 @@ const Editor = {
   /* a saved fish from what is in the editor now: layers become stored pictures, the sounds go with it */
   makeTemplate(flat, sounds) {
     const fish = this.mode === 'fish';
-    return { v: 2, mode: this.mode, name: this.name(), kind: fish ? (this.kind || 'swimmer') : null, sizeHint: fish ? TPL.sizeHintFor(flat) : null, updated: now(),
-      energy: fish ? this.beh.energy : undefined, curious: fish ? this.beh.curious : undefined, scale: fish ? this.beh.scale : undefined,
+    return { v: 2, mode: this.mode, name: this.name(), kind: fish ? this.kindOut() : null, kindBefore: fish && this.beh.bottom ? this.kindPrev : undefined, sizeHint: fish ? TPL.sizeHintFor(flat) : null, updated: now(),
+      energy: fish ? this.beh.energy : undefined, curious: fish ? this.beh.curious : undefined, scale: fish ? this.beh.scale : undefined, matchmaker: fish ? !!this.beh.match : undefined,
       art: { x: flat.x, y: flat.y }, layers: this.buildLayers(), sounds: fish ? (sounds || {}) : {}, thumb: G.registerImage(flat.canvas, 850, { noTex: true }) };
   },
   /* a fish file (.zip): checked first, kept with your saved fish, then opened here */
@@ -14637,8 +14925,11 @@ const Editor = {
       const id = G.registerImage(flat.canvas, 850);
       const sounds = this.voice ? this.voice.commit() : {};
       this.voice = null;
-      Object.assign(f, { img: id, art: { x: flat.x, y: flat.y }, sizeHint: TPL.sizeHintFor(flat), name: fname, kind: this.kind || f.kind, layers, sounds, curious: this.beh.curious, scale: this.beh.scale });
+      const kind = this.kindOut();
+      if (kind === 'bottom' && f.kind !== 'bottom') f.kindBefore = f.kind;
+      Object.assign(f, { img: id, art: { x: flat.x, y: flat.y }, sizeHint: TPL.sizeHintFor(flat), name: fname, kind, layers, sounds, curious: this.beh.curious, scale: this.beh.scale, matchmaker: !!this.beh.match });
       f.traits.energy = this.beh.energy;
+      if (Tank.fish.indexOf(f) >= 0) f.retarget = 0;
       if (Tank.fish.indexOf(f) >= 0) { [f.w, f.h] = Tank.sizeOf(f); }
       this.close();
       if (Tank.fish.indexOf(f) >= 0) { f.flash = 1; Tank.sparkles(f.screen.x, f.screen.y, 12, [1, 1, 1]); }

@@ -480,11 +480,11 @@ input.dim { opacity: .4; }
 #tour .tcard.swap { opacity: 0; transform: translateY(6px); }
 #tour h3 { margin: 0 0 6px; font-size: 20px; font-weight: 400; color: #fff; }
 #tour p { margin: 0 0 16px; color: var(--muted); font-size: 15px; line-height: 1.4; }
-#tour .tfoot { display: flex; align-items: center; gap: 6px; min-height: 40px; }
-#tour .tdots { display: flex; gap: 6px; margin-right: auto; }
+#tour .tfoot { display: flex; align-items: center; justify-content: flex-end; gap: 6px; min-height: 40px; }
+#tour .tdots { display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 14px; }
 #tour .tdots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(214, 230, 255, .22); transition: background .2s, transform .2s; }
 #tour .tdots i.on { background: var(--accent); transform: scale(1.3); }
-#tour .tskip { padding: 8px 10px; font-size: 14px; color: var(--muted); border-radius: 999px; transition: color .15s; }
+#tour .tskip { margin: 0 auto 0 -10px; padding: 8px 10px; font-size: 14px; color: var(--muted); border-radius: 999px; transition: color .15s; }
 #tour .tskip:hover { color: var(--ink); }
 #tour .tnext { padding: 9px 18px; }
 #tour [hidden] { display: none; }
@@ -1961,6 +1961,32 @@ const Sound = {
     gs.connect(hp); hp.connect(gg); gg.connect(p); gs.start(t + 0.03); gs.stop(t + 0.6);
     nodes.push(h, bp, g, gs, hp, gg);
     setTimeout(() => { for (const nd of nodes) { try { nd.disconnect(); } catch (e) { /* gone */ } } }, 900);
+  },
+  /* a shooting star sent off by a touch on the night sky. Real ones are silent: only a faint glassy shimmer answers
+     the touch, with a breath of air falling away, placed up in the sky where it starts (HRTF), its tail in the
+     reverb. x01: across the view, up: how high above the horizon (0..1) */
+  meteor(x01, up) {
+    const c = this.ctx;
+    if (!c || c.state !== 'running' || !this.on || !this.uiOn) return;
+    const t = c.currentTime, nodes = [], v = this.uiVol;
+    const p = c.createPanner();
+    p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.3;
+    Ambience.pos(p, clamp(x01 - 0.5, -0.6, 0.6) * 6, 1.2 + 2.6 * up, -3);
+    p.connect(this.sfx); nodes.push(p);
+    for (const [f0, d, a] of [[2637, 0, 0.02], [3951, 0.055, 0.012], [3136, 0.12, 0.014]]) {
+      const o = c.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(f0, t + d); o.frequency.exponentialRampToValueAtTime(f0 * 0.93, t + d + 1.1);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(a, t + d + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 1.2);
+      const w = c.createGain(); w.gain.value = 0.7 * v;
+      o.connect(g); g.connect(p); g.connect(w); w.connect(this.rev);
+      o.start(t + d); o.stop(t + d + 1.25); nodes.push(o, g, w);
+    }
+    const n = c.createBufferSource(); n.buffer = this.noiseBuf(0.8);
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 2.4;
+    bp.frequency.setValueAtTime(7500, t); bp.frequency.exponentialRampToValueAtTime(2000, t + 0.65);
+    const ng = c.createGain(); ng.gain.setValueAtTime(0.0001, t); ng.gain.exponentialRampToValueAtTime(0.016, t + 0.06); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.72);
+    n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t); n.stop(t + 0.76); nodes.push(n, bp, ng);
+    setTimeout(() => { for (const nd of nodes) { try { nd.disconnect(); } catch (e) { /* gone */ } } }, 1700);
   },
   /* sand pattering down: sparse tiny ticks, thick at first, thinning out */
   makeGrains(sec) {
@@ -3827,6 +3853,9 @@ function buildAtlas() {
     ATLAS.map[name] = [cx / S, cy / S, (cx + C) / S, (cy + C) / S];
     idx++;
   };
+  /* a soft band filling the cell's height (bright along its middle), for ribbons drawn piece by piece (Batch.quad4):
+     the piece is hardly wider than what shows, so it never folds over itself in a tight turn */
+  cell('band', (g, C) => { const r = g.createLinearGradient(0, 0, 0, C); [[0, 0], [0.16, 0.08], [0.32, 0.46], [0.5, 1], [0.68, 0.46], [0.84, 0.08], [1, 0]].forEach(([o, a]) => r.addColorStop(o, 'rgba(255,255,255,' + a + ')')); g.fillStyle = r; g.fillRect(0, 0, C, C); });
   /* a straight soft line across the cell, for the wind's streaks */
   cell('wline', (g, C) => { const r = g.createLinearGradient(0, 0, 0, C); r.addColorStop(0, 'rgba(255,255,255,0)'); r.addColorStop(0.38, 'rgba(255,255,255,0)'); r.addColorStop(0.5, 'rgba(255,255,255,1)'); r.addColorStop(0.62, 'rgba(255,255,255,0)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, C, C); });
   cell('dot', (g, C) => { const r = g.createRadialGradient(C / 2, C / 2, 0, C / 2, C / 2, C / 2); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, C, C); });
@@ -5112,8 +5141,15 @@ const Env = {
     const t = Scene.time, ws = Scene.waterSpeed();
     for (const p of this.parts) {
       p.ph += dt * p.sp;
-      /* slow sinking with small eddies: two slow waves at different speeds per speck */
-      if (p.type === 'snow') { p.y += dt * (0.005 + 0.003 * Math.sin(p.ph * 0.23)) * p.sp * ws; p.x += (Math.sin(p.ph * 0.4) + 0.6 * Math.sin(p.ph * 0.13 + p.sp * 5)) * dt * 0.0025 * ws; }
+      /* marine snow: carried by a slow current that turns and swirls, the heavier flakes sinking through it, the
+         lightest lifted now and then by an eddy (bu: each flake's weight, -0.6..1) */
+      if (p.type === 'snow') {
+        if (p.bu === undefined) p.bu = ((p.ph * 7.31) % 1.6) - 0.6;
+        const cur = Math.sin(p.x * 5.1 + t * 0.06 + p.z) + 0.5 * Math.sin(p.y * 7.3 - t * 0.045);
+        const up = Math.cos(p.x * 6.3 - t * 0.05 + p.z * 2) * 0.6 + 0.4 * Math.sin(p.y * 9.1 + t * 0.08);
+        p.y += dt * (0.0042 * p.bu + 0.0028 * up + 0.002 * Math.sin(p.ph * 0.23)) * p.sp * ws;
+        p.x += (cur * 0.0042 + (Math.sin(p.ph * 0.4) + 0.6 * Math.sin(p.ph * 0.13 + p.sp * 5)) * 0.0018) * dt * ws;
+      }
       else { p.y -= dt * 0.004 * p.sp * ws; p.x += Math.sin(p.ph * 0.3) * dt * 0.003; }
       if (p.y > 1.05) p.y = -0.05; if (p.y < -0.05) p.y = 1.05;
       if (p.x < -0.1) p.x = 1.1; if (p.x > 1.1) p.x = -0.1;
@@ -5246,10 +5282,12 @@ const Daytime = {
 };
 /* the sky at dawn and in the evening, and at night (the moon in place of the sun, and stars) */
 const SKY_GOLD = { zen: '#3b3f80', mid: '#d9887c', hor: '#ffc792', sunCol: '#ffd59a', lit: '#ffb486', dark: '#6b4a6e', sea: '#5e4a6a', land: '#4a3446' };
+/* the evening a little rosier than the dawn: pink above the glow of the horizon, pink-lit clouds, mauve shadows */
+const SKY_DUSK = { zen: '#3a3d80', mid: '#dc8790', hor: '#ffc592', sunCol: '#ffd39a', lit: '#ffb099', dark: '#6a4874', sea: '#5d486c', land: '#4a3348' };
 const SKY_NIGHT = { zen: '#030716', mid: '#0a1636', hor: '#1b2a56', sunCol: '#e6ecff', lit: '#5c6c94', dark: '#141c36', sea: '#07122a', land: '#0b1226' };
 
 const Sky = {
-  p: null, u: null, birds: [], motes: [], shoot: null, shootT: 8, seaH: 0, F: 1,
+  p: null, u: null, birds: [], motes: [], shootT: 8, seaH: 0, F: 1,
   /* settings for a scene; the same scene always gets the same birds and motes */
   set(def) {
     const p = SKIES[def.id] || SKIES.openblue;
@@ -5261,12 +5299,12 @@ const Sky = {
     };
     /* the scene's own sky, by day: the time of day is laid over it each frame */
     this.base = JSON.parse(JSON.stringify(this.u));
-    if (!this.goldC) { this.goldC = {}; this.nightC = {}; for (const k in SKY_GOLD) { this.goldC[k] = c(SKY_GOLD[k]); this.nightC[k] = c(SKY_NIGHT[k]); } }
+    if (!this.goldC) { this.goldC = {}; this.duskC = {}; this.nightC = {}; for (const k in SKY_GOLD) { this.goldC[k] = c(SKY_GOLD[k]); this.duskC[k] = c(SKY_DUSK[k]); this.nightC[k] = c(SKY_NIGHT[k]); } }
     const rnd = mulberry32(hashStr(def.id) + 91);
     this.birds = [];
     for (let i = 0; i < (p.birds.n || 0); i++) {
       const near = rnd() < 0.25;
-      this.birds.push({ x: rnd(), alt: lerp(0.3, 0.9, rnd()), size: near ? lerp(24, 34, rnd()) : lerp(12, 20, rnd()), dir: rnd() < 0.5 ? -1 : 1, sp: lerp(0.6, 1.2, rnd()), ph: rnd() * TAU, seed: rnd() * 100, flap: rnd() < 0.5 });
+      this.birds.push({ x: rnd(), alt: lerp(0.3, 0.9, rnd()), size: (near ? lerp(24, 34, rnd()) : lerp(12, 20, rnd())) * 1.12, dir: rnd() < 0.5 ? -1 : 1, sp: lerp(0.6, 1.2, rnd()), ph: rnd() * TAU, seed: rnd() * 100, flap: rnd() < 0.5 });
     }
     /* a few birds fly together */
     if (this.birds.length > 3) { const lead = this.birds[0]; for (let i = 1; i < 3; i++) { const b = this.birds[i]; b.dir = lead.dir; b.sp = lead.sp; b.x = lead.x - 0.025 * i * lead.dir; b.alt = lead.alt - 0.06 * i; b.size = lead.size * (0.9 + 0.1 * rnd()); } }
@@ -5274,7 +5312,7 @@ const Sky = {
     for (let i = 0; i < (p.motes.n || 0); i++) this.motes.push({ x: rnd(), y: rnd(), sz: lerp(1.8, 4.2, rnd() * rnd()), sp: 0.5 + rnd(), ph: rnd() * TAU });
     this.moteCol = p.motes.n ? c(p.motes.col) : null;
     this.birdCol = p.birds.n ? c(p.birds.col) : null;
-    this.shoot = null; this.shootT = 6 + rnd() * 10;
+    this.shoots = []; this.shootT = 6 + rnd() * 10;
     /* a few rowing boats far out at sea, the same ones each time in a scene */
     this.boats = [];
     const nb = 1 + Math.floor(rnd() * 2.6);
@@ -5285,8 +5323,10 @@ const Sky = {
     if (!this.u) return;
     const g = Scene.geo, H = Scene.H, W = Scene.W;
     const yF = g.yF;
-    /* a wider strip of open sea below the horizon, to mirror the sky */
-    this.seaH = Math.min(Math.max(8, H * 0.1), Math.max(0, yF) * 0.32);
+    /* the horizon is at the eye's level, the vanishing line: below the waterline while the eye is under water (only
+       sky shows above it then, seen from below), above it once the eye has come out, the sea seen from above out to
+       it. seaH: from the horizon down to the waterline (below 0: the horizon is behind the water) */
+    this.seaH = yF - g.vpY;
     this.F = H * 0.62;
     this.u.P[0] = this.seaH; this.u.P[1] = this.F;
     const def = this.def || {};
@@ -5294,7 +5334,8 @@ const Sky = {
     /* the time of day over the scene's sky: warm and low at dawn and in the evening, dark with the moon at night */
     const B = this.base, U = this.u, n = Daytime.night, gk = Daytime.gold * 0.85;
     if (B) {
-      for (const k in this.goldC) for (let i = 0; i < 3; i++) U[k][i] = lerp(lerp(B[k][i], this.goldC[k][i], gk), this.nightC[k][i], n);
+      const GC = Daytime.hour() >= 12 ? this.duskC : this.goldC;
+      for (const k in GC) for (let i = 0; i < 3; i++) U[k][i] = lerp(lerp(B[k][i], GC[k][i], gk), this.nightC[k][i], n);
       U.sun[1] = lerp(lerp(B.sun[1], 0.05, Daytime.gold), 0.18, n);
       U.sun[2] = lerp(B.sun[2], 0.028, n); U.sun[3] = lerp(B.sun[3], 0.85, n);
       U.P[2] = Math.max(B.P[2], n); U.ld[3] = Math.max(B.ld[3], Daytime.gold);
@@ -5324,12 +5365,12 @@ const Sky = {
      fading in and out (more of them, and faster, as it blows harder) */
   trails: [], trailT: 0,
   windTrails(dt, hz) {
-    const wind = Scene.weather().wind, W = Scene.W, SP = Scene.particles, uv = ATLAS.map.wline;
+    const wind = Scene.weather().wind, W = Scene.W, SP = Scene.particles, uv = ATLAS.map.band;
     const want = wind > 0.02 && hz > 70 ? Math.round(1 + wind * 6) : 0;
     this.trailT -= dt;
     if (this.trails.length < want && this.trailT <= 0) {
       this.trailT = rand(0.25, 1.1) / (0.4 + wind);
-      this.trails.push({ x: rand(-0.15, 0.75) * W, y: rand(0.15, 0.8) * (hz - 24), a: rand(-0.1, 0.1), t: 0, life: rand(2.6, 4.4), pts: [], loop: 0, dirL: Math.random() < 0.75 ? -1 : 1, sp: (150 + 230 * wind) * rand(0.8, 1.2), ph: rand(TAU), next: rand(0.4, 1.4), w: rand(1.8, 2.8) });
+      this.trails.push({ x: rand(-0.15, 0.75) * W, y: rand(0.15, 0.8) * (hz - 24), a: rand(-0.1, 0.1), t: 0, life: rand(2.6, 4.4), pts: [], loop: 0, dirL: Math.random() < 0.75 ? -1 : 1, sp: (150 + 230 * wind) * rand(0.8, 1.2), ph: rand(TAU), next: rand(0.4, 1.4), w: rand(2.9, 4.2) });
     }
     for (let i = this.trails.length - 1; i >= 0; i--) {
       const T = this.trails[i];
@@ -5345,26 +5386,33 @@ const Sky = {
       if (T.pts.length > 76) T.pts.splice(0, 2);
       if (T.t > T.life || T.x > W + 60) { this.trails.splice(i, 1); continue; }
       const fade = smoothstep(0, 0.5, T.t) * (1 - smoothstep(T.life - 0.9, T.life, T.t)) * Math.min(1, wind * 3);
-      const n = T.pts.length / 2;
+      /* one continuous ribbon (Batch.quad4), thicker in its middle, thin at both ends */
+      const P = T.pts, n = P.length / 2, sd = [], al = [];
+      for (let k = 0; k < n; k++) {
+        const a = Math.max(0, k - 1), b = Math.min(n - 1, k + 1);
+        let dx = P[b * 2] - P[a * 2], dy = P[b * 2 + 1] - P[a * 2 + 1]; const d = Math.hypot(dx, dy) || 1;
+        const taper = Math.pow(Math.sin((k + 0.5) / n * Math.PI), 0.7), hw = T.w * taper * 0.62;
+        sd.push(-dy / d * hw, dx / d * hw); al.push(0.5 * fade * (0.35 + 0.65 * taper));
+      }
       for (let k = 1; k < n; k++) {
-        const x0 = T.pts[k * 2 - 2], y0 = T.pts[k * 2 - 1], x1 = T.pts[k * 2], y1 = T.pts[k * 2 + 1];
-        if (y1 > hz - 6) continue;
-        const q = k / n, taper = Math.pow(Math.sin(q * Math.PI), 0.7);
-        const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy);
-        if (len < 0.01) continue;
-        SP.push({ uv, x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: len + 0.6, h: T.w * taper * 5, rot: Math.atan2(dy, dx), r: 1, g: 1, b: 1, a: 0.8 * fade * (0.35 + 0.65 * taper), add: 0.15, z: 9.94 });
+        const x0 = P[k * 2 - 2], y0 = P[k * 2 - 1], x1 = P[k * 2], y1 = P[k * 2 + 1];
+        if (y1 > hz - 6 || y0 > hz - 6) continue;
+        const s0x = sd[k * 2 - 2], s0y = sd[k * 2 - 1], s1x = sd[k * 2], s1y = sd[k * 2 + 1];
+        SP.push({ q4: [x0 + s0x, y0 + s0y, x0 - s0x, y0 - s0y, x1 + s1x, y1 + s1y, x1 - s1x, y1 - s1y], uv, r: 1, g: 1, b: 1, a: al[k - 1], a1: al[k], add: 0.15, z: 9.94 });
       }
     }
   },
   /* birds, motes and shooting stars: only in the air above the waterline */
   draw(dt) {
     const p = this.p, E = Scene.env;
+    if (this.met) this.met.n = 0;
     if (!p || !E || E.id === 'picture') return;
     const g = Scene.geo, W = Scene.W, SP = Scene.particles;
-    const yF = g.yF, hz = yF - this.seaH;
-    if (hz < 18) return;
+    /* hz: the horizon; sky: where the sky that shows ends (the horizon, or the waterline when that is higher) */
+    const yF = g.yF, hz = yF - this.seaH, sky = Math.min(hz, yF);
+    if (sky < 18) return;
     const t = Scene.time;
-    this.drawBolt(hz);
+    this.drawBolt(sky);
     if (this.birdCol) {
       const bc = this.birdCol;
       /* the Birds setting in the Weather window: none at 0, all of the scene's birds from its starting value up */
@@ -5380,6 +5428,8 @@ const Sky = {
         if (b.flap) { const w = Math.sin(b.ph); fr = w > 0.45 ? 0 : w > -0.15 ? 1 : w > -0.65 ? 2 : 3; }
         const alt = clamp(b.alt + 0.03 * Math.sin(t * 0.25 + b.seed), 0.12, 0.95);
         const y = hz - 10 - alt * (hz - 22);
+        /* low birds stay out of sight behind the water while the eye is under it */
+        if (y > yF - 8) continue;
         const x = b.x * W;
         const tilt = b.flap ? 0 : 0.08 * Math.sin(t * 0.7 + b.seed);
         SP.push({ uv: ATLAS.map['bird' + fr], x, y, w: b.size * b.dir, h: b.size * 0.5, rot: tilt, r: bc[0], g: bc[1], b: bc[2], a: 0.9, z: 9.96 });
@@ -5400,23 +5450,31 @@ const Sky = {
         SP.push({ uv: ATLAS.map.mote, x, y, w: m.sz * 2.2, h: m.sz * 2.2, r: mc[0], g: mc[1], b: mc[2], a: Math.min(1, a * mk), add: 1, z: 9.9 });
       }
     }
-    this.windTrails(dt, hz);
+    this.windTrails(dt, sky);
     this.drawBoats(dt, hz, yF);
-    this.shootingStar(dt, hz);
+    this.shootingStar(dt, hz, sky);
   },
-  /* rowing boats far out at sea: small dark shapes on the sea below the horizon, the further the smaller and the
-     paler in the haze, rocking on the swell as they drift; each with its blurred reflection, and a lantern at night */
+  /* rowing boats far out at sea: small dark shapes on the sea just below the horizon, the further the smaller and
+     the paler in the haze, rocking on the swell as they drift; each with its blurred reflection, and a lantern at
+     night */
   drawBoats(dt, hz, yF) {
     if (!this.boats || this.seaH < 10) return;
-    const W = Scene.W, SP = Scene.particles, U = this.u, t = Scene.time, n = Daytime.night;
-    const sea = Math.max(0, yF - hz);
+    const W = Scene.W, SP = Scene.particles, U = this.u, t = Scene.time, n = Daytime.night, geo = Scene.geo;
+    /* the open sea shows from the horizon down to the back of the tank, where the tank's own water begins */
+    const sea = Math.max(0, geo.vpY + (yF - geo.vpY) * geo.s1 - hz);
+    /* the drifting camera moves the sea's horizon (bg: with the waterline) more than these far sprites (u_par * s):
+       they are moved by the difference, so they keep to the water; and they turn with the view, as the islands do */
+    const zB = 9.965, py = Scene.par.y * (1.02 - Scene.s(zB)), yawX = Scene.yawX() * 0.3;
     for (const b of this.boats) {
       b.x += b.dir * b.sp * 0.0022 * dt;
       if (b.x > 1.1) b.x = -0.1; else if (b.x < -0.1) b.x = 1.1;
-      const y = hz + 1.5 + sea * 0.42 * b.d, sz = (10 + 16 * b.d) * b.size * clamp(W / 1300, 0.7, 1.3);
-      const x = b.x * W, rock = Math.sin(t * 0.9 + b.ph) * 0.06, bob = Math.sin(t * 1.3 + b.ph * 2) * 0.5;
+      const sz = (10 + 16 * b.d) * b.size * clamp(W / 1300, 0.7, 1.3);
+      /* far out, near the horizon, but on the water: the sea shows behind the whole hull */
+      if (sea < sz * 0.55) continue;
+      const y = hz + sz * 0.3 + (sea - sz * 0.3) * 0.28 * b.d + py;
+      const x = ((b.x * W - yawX) % (W * 1.2) + W * 1.3) % (W * 1.2) - W * 0.1, rock = Math.sin(t * 0.9 + b.ph) * 0.06, bob = Math.sin(t * 1.3 + b.ph * 2) * 0.5;
       /* dark against the water, paler the further off */
-      const fog = lerp(0.62, 0.3, b.d), dark = lerp(0.1, 0.04, n);
+      const fog = lerp(0.7, 0.48, b.d), dark = lerp(0.1, 0.04, n);
       const r = lerp(dark, U.hor[0], fog), g = lerp(dark + 0.01, U.hor[1], fog), bl = lerp(dark + 0.03, U.hor[2], fog);
       const cy = y - sz * 0.15 + bob;
       SP.push({ uv: ATLAS.map['boat' + b.kind], x, y: cy, w: sz * b.dir, h: sz, rot: rock, r, g, b: bl, a: 0.92, z: 9.965 });
@@ -5428,40 +5486,78 @@ const Sky = {
       }
     }
   },
-  /* shooting stars: at night (always in the starry scene), now and then a thin bright streak far off, quick, flaring
-     and fading, its trail lingering a moment after it; once in a while a big one, tinted */
-  shootingStar(dt, hz) {
+  /* shooting stars: at night (always in the starry scene) now and then, or where the sky is touched at night. A
+     meteor burns far above the clouds in a straight line, quick: it lights up, flares and goes out a little slower
+     than it started; a short glowing trail follows the head, and the big ones leave a train that lingers, widening as
+     it fades. The sky shader draws them (meteorsAt): hidden behind a cloud, whose inside their light brightens.
+     Positions in sky px (the scene's, shifted with the turning view: Scene.skyOff) */
+  shoots: [], met: null,
+  spawnMeteor(x, y, hz, opt = {}) {
+    const big = Math.random() < (opt.big || 0.12);
+    const dir = opt.dir || (Math.random() < 0.5 ? -1 : 1), W = Scene.W;
+    let ang = rand(0.22, 0.78), len = (big ? rand(190, 300) : rand(80, 160)) * clamp(W / 1400, 0.6, 1.3);
+    /* it goes out before the horizon: flatter, then shorter, if it would reach it */
+    const room = hz * 0.9 - y;
+    if (Math.sin(ang) * len > room) ang = Math.max(0.1, Math.asin(clamp(room / len, 0, 1)));
+    if (Math.sin(ang) * len > room) len = Math.max(30, room / Math.sin(ang));
+    if (this.shoots.length >= 2) this.shoots.shift();
+    this.shoots.push({ x, y, dx: dir * Math.cos(ang), dy: Math.sin(ang), len, big, t: 0,
+      life: big ? rand(0.9, 1.3) : rand(0.35, 0.7), linger: big ? rand(1.4, 2.2) : rand(0.25, 0.45),
+      w: big ? 1.35 : rand(0.8, 1), br: big ? 1.7 : rand(0.9, 1.25),
+      col: big ? pick([[0.72, 1, 0.8], [1, 0.84, 0.6], [0.86, 0.9, 1]]) : [0.9, 0.94, 1] });
+  },
+  /* night: a touch on the sky sends one off from there, toward the middle of the view. True if it did */
+  tapSky(sx, sy) {
+    const p = this.p, E = Scene.env;
+    if (!p || !E || E.id === 'picture') return false;
+    const night = Math.max(p.shooting ? 1 : 0, smoothstep(0.55, 0.92, Daytime.night));
+    const yF = Scene.geo.yF + Scene.par.y, sky = Math.min(yF - this.seaH, yF);
+    if (night < 0.5 || sky < 40 || sy > sky - 12 || sy < 0) return false;
+    const off = Scene.skyOff || [0, 0];
+    const dir = Math.random() < 0.8 ? (sx < Scene.cam.x ? 1 : -1) : (Math.random() < 0.5 ? -1 : 1);
+    this.spawnMeteor(sx + off[0], sy + off[1], sky + off[1], { big: 0.3, dir });
+    Sound.meteor(sx / Scene.W, clamp(1 - sy / Math.max(hz, 1), 0, 1));
+    return true;
+  },
+  shootingStar(dt, hz, sky) {
     const night = Math.max(this.p.shooting ? 1 : 0, smoothstep(0.55, 0.92, Daytime.night));
-    const W = Scene.W, SP = Scene.particles;
-    if (night < 0.01) { this.shoot = null; return; }
-    this.shootT -= dt * night;
-    if (!this.shoot && this.shootT <= 0) {
-      const big = Math.random() < 0.12, dir = Math.random() < 0.5 ? -1 : 1, ang = rand(0.22, 0.8);
-      this.shoot = { x: rand(0.08, 0.92) * W, y: rand(0.04, 0.4) * hz, dx: dir * Math.cos(ang), dy: Math.sin(ang), len: (big ? rand(170, 280) : rand(60, 150)) * clamp(W / 1400, 0.6, 1.3),
-        life: big ? rand(0.8, 1.2) : rand(0.3, 0.7), t: 0, big, col: big ? pick([[0.75, 1, 0.82], [1, 0.86, 0.62], [0.86, 0.9, 1]]) : [0.92, 0.95, 1] };
-      this.shootT = rand(7, 26);
+    if (night < 0.01) this.shoots.length = 0;
+    else {
+      this.shootT -= dt * night;
+      if (this.shootT <= 0) {
+        const off = Scene.skyOff || [0, 0];
+        if (this.shoots.length < 2) this.spawnMeteor(rand(0.08, 0.92) * Scene.W + off[0], rand(0.04, 0.4) * sky + off[1], sky + off[1]);
+        this.shootT = rand(7, 26);
+      }
     }
-    const s = this.shoot;
-    if (!s) return;
-    s.t += dt;
-    const k = s.t / s.life;
-    if (k >= 1.45) { this.shoot = null; return; }
-    const head = Math.min(k, 1), flare = k < 1 ? Math.pow(Math.sin(Math.PI * Math.pow(k, 0.7)), 0.8) : 0;
-    const linger = k < 1 ? 1 : 0.45 * (1 - (k - 1) / 0.45);
-    const tail = Math.min(head, s.big ? 0.6 : 0.45), at = (q) => [s.x + s.dx * s.len * q, s.y + s.dy * s.len * q];
-    const N = 10, c = s.col;
-    for (let i = 0; i < N; i++) {
-      const q0 = i / N, a0 = head - tail * (i + 1) / N, a1 = head - tail * q0;
-      if (a0 < 0) continue;
-      const [x0, y0] = at(a0), [x1, y1] = at(a1);
-      if (Math.max(y0, y1) > hz - 6) continue;
-      const len = Math.hypot(x1 - x0, y1 - y0);
-      const a = Math.pow(1 - q0, 1.6) * (k < 1 ? 0.25 + 0.75 * flare : linger) * night;
-      SP.push({ uv: ATLAS.map.wline, x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: len + 0.6, h: (s.big ? 2.4 : 1.6) * (1 - q0 * 0.55) * 5, rot: Math.atan2(y1 - y0, x1 - x0), r: c[0], g: c[1], b: c[2], a, add: 1, z: 9.97 });
+    const M = this.met || (this.met = { n: 0, A: new Float32Array(8), B: new Float32Array(8), C: new Float32Array(6) });
+    M.n = 0;
+    for (let i = this.shoots.length - 1; i >= 0; i--) {
+      const s = this.shoots[i];
+      s.t += dt;
+      const k = s.t / s.life;
+      if (k >= 1 && (s.t - s.life) / s.linger >= 1) { this.shoots.splice(i, 1); continue; }
     }
-    if (k < 1) {
-      const [hx, hy] = at(head);
-      if (hy < hz - 6) SP.push({ uv: ATLAS.map.glow, x: hx, y: hy, w: s.big ? 18 : 9, h: s.big ? 18 : 9, r: c[0], g: c[1], b: c[2], a: flare * 0.85 * night, add: 1, z: 9.97 });
+    for (const s of this.shoots) {
+      const k = s.t / s.life, kc = Math.min(k, 1);
+      /* it slows a little as it burns; the trail behind the head is a part of the way it came */
+      const q = 1 - Math.pow(1 - kc, 1.25), tl = Math.min(q, s.big ? 0.55 : 0.4);
+      let br, head, old, w = s.w;
+      if (k < 1) {
+        br = Math.pow(Math.sin(Math.PI * Math.pow(k, 0.7)), 0.8) + (s.big ? 0.7 * Math.exp(-Math.pow((k - 0.86) / 0.05, 2)) : 0);
+        head = 1; old = 0;
+      } else {
+        const a = (s.t - s.life) / s.linger;
+        br = (s.big ? 0.42 : 0.3) * Math.pow(1 - a, 1.6); head = 0; old = Math.min(1, 0.3 + a * 1.4); w *= 1 + 2 * a;
+      }
+      /* low over the horizon its light crosses more air: fainter */
+      br *= 0.35 + 0.65 * smoothstep(0.05, 0.45, 1 - (s.y + s.dy * s.len * q) / Math.max(hz, 1));
+      const o = M.n;
+      M.A[o * 4] = s.x + s.dx * s.len * q; M.A[o * 4 + 1] = s.y + s.dy * s.len * q;
+      M.A[o * 4 + 2] = s.x + s.dx * s.len * (q - tl); M.A[o * 4 + 3] = s.y + s.dy * s.len * (q - tl);
+      M.B[o * 4] = br * s.br * night; M.B[o * 4 + 1] = w; M.B[o * 4 + 2] = head; M.B[o * 4 + 3] = old;
+      M.C[o * 3] = s.col[0]; M.C[o * 3 + 1] = s.col[1]; M.C[o * 3 + 2] = s.col[2];
+      M.n++;
     }
   },
 };
@@ -5499,10 +5595,12 @@ uniform vec4 u_crest[8]; uniform int u_crestN;
 uniform vec4 u_seaS;
 /* how far from the still waterline the waves can reach (px): further away nothing needs working out */
 uniform float u_waveB;
+/* all of them run toward +x, the way the wind drives the sea out there and the swell's crests (the longest the
+   fastest, as on deep water) */
 float ripple(float wx){
   float a = (.4 + 3.6 * u_seaS.x) * (1. + u_seaS.y * 1.4);
   float f = u_seaS.w;
-  return (sin(wx * .011 * f + u_wt * 1.3 * sqrt(f)) * 2.6 + sin(wx * .029 * f - u_wt * 1.9 * sqrt(f)) * 1.2 + sin(wx * .053 * f + u_wt * 2.7) * (.6 * u_seaS.y + .5 * max(f - 1., 0.))) * a;
+  return (sin(wx * .011 * f - u_wt * 1.3 * sqrt(f)) * 2.6 + sin(wx * .029 * f - u_wt * 1.9 * sqrt(f) + 1.7) * 1.2 + sin(wx * .053 * f - u_wt * 2.7) * (.6 * u_seaS.y + .5 * max(f - 1., 0.))) * a;
 }
 /* each crest a peak: rounded while it rolls, sharp and leaning forward (toward +x) when it breaks */
 float swell(float x){
@@ -5648,14 +5746,14 @@ vec4 clouds(vec3 d, vec3 sd, vec3 sky){
     float ls = cloudDen(q + sdir * .3, min(hf + .3, 1.), false) + cloudDen(q + sdir * .75, min(hf + .6, 1.), false) * .7;
     float Ts = exp(-ls * 2.3);
     float pw = 1. - exp(-den * 4.);
-    vec3 lit = u_clL * u_sunS.w * (Ts * ph * 1.15 + .1) * mix(1., pw, .45) * rainK + mix(u_clD, sky, .35) * (.45 + .55 * hf) * .55;
+    vec3 lit = u_clL * u_sunS.w * (Ts * ph * 1.06 + .08) * mix(1., pw, .45) * rainK + mix(u_clD, sky, .35) * (.4 + .6 * hf) * .5;
     float a = 1. - exp(-den * pathK * 7.);
     L += T * a * lit;
     T *= 1. - a;
     if (T < .02) break;
   }
   float far = 1. - exp(-.05 / max(d.y, .01));
-  L = mix(L, sky * (1. - T), far * .75);
+  L = mix(L, sky * (1. - T), far * .6);
   return vec4(L, T);
 }
 vec3 starsAt(vec3 d){
@@ -5669,6 +5767,30 @@ vec3 starsAt(vec3 d){
   vec2 v = d.xy / d.z;
   float band = exp(-pow((v.y - v.x * .4 - .2) * 3.2, 2.)) * smoothstep(.1, .8, fbm(v * 3. + 1.7, 4) + .35);
   return vec3(.86, .9, 1.) * st * tw * 1.5 * smoothstep(.0, .1, d.y) + vec3(.3, .34, .5) * band * .3 * smoothstep(.02, .2, d.y);
+}
+/* shooting stars (Sky.shootingStar), at most two, in sky px: A = the head and the far end of its trail; B = x its
+   brightness, y the width of the streak (px), z how bright the head still is, w how old the trail is (an old train
+   glows evenly along its length); C its colour. In clear sky: the thin streak, brightest at the head. Meteors burn far
+   above every cloud: behind one the streak is hidden, but its light spreads through the cloud, which glows from inside
+   round the head, most where it is thin (T: how clear the way is there, from the sky picture) */
+uniform vec4 u_metA[2], u_metB[2]; uniform vec3 u_metC[2]; uniform int u_metN;
+vec3 meteorsAt(vec2 q, float T){
+  vec3 c = vec3(0.);
+  for (int i = 0; i < 2; i++) {
+    if (i >= u_metN) break;
+    vec4 A = u_metA[i], B = u_metB[i];
+    vec2 ab = A.xy - A.zw;
+    float s = clamp(dot(q - A.zw, ab) / max(dot(ab, ab), 1e-3), 0., 1.);
+    float dl = length(q - A.zw - ab * s), dh = length(q - A.xy), w = B.y;
+    float along = mix(s * s, .6 + .4 * s, B.w);
+    float streak = exp(-dl * dl / (w * w)) * along;
+    float head = (exp(-dh * dh / (w * w * 3.)) * 1.6 + exp(-dh / (w * 5.)) * .16) * B.z;
+    vec3 mc = u_metC[i];
+    c += mc * (streak + head) * B.x * T;
+    float g = (exp(-dh * dh / 1100.) * .6 + exp(-dh * dh / 7000.) * .18) * (.3 + .7 * B.z) + exp(-dl * dl / 600.) * along * .3;
+    c += mix(mc, vec3(.82, .88, 1.), .4) * g * B.x * (1. - T) * (.3 + 1.8 * T);
+  }
+  return c;
 }
 vec3 sunDisk(vec3 d, vec3 sd){
   float ang = acos(clamp(dot(d, sd), -1., 1.)), r = u_sunS.z;
@@ -5752,7 +5874,10 @@ vec3 seaAt(vec2 p, float hz, float F, float cx, vec3 sd, float sunVis){
   vec3 r = reflect(v, n); r.y = max(r.y, .003);
   float fr = .02 + .98 * pow(1. - max(dot(-v, n), 0.), 5.);
   vec2 rp = vec2(cx + r.x / r.z * F, hz - r.y / r.z * F);
-  vec3 refl = texture(u_skyTex, clamp(skyUV(rp), .001, .999)).rgb;
+  vec4 rS = texture(u_skyTex, clamp(skyUV(rp), .001, .999));
+  vec3 refl = rS.rgb;
+  /* a shooting star shows in the sea too, broken up by the waves */
+  if (u_metN > 0) refl += meteorsAt(rp, rS.a) * .8;
   float ru = ux + (r.x / r.z - ux) * .35, lh = landH(ru);
   if (lh > 0.) { float ry = td * mix(1., r.y / r.z / td, .3); refl = mix(refl, landCol(ru, ry, lh) * .75, .8 * smoothstep(-.004, .006, lh - ry)); }
   vec3 body = u_sea * (.72 + .45 * clamp(sl.y * 2. + .5, 0., 1.));
@@ -5803,6 +5928,7 @@ vec3 outside(vec2 p, float hz, vec2 uvT){
     }
   }
   if (u_skP.z > 0.) c += starsAt(d) * u_skP.z * S.a;
+  if (u_metN > 0) c += meteorsAt(p, S.a);
   c += sunDisk(d, sd) * S.a;
   if (u_clP.w > 0. && u_skQ > .5) {
     float acc = 0.;
@@ -5811,6 +5937,10 @@ vec3 outside(vec2 p, float hz, vec2 uvT){
     vec2 dd = (uvT - sunUV) * vec2(u_res.x / u_res.y, 1.);
     c += u_sunC * pow(acc, 3.) * exp(-length(dd) * 2.4) * .2 * u_sunS.w * (1. - u_skP.z * .7) * (1. - u_skyW.y * .7);
   }
+  /* bright cloud and haze roll off softly toward white instead of burning out, like a well exposed photograph (by
+     day; the sun's disk keeps its glare) */
+  float mx = max(c.r, max(c.g, c.b));
+  if (mx > .78 && u_skP.z < .9) c *= mix(1., (.78 + .2 * (1. - exp(-(mx - .78) / .2))) / mx, 1. - u_skP.z);
   float u = d.x / d.z, e = d.y / d.z, lh = landH(u);
   if (lh > 0.) c = mix(c, landCol(u, e, lh), clamp((lh - e) * F + .5, 0., 1.));
   return c;
@@ -5825,6 +5955,8 @@ uniform float u_time;
 uniform float u_px; uniform vec3 u_cam; uniform float u_vpY, u_s1, u_yF;
 uniform int u_mode; uniform sampler2D u_bg; uniform sampler2D u_bgb; uniform vec4 u_bgXf; uniform float u_yawX; uniform float u_circ; uniform float u_bgBright;
 uniform vec2 u_par; uniform vec4 u_sun; uniform sampler2D u_bgd; uniform float u_pK; uniform float u_bgFog;
+/* how far the vanishing line has moved from where the picture was made for (px, up < 0): the eye has risen */
+uniform float u_dvp;
 out vec4 o;
 void main(){
   vec2 sc = vec2(gl_FragCoord.x, u_res.y * u_px - gl_FragCoord.y) / u_px;
@@ -5835,7 +5967,10 @@ void main(){
     /* the picture stands at one place of the 360° circle; the rest of the way round is open water, where the
        scenery is built (06d), and the picture's sides fade into that water */
     float cx = mod(p.x - u_res.x * .5 + u_yawX + u_circ * .5, u_circ) - u_circ * .5 + u_res.x * .5;
-    vec2 wall = vec2(cx, p.y) - u_par * u_s1;
+    /* the eye risen: the picture keeps to the sand (its nearest points move as the back of the tank does), and its
+       far points move a little more, as seen from higher up (a part of what they would, to keep the picture whole) */
+    float sN = 1. / (1. + 1.1 * u_pK);
+    vec2 wall = vec2(cx, p.y) - u_par * u_s1 - vec2(0., u_dvp * (1. - sN));
     vec2 uv = (wall - u_bgXf.xy) / u_bgXf.zw + .5;
     /* wide soft sides, measured on the picture itself (not after the depth shift, which would cut them) */
     float edge = smoothstep(0., .26, uv.x) * smoothstep(1., .74, uv.x);
@@ -5845,8 +5980,8 @@ void main(){
     for (int i = 0; i < 2; i++) {
       float n = texture(u_bgd, uv).r;
       z = 1.1 + 9. * pow(1. - n, 1.6);
-      float ds = 1. / (1. + z * u_pK) - u_s1;
-      uv = (wall - u_par * ds - u_bgXf.xy) / u_bgXf.zw + .5;
+      float sz = 1. / (1. + z * u_pK), ds = sz - u_s1;
+      uv = (wall - u_par * ds - vec2(0., u_dvp * .35 * (sN - sz)) - u_bgXf.xy) / u_bgXf.zw + .5;
     }
     col = texture(u_bg, clamp(uv, 0., 1.)).rgb * u_bgBright;
     if (air) col = skyAt(p + u_skyOff, u_yF, gl_FragCoord.xy / (u_res * u_px));
@@ -5903,6 +6038,11 @@ precision highp float;
 uniform sampler2D u_sand; uniform sampler2D u_shadow; uniform float u_time, u_wt;
 uniform vec3 u_sandCol, u_sandCol2, u_amb, u_key; uniform float u_patch, u_ripple;
 uniform float u_contrast, u_grain, u_depthLen, u_caus, u_fogK, u_fogBase;
+/* how much sun there is (1 by day, 0 at night): its pool of light and its caustics on the sand go with it */
+uniform float u_sunK;
+/* the eye above the water: the front glass's waterline; the far sand that would show above it is hidden by the surface,
+   which mirrors the sky at so low an angle */
+uniform float u_topY;
 uniform vec4 u_shXf; uniform float u_murk; uniform vec4 u_spot; uniform float u_yawX; uniform float u_circ; uniform float u_imgHW;
 uniform sampler2D u_detail, u_causTex; uniform float u_detD;
 /* where fish touched down on the sand: (place on the circle, depth in pixels, age in seconds, strength) */
@@ -5949,7 +6089,8 @@ void main(){
   float dif = clamp(dot(n, L), 0., 1.);
   vec3 col = alb * (u_amb + u_key * dif);
   float pool = exp(-pow((v_xz.x - u_light.x) / (u_res.x * .42), 2.) - pow((min(v_xz.y, 1.6) - .45) * 1.4, 2.)) * u_lamp;
-  col *= .62 + .62 * pool;
+  /* at night no pool of sunlight: the sand is evenly lit by the moon */
+  col *= .62 + .62 * mix(.4, pool, u_sunK);
   if (u_spot.w > 0.) { float sp = exp(-pow((v_xz.x - u_spot.x) / (u_res.x * u_spot.z), 2.) - pow((v_xz.y - u_spot.y) * .55, 2.)); col += alb * sp * u_spot.w * u_lamp; }
   /* caustics fade with distance: far away they are not worth their cost */
   if (v_xz.y < 4.) {
@@ -5971,7 +6112,7 @@ void main(){
     fade = smoothstep(u_imgHW, u_imgHW * .55, d) * smoothstep(1.02, 1.12, v_xz.y);
   }
   col = mix(col, waterAt(v_scr), fog);
-  o = vec4(col, 1. - fade);
+  o = vec4(col, (1. - fade) * (1. - sstep(u_topY + 1.5, u_topY - 1.5, v_scr.y)));
 }`;
 
 SH.spriteVS = `#version 300 es
@@ -6069,6 +6210,9 @@ uniform float u_absorb;
 uniform float u_clipMode, u_clipY;
 /* how softly scenery is cut at the waterline: sharp on a calm sea, melting over the height of the crests in a swell */
 uniform float u_clipS;
+/* the eye above the water: the front glass's waterline (else far up). What lies under the surface but shows above that
+   line is seen from above through the surface: faint */
+uniform float u_topY;
 uniform vec2 u_size; uniform float u_grow; uniform vec4 u_uvr; uniform float u_belly;
 /* a fish torn up like paper: x the half kept (-1 the left of the drawing, 1 its right, 2 still whole while the rip
    runs down), y the rip's seed, z how far down it has run (0..1), w the width of its white fibres (drawing widths) */
@@ -6175,6 +6319,8 @@ void main(){
   rgb = mix(rgb, waterAt(v_scr), u_haze * (1. - above));
   rgb += lit * u_emit;
   float a = max(c.a, fib) * u_tint.a * (cut ? 1. - above : 1.);
+  float overS = sstep(u_clipY + u_clipS, u_clipY - u_clipS, v_scr.y);
+  a *= 1. - .8 * (1. - overS) * sstep(u_topY + 1.5, u_topY - 1.5, v_scr.y);
   o = vec4(rgb * a, a);
 }`;
 
@@ -6202,6 +6348,36 @@ void main(){
   o = vec4(rgb * a, a * (1. - v_add));
 }`;
 
+/* the little signs over the fish (Scene.marks), drawn on the finished picture so that neither the night nor the
+   grading dims them. They stay flat; only their colour follows the water behind the whole sign (the scene before
+   the last pass, at the final exposure, read round the sign's middle): its light colour over dark water, a deep one
+   over bright water. v_add carries the kind of sign (Tank.mark) */
+/* each kind of sign (MARK_KIND): the tint over dark water (its own colours, the heart pink) and over bright water
+   (deeper: raspberry, amber, grey-blue, navy, indigo, deep red, slate, gold) */
+const MARK_LITE = new Float32Array([1, 0.62, 0.72, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+const MARK_DEEP = new Float32Array([0.92, 0.2, 0.45, 0.95, 0.55, 0.15, 0.62, 0.7, 0.86, 0.22, 0.3, 0.62, 0.32, 0.25, 0.62, 0.8, 0.45, 0.5, 0.55, 0.62, 0.78, 1, 0.7, 0.3]);
+SH.marksFS = `#version 300 es
+precision highp float;
+uniform sampler2D u_tex, u_bg; uniform vec2 u_vp; uniform float u_bgK, u_cells;
+uniform vec3 u_lite[8], u_deep[8];
+in vec2 v_uv; in vec4 v_col; in float v_add;
+out vec4 o;
+void main(){
+  vec4 t = texture(u_tex, v_uv);
+  float a = t.a * v_col.a;
+  if (a < .002) discard;
+  /* the sign's middle on screen: its atlas cell's centre, brought back through how the cell lies on the screen */
+  vec2 cellC = (floor(v_uv * u_cells) + .5) / u_cells;
+  vec2 c = gl_FragCoord.xy + inverse(mat2(dFdx(v_uv), dFdy(v_uv))) * (cellC - v_uv);
+  float r = .3 / u_cells / max(length(dFdx(v_uv)), 1e-6);
+  vec3 bg = (texture(u_bg, c / u_vp).rgb * 2. + texture(u_bg, (c + vec2(r, 0.)) / u_vp).rgb + texture(u_bg, (c - vec2(r, 0.)) / u_vp).rgb
+           + texture(u_bg, (c + vec2(0., r)) / u_vp).rgb + texture(u_bg, (c - vec2(0., r)) / u_vp).rgb) / 6.;
+  float br = smoothstep(.3, .58, dot(bg * u_bgK, vec3(.3, .59, .11)));
+  int k = int(v_add + .5);
+  vec3 rgb = (t.a > 0.) ? t.rgb / t.a : vec3(0.);
+  o = vec4(rgb * mix(u_lite[k], u_deep[k], br) * a, a);
+}`;
+
 SH.postFS = `#version 300 es
 precision highp float;
 ` + GLSL_COMMON + SH.water + SH.waves + SH.foam + `
@@ -6220,13 +6396,34 @@ uniform float u_lineHi;
 uniform vec3 u_rayCol; uniform vec3 u_raySrc; uniform float u_raySpread, u_bloomK, u_shimmer, u_expo, u_sat, u_con; uniform vec3 u_tint;
 /* the time of day: x the low sun (dawn, evening), y the night, z 1 at dawn and 0 in the evening */
 uniform vec3 u_tod;
-/* how much the Lumière setting brightens the water (the air a little) */
+/* how much the Lumière setting brightens the water (not the air) */
 uniform float u_litE;
 /* the dive at the start: x goes from 0 (above the sea) to 1 (in the tank), y = 1 while it plays */
 uniform vec2 u_dive;
 uniform float u_dust;
 uniform sampler2D u_light0, u_light1;
+/* the fish whose card is open: the rest of the tank dims round a living light on it, the guided tour's light
+   (Tour.drawSpot) drawn here: centre and half size (screen px), how far it has come (0..1) and its clock */
+uniform vec4 u_cardC; uniform vec2 u_cardK;
 out vec4 o;
+/* a rounded shape (a superellipse) round the fish, its outline breathing in three slow waves: a soft opening a
+   little wider, blurred, and inside it a clean core whose edge comes in on one side and reaches the soft one on the
+   other, the two turning slowly round; a faint glow at the rim */
+vec3 cardSpot(vec3 col, vec2 q){
+  vec2 R = u_cardC.zw + 6., d = q - u_cardC.xy;
+  float t = u_cardK.y;
+  vec2 n = d / (R + 4.);
+  float a = atan(n.y, n.x), ca = cos(a), sa = sin(a);
+  float sup = 1. / pow(pow(abs(ca), 2.6) + pow(abs(sa), 2.6), 1. / 2.6);
+  float k = 1. + .05 * sin(3. * a + t * .8) + .03 * sin(5. * a - t * 1.15 + 1.3) + .018 * sin(8. * a + t * 1.7 + 2.1);
+  float dSoft = (length(n) - sup * k) * length(vec2(ca * (R.x + 4.), sa * (R.y + 4.)));
+  float dHard = (length(d / R) - sup * (k - .13 * (.5 + .5 * sin(a + t * .35)))) * length(vec2(ca * R.x, sa * R.y));
+  float dRim = (length(d / (R + 2.)) - sup * k) * length(vec2(ca * (R.x + 2.), sa * (R.y + 2.)));
+  float open = max(1. - smoothstep(-26., 26., dSoft), 1. - smoothstep(-.8, .8, dHard));
+  col = mix(col, vec3(.012, .035, .078), .62 * (1. - open) * u_cardK.x);
+  float rim = exp(-dRim * dRim / 1.1) * .1 + exp(-dRim * dRim / 130.) * .035;
+  return mix(col, vec3(.63, .98, .94), rim * u_cardK.x);
+}
 vec2 toUV(vec2 p){ vec2 c = (p - u_cam.xy) * u_cam.z + u_res * .5; return vec2(c.x / u_res.x, 1. - c.y / u_res.y); }
 /* above the sea, at the start of the dive: the same outside as above the tank (sky picture drawn for this view),
    the horizon rising as the camera goes down; uv.y = 0 at the bottom */
@@ -6303,7 +6500,7 @@ void main(){
     /* the ripples follow the Waves setting; a surface you stirred heaves for a while */
     float amp = (5. + 14. * (1. - k)) * (.35 + u_seaS.x * 3.3) * (1. + surge * 1.6);
     vec2 q = vec2(wx * .010, p.y * .045 / max(.25, 1. - k * .7));
-    vec2 w = vec2(gnoise(q + vec2(t * .45, 0.)), gnoise(q * 1.3 + vec2(5.2, -t * .38)));
+    vec2 w = vec2(gnoise(q - vec2(t * .45, 0.)), gnoise(q * 1.3 + vec2(5.2 - t * .3, -t * .38)));
     /* the slope of the swell bends what the underside mirrors */
     if (u_crestN > 0) w.x += clamp((swell(p.x + 12.) - swell(p.x - 12.)) / 24., -.35, .35) * 2.2 * (1. - k * .5);
     if (u_splashN > 0) w.x += clamp((splashY(p.x + 6.) - splashY(p.x - 6.)) / 12., -.5, .5) * 2. * (1. - k * .5);
@@ -6312,9 +6509,9 @@ void main(){
     float zz = (1. / max(sZ, .35) - 1.) / u_K;
     vec2 SP = vec2(wx, zz * u_dLen);
     float squash = u_dLen * u_K * sZ * sZ / max(u_vpY - u_yF, 1.);
-    /* rain: each drop sends rings out across the surface; seen from below they bend what it mirrors, catch a
-       glint on the side facing the light and flash where the drop lands */
-    float glint = 0., flash = 0., shade = 0.;
+    /* rain: each drop sends rings out across the surface; seen from below they bend what it mirrors and shade it
+       lightly, a faint sheen on the side facing the light (no spark where a drop lands: it read as little lights) */
+    float glint = 0., shade = 0.;
     if (rain > 0.) {
       vec2 nr = vec2(0.);
       for (int L = 0; L < 2; L++) {
@@ -6337,7 +6534,6 @@ void main(){
           nr += d / max(r, .5) * sl;
           glint += max(sl, 0.) * env * (.5 + .5 * d.x / max(r, .5));
           shade += max(-sl, 0.) * env;
-          flash += exp(-r * r / 3.) * smoothstep(.09, 0., age);
         }
       }
       w += vec2(nr.x, nr.y * squash) * .32 * (1. - k * .5);
@@ -6351,19 +6547,19 @@ void main(){
     vec3 sky = mix(u_wTop * 1.3, vec3(1.), .22);
     sky += vec3(1., .96, .86) * exp(-pow((p.x - u_light.x) / (u_res.x * .25), 2.)) * .3 * u_lamp;
     surf = mix(surf, sky, smoothstep(.5, .05, k) * .32);
-    float hl = gnoise(vec2(wx * .018 + w.y, p.y * .09 / max(.3, 1. - k * .6)) + vec2(t * .3, t * .1));
+    float hl = gnoise(vec2(wx * .018 + w.y, p.y * .09 / max(.3, 1. - k * .6)) + vec2(-t * .3, t * .1));
     hl = smoothstep(.18, .45, hl);
     surf += vec3(.55, .7, .82) * hl * .13 * (.25 + u_wStr * .6) * (1. - k * .6);
     /* the sun's glitter: facets tilted toward it flash, more of them when the water is rough */
     float toSun = (p.x - u_light.x) / (u_res.x * .35);
-    float gli = pow(max(0., sin(wx * .085 + t * 4.2 + w.y * 7. + w.x * 3.)), 18.) * exp(-toSun * toSun);
+    float gli = pow(max(0., sin(wx * .085 - t * 4.2 + w.y * 7. + w.x * 3.)), 18.) * exp(-toSun * toSun);
     surf += vec3(1., .97, .88) * gli * (.16 + .3 * surge) * u_lamp * (1. - k * .7);
-    surf *= 1. - shade * .32 * (1. - k * .6);
-    surf += vec3(.85, .92, 1.) * (glint * .7 + flash * 1.6) * (1. - k * .55) * (.45 + .55 * u_lamp);
+    surf *= 1. - shade * .26 * (1. - k * .6);
+    surf += vec3(.85, .92, 1.) * glint * .3 * (1. - k * .55) * (.45 + .55 * u_lamp);
     /* foam floating on the surface, seen from below: pale, lacy patches over the breaking crests and behind them */
     float fb = max(trail, cap);
     if (fb > .01) {
-      float lace = foamLace(SP * .06 + vec2(t * .05, 0.));
+      float lace = foamLace(SP * .06 - vec2(t * .05, 0.));
       float fpat = smoothstep(.0, .35, fbm(SP * .006 + vec2(3.1, t * .02), 3) + .1);
       surf = mix(surf, vec3(.8, .88, .9) * (.7 + .3 * u_lamp), clamp(fb * fpat * (.25 + .75 * lace) * (1. - k * .6), 0., .8));
     }
@@ -6378,7 +6574,7 @@ void main(){
   col = mix(col, vec3(.95, .98, 1.), clamp(spray, 0., 1.) * .85);
   /* foam: white lace, thicker where the water is most broken */
   if (foam > .01) {
-    float lace = foamLace(vec2(wx, p.y) * .085 + vec2(t * .15, -t * .08));
+    float lace = foamLace(vec2(wx, p.y) * .085 + vec2(-t * .15, -t * .08));
     col = mix(col, vec3(.95, .97, .99) * (.8 + .22 * u_lamp), clamp(foam * (.35 + .8 * lace), 0., 1.));
   }
   float dl = p.y - yF;
@@ -6386,15 +6582,16 @@ void main(){
   col += mix(vec3(.55, .65, .75), vec3(.9, .95, 1.), clamp(surge * 1.2, 0., 1.)) * exp(-dl * dl * .5 / (1. + u_lineHi * 2.5)) * (.4 + surge * .5 + u_lineHi * .55);
   if (u_lineHi > 0. && u_yF < 0.) col += vec3(.6, .78, .9) * u_lineHi * exp(-max(p.y - (u_cam.y - u_res.y * .5 / u_cam.z), 0.) / 14.) * .35;
   if (rain > 0.) {
-    /* rain in the air: thin streaks at three depths, straight down in still air; the wind carries them sideways,
-       more and more as they fall, so their path curves */
+    /* rain in the air: thin streaks at three depths, the far ones fine and faint, the near ones longer, a little
+       softer and quicker. Every drop falls on a straight line: down in still air, slanted by the wind (the near ones,
+       falling faster, a little less). Each streak is brighter toward its head and melts away along its tail; the
+       drops near the sun or the moon catch its light */
     if (p.y < yF) {
       float rs = 0.;
       for (int L = 0; L < 3; L++) {
         float fl = float(L);
         float cw = 8. + fl * 7., len = (13. + fl * 11.) * u_rainT.x, sp = (1100. + fl * 420.) * u_rainT.z;
-        float fall = max(p.y + 90., 0.) / u_res.y;
-        float xs = p.x - wind * (.5 + fl * .28) * fall * fall * u_res.y * .55;
+        float xs = p.x - wind * (.5 - fl * .08) * p.y;
         float cx = xs / cw + fl * 37.1, cid = floor(cx);
         /* each column of drops falls at its own pace and spacing, so they never line up in rows */
         float ho = hash12(vec2(cid, fl * 3.1 + .7));
@@ -6403,11 +6600,14 @@ void main(){
         vec2 h2 = hash22(vec2(cid, floor(yy / cellH)) + fl * 11.3);
         float fx = (fract(cx) - .5 - (h2.x - .5) * .7) * cw;
         float fy = fract(yy / cellH) * cellH / len;
-        float wdt = (.22 + fl * .2) * u_rainT.w;
-        float line = smoothstep(wdt + .7, wdt - .2, abs(fx)) * smoothstep(0., .2, fy) * smoothstep(1., .5, fy);
-        rs += line * step(h2.y, rain * (.35 + fl * .15) * u_rainT.y) * (.4 + fl * .3) * (.6 + .4 * h2.x);
+        float wdt = (.2 + fl * .2) * u_rainT.w;
+        float body = smoothstep(0., .35, fy) * smoothstep(1.04, .9, fy) * (.3 + .7 * fy);
+        float line = smoothstep(wdt + .6 + fl * .3, wdt - .25, abs(fx)) * body;
+        rs += line * step(h2.y, rain * (.35 + fl * .15) * u_rainT.y) * (.35 + fl * .3) * (.55 + .45 * h2.x);
       }
-      col += vec3(.82, .87, .95) * rs * .2 * (.55 + .45 * u_rainT.w);
+      float nearL = exp(-pow((p.x - u_light.x) / (u_res.x * .38), 2.));
+      vec3 rc = mix(vec3(.76, .83, .93), vec3(1., .97, .9), nearL * .6);
+      col += rc * rs * .24 * (.55 + .45 * u_rainT.w) * (.8 + .5 * nearL * u_lamp);
     }
     /* where a drop hits the waterline: a small crown of droplets thrown up and out, then falling back */
     if (abs(dl) < 30.) {
@@ -6424,13 +6624,14 @@ void main(){
         for (int k = 0; k < 5; k++) {
           float fk = float(k) / 4. - .5;
           vec2 dp = vec2(x0 + fk * 34. * age, y0 - (52. * (1. - abs(fk) * .7) * age - 260. * age * age));
-          crown += smoothstep(1.9, .4, length(p - dp)) * (1. - age / .38);
+          crown += smoothstep(1.5, .3, length(p - dp)) * (1. - age / .38);
         }
         /* the little column that rises from the middle afterwards */
         float jy = y0 - max(0., 40. * (age - .1) - 150. * (age - .1) * (age - .1));
-        crown += smoothstep(1., .2, abs(p.x - x0)) * step(jy, p.y) * step(p.y, y0) * smoothstep(.1, .2, age) * (1. - age / .38);
+        crown += smoothstep(.9, .15, abs(p.x - x0)) * step(jy, p.y) * step(p.y, y0) * smoothstep(.1, .2, age) * (1. - age / .38) * .7;
       }
-      col = mix(col, vec3(.9, .95, 1.), clamp(crown, 0., 1.) * .8);
+      /* clear water thrown up: a light touch, not white paint */
+      col = mix(col, vec3(.88, .94, 1.), clamp(crown, 0., 1.) * .45);
     }
   }
   vec2 lp = (p - vec2(u_light.x, max(u_yF, 0.) + u_res.y * .035)) / u_res.y;
@@ -6455,8 +6656,11 @@ void main(){
     int nL = beam > .004 ? 3 : 1;
     for (int L = 0; L < 3; L++) {
       if (L >= nL) break;
+      /* each depth of specks drifts its own way in the slow currents: the near ones rise a little, the middle
+         ones sink, the far ones wander, all swaying from side to side */
       float fl = float(L), cs = 30. + fl * 26.;
-      vec2 q = p + vec2(sin(t * .07 + fl) * 30. + t * (2. + fl), -t * (4. + fl * 3.));
+      float vy = L == 0 ? 2.6 : L == 1 ? -3.8 : 1.2;
+      vec2 q = p + vec2(sin(t * .07 + fl) * 30. + t * (2. + fl) * (L == 1 ? -1. : 1.), vy * t + sin(t * .11 + fl * 2.) * 14.);
       vec2 cell = floor(q / cs);
       vec2 h = hash22(cell + fl * 17.);
       if (h.x < .45) continue;
@@ -6476,7 +6680,8 @@ void main(){
   col = mix(col, u_murkCol * (.6 + .4 * dot(col, vec3(.33))), u_murk * .45 * (.7 + .3 * uv.y) * wk);
   /* lightning: everything lit up white-blue for an instant, the air most, the water a little */
   if (u_flash > 0.) col = mix(col, col * 1.6 + vec3(.24, .27, .34), u_flash * (p.y < yF ? 1. : .4));
-  col *= u_expo * mix(mix(1., u_litE, .3), u_litE, wk);
+  /* the Lumière setting brightens the water only: the air and the sky keep their own light */
+  col *= u_expo * mix(1., u_litE, wk);
   /* filmic shoulder in linear light: midtones stay, bright water and light roll off softly instead of clipping */
   vec3 fc = pow(max(col, 0.), vec3(2.2)) * 1.1;
   fc = clamp((fc * (2.51 * fc + .03)) / (fc * (2.43 * fc + .59) + .14), 0., 1.);
@@ -6488,12 +6693,13 @@ void main(){
   col = mix(col, clamp(col, 0., 1.) * clamp(col, 0., 1.) * (3. - 2. * clamp(col, 0., 1.)), .1 * (1. - u_tod.y));
   col *= u_tint;
   /* the time of day, graded like a photograph. Dawn and evening: the deep water keeps its cool blue while what the
-     low sun lights turns warm (gold in the evening, peach at dawn), and its warm light pours in from above */
+     low sun lights turns warm (a rosy gold in the evening, its shadows a little mauve; peach at dawn), and its warm
+     light pours in from above */
   if (u_tod.x > .001) {
     float lg = dot(col, vec3(.299, .587, .114));
-    vec3 warm = mix(vec3(1.14, .97, .80), vec3(1.12, .94, .93), u_tod.z), cool = mix(vec3(.9, .96, 1.07), vec3(.94, .95, 1.06), u_tod.z);
+    vec3 warm = mix(vec3(1.15, .95, .84), vec3(1.12, .94, .93), u_tod.z), cool = mix(vec3(.92, .94, 1.07), vec3(.94, .95, 1.06), u_tod.z);
     col *= mix(vec3(1.), mix(cool, warm, smoothstep(.2, .85, lg)), u_tod.x);
-    col += mix(vec3(.15, .075, .02), vec3(.13, .065, .075), u_tod.z) * u_tod.x * smoothstep(.3, 1., uv.y);
+    col += mix(vec3(.16, .068, .055), vec3(.13, .065, .075), u_tod.z) * u_tod.x * smoothstep(.3, 1., uv.y);
   }
   /* night: the shadows go deep indigo, the light a silvery moonlit grey-blue: dreamy */
   if (u_tod.y > .001) {
@@ -6503,6 +6709,7 @@ void main(){
   }
   float v = length((uv - .5) * vec2(1.15, 1.)) * 1.3;
   col *= mix(1., .55, smoothstep(.5, 1.15, v) * u_vig);
+  if (u_cardK.x > .001) col = cardSpot(col, vec2(gl_FragCoord.x, u_res.y * u_px - gl_FragCoord.y) / u_px);
   if (u_dive.y > 0.) {
     vec2 vu = vec2(gl_FragCoord.x / (u_res.x * u_px), gl_FragCoord.y / (u_res.y * u_px));
     float k = u_dive.x;
@@ -6528,6 +6735,8 @@ precision highp float;
 ` + GLSL_COMMON + `
 uniform vec2 u_res; uniform float u_px; uniform vec3 u_cam; uniform float u_yawX; uniform vec2 u_dive;
 uniform float u_yF, u_wt, u_rays; uniform vec3 u_raySrc; uniform float u_raySpread;
+/* the Brume setting (0..3.2, 1 by default): more haze, more for the light to catch on: crisper, deeper shafts */
+uniform float u_rayHz;
 /* how high the crests can rise above the still waterline (px) */
 uniform float u_rayTop;
 /* the fish in the light: centre xy, half length, half height */
@@ -6547,15 +6756,17 @@ void main(){
     float ang = atan(d.x, d.y);
     /* shafts of uneven width that drift slowly, a few bright and many faint, flickering along their length
        as the surface above moves; each one keeps a fairly crisp edge */
-    float r = 0.;
+    float r = 0., ed = .105 / (1. + .5 * u_rayHz);
     for (int k = 0; k < 3; k++) {
       float f = float(k), q = ang * (7. + f * 9.) * u_raySrc.z + f * 3.7 + t * (.05 + .03 * f) * (k == 1 ? -1. : 1.);
-      float i = floor(q), fr = smoothstep(.43, .57, fract(q));
+      float i = floor(q), fr = smoothstep(.5 - ed, .5 + ed, fract(q));
       r += pow(mix(hash12(vec2(i, f)), hash12(vec2(i + 1., f)), fr), 2.5 + f * 1.5) * (.85 - f * .2);
     }
     r *= 1.85 * (.7 + .3 * gnoise(vec2(ang * 3., p.y * .004 - t * .06)));
+    /* in a thicker haze the bright shafts stand out from the faint ones */
+    r = 2. * pow(r * .5, clamp(1. + .25 * (u_rayHz - 1.), .75, 1.6));
     r *= sstep(u_raySpread, .0, abs(ang));
-    float fall = exp(-max(p.y - max(yF, 0.), 0.) / (u_res.y * .95));
+    float fall = exp(-max(p.y - max(yF, 0.), 0.) / (u_res.y * .95) * (.75 + .25 * u_rayHz));
     /* each fish casts a straight shaft of shadow away from the light, as wide as the fish seen from the light,
        with a clean edge that softens a little and fades with distance: never a copy of its outline */
     float sh = 0.;
@@ -6892,6 +7103,20 @@ class QuadBatch {
     }
     this.n++;
   }
+  /* a piece of a ribbon: four corners given (c: the near end's two sides, then the far end's), so that pieces laid
+     end to end share their edges exactly; a0 the alpha at the near end, a1 at the far end. The cell's v runs across */
+  quad4(c, uvr, r, g, b, a0, a1, add, z) {
+    if (this.n >= this.max) return;
+    const d = this.data; let o = this.n * 4 * this.stride;
+    const u0 = uvr[0] * 0.75 + uvr[2] * 0.25, u1 = uvr[0] * 0.25 + uvr[2] * 0.75;
+    const P = [c[0], c[1], u0, uvr[1], a0, c[4], c[5], u1, uvr[1], a1, c[2], c[3], u0, uvr[3], a0, c[6], c[7], u1, uvr[3], a1];
+    for (let i = 0; i < 4; i++) {
+      d[o++] = P[i * 5]; d[o++] = P[i * 5 + 1]; d[o++] = P[i * 5 + 2]; d[o++] = P[i * 5 + 3];
+      d[o++] = r; d[o++] = g; d[o++] = b; d[o++] = P[i * 5 + 4];
+      d[o++] = z; d[o++] = add;
+    }
+    this.n++;
+  }
   flush() {
     if (!this.n) return;
     const gl = this.gl;
@@ -6978,6 +7203,7 @@ const Scene = {
     this.pSprite = P(SH.spriteVS, SH.spriteFS);
     this.pBatch = P(SH.batchVS, SH.batchFS, ['a_pos', 'a_uv', 'a_col', 'a_za']);
     this.pShadow = P(SH.batchVS, SH.shadowFS, ['a_pos', 'a_uv', 'a_col', 'a_za']);
+    this.pMarks = P(SH.batchVS, SH.marksFS, ['a_pos', 'a_uv', 'a_col', 'a_za']);
     this.pPost = P(SH.bgVS, SH.postFS);
     this.pBright = P(SH.bakeVS, SH.brightFS);
     this.pBlur = P(SH.bakeVS, SH.blurFS);
@@ -7028,7 +7254,13 @@ const Scene = {
   updateGeo() {
     const W = this.W, H = this.H, g = this.geo;
     const lvl = this.cfg ? this.cfg.water.level : 0.6;
-    g.vpY = H * 0.58;
+    /* the eye: deep under the water when it is high (the view as it always was); as the water is lowered the eye
+       rises with it, the surface seen ever flatter, until near the lowest it comes out just above the water and sees
+       it from above, the sea out to the horizon. Its level is the vanishing line: what is at the front glass stays
+       where it is (the waterline stays under the finger), what is further back draws toward it (the sand and the
+       scenery seen from a little higher). vpY0: where it stands when the water is high */
+    g.vpY0 = H * 0.58;
+    g.vpY = lerp(H * 0.17, g.vpY0, smoothstep(0, 0.45, lvl));
     g.K = 0.75;
     g.s1 = 1 / (1 + g.K);
     g.floorY = H * 1.035;
@@ -7052,6 +7284,11 @@ const Scene = {
      that is in it, fish included, brighten too, more gently */
   lightK() { const w = this.cfg ? this.cfg.water : null; return clamp(w && Number.isFinite(w.strength) ? w.strength : 1, 0, 2); },
   lightRays() { const k = this.lightK(); return 0.5 + 1.05 * k + 0.9 * Math.max(0, k - 1) ** 2; },
+  /* the Brume setting (0..3.2, 1 by default): the more haze in the water, the more there is for the light to catch
+     on, so the shafts show stronger and crisper (and fade a little sooner with depth) */
+  hazeK() { const h = G.state.env.haze; return typeof h === 'number' && Number.isFinite(h) ? clamp(h, 0, 3.2) : 1; },
+  /* asked for less motion: the living lights hold still */
+  stillMotion() { const m = this.reduceMQ || (this.reduceMQ = matchMedia('(prefers-reduced-motion: reduce)')); return m.matches; },
   lightExpo() { const k = this.lightK(); return k >= 1 ? 1 + 0.3 * (k - 1) : 1 - 0.14 * (1 - k); },
   /* the little lights of a scene: placed once per scene (the same each time), they drift and breathe slowly.
      The Petites lumières slider (Weather window) sets how bright they are (0 turns them off) */
@@ -7069,7 +7306,7 @@ const Scene = {
     for (let i = 0; i < n; i++) {
       const o = this.orbs[i], s = this.s(o.z);
       const x = this.wrapX(o.x * this.W) + Math.sin(t * o.sp + o.ph) * 50 + par[0] * s;
-      const y = o.y * this.H + Math.sin(t * o.sp * 1.3 + o.ph * 2) * 25 + par[1] * s;
+      const y = o.y * this.H + Math.sin(t * o.sp * 1.3 + o.ph * 2) * 25 + par[1] * s + (this.geo.vpY - (this.geo.vpY0 || this.geo.vpY)) * (1 - s);
       const breathe = 0.75 + 0.25 * Math.sin(t * o.pulse + o.ph) + 0.08 * Math.sin(t * 3.1 + o.ph * 5);
       pos.set([x, y, o.r * (0.5 + s), k * 1.3 * breathe * (1 + 0.6 * Daytime.night)], i * 4);
       col.set(o.col, i * 3);
@@ -7088,7 +7325,7 @@ const Scene = {
     const t = this.time, soft = lerp(0.35, 1, Daytime.night);
     this.orbs.forEach((o, n) => {
       const s = this.s(o.z), R = o.r * (0.5 + s);
-      const cx = this.wrapX(o.x * this.W) + Math.sin(t * o.sp + o.ph) * 50, cy = o.y * this.H + Math.sin(t * o.sp * 1.3 + o.ph * 2) * 25;
+      const cx = this.wrapX(o.x * this.W) + Math.sin(t * o.sp + o.ph) * 50, cy = o.y * this.H + Math.sin(t * o.sp * 1.3 + o.ph * 2) * 25 + (this.geo.vpY - (this.geo.vpY0 || this.geo.vpY)) * (1 - s);
       const breathe = 0.75 + 0.25 * Math.sin(t * o.pulse + o.ph) + 0.08 * Math.sin(t * 3.1 + o.ph * 5);
       /* (a sprite carries at most 1: what the heart has more is laid again on top) */
       for (let a = 1.6 * k * 1.3 * breathe; a > 0.01; a -= 1) SP.push({ uv: ATLAS.map.gauss, x: cx, y: cy, w: R * 0.3, h: R * 0.3, r: o.col[0], g: o.col[1], b: o.col[2], a: Math.min(1, a), add: 1, z: o.z });
@@ -7226,6 +7463,12 @@ const Scene = {
     gl.uniform4f(u.u_sunS, K.sun[0], view.dive ? Math.min(K.sun[1], 0.3) : K.sun[1], K.sun[2], K.sun[3]);
     gl.uniform1f(u.u_skQ, G.state.settings.quality === 'low' ? 0 : 1);
     gl.uniform3fv(u.u_skyCam, view.cam); gl.uniform2fv(u.u_skyOff, view.off); gl.uniform3fv(u.u_skyW, view.w);
+    /* the shooting stars of this frame (Sky.shootingStar); none in the dive's view of the sea */
+    if (u.u_metN) {
+      const M = !view.dive && typeof Sky !== 'undefined' ? Sky.met : null, mn = M ? M.n : 0;
+      gl.uniform1i(u.u_metN, mn);
+      if (mn) { gl.uniform4fv(u.u_metA, M.A); gl.uniform4fv(u.u_metB, M.B); gl.uniform3fv(u.u_metC, M.C); }
+    }
     gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D, this.skyFbo.tex.t); gl.uniform1i(u.u_skyTex, 4);
     gl.activeTexture(gl.TEXTURE5); gl.bindTexture(gl.TEXTURE_2D, this.noiseTex.t); gl.uniform1i(u.u_noise, 5);
     gl.activeTexture(gl.TEXTURE0);
@@ -7521,13 +7764,14 @@ const Scene = {
     const H = this.H, W = this.W;
     /* a rendered backdrop covers the screen itself (no perspective squash), with room for the camera to travel */
     if (this.env && this.env.backdrop) {
+      /* it stays where it is: when the eye rises, the bg shader moves each of its points by its depth (u_dvp) */
       const iw = this.bgTex.w || 1, ih = this.bgTex.h || 1, f = Math.max(W / iw, H / ih) * 1.1;
-      /* when the water is lowered, the picture slides down with it: its own surface meets the tank's waterline */
-      const top = H * 0.46 - ih * f / 2;
-      return [W / 2, H * 0.46 + Math.max(0, this.geo.yF - top - H * 0.015), iw * f, ih * f];
+      return [W / 2, H * 0.46, iw * f, ih * f];
     }
     const E = G.state.env;
-    const wallTop = this.unprojY(0, 1), wallBot = this.unprojY(H, 1);
+    /* a picture on the back wall belongs to the wall: placed for the eye's usual height, it then moves with the wall */
+    const v0 = this.geo.vpY0 || this.geo.vpY, s1 = this.geo.s1;
+    const wallTop = v0 - v0 / s1, wallBot = v0 + (H - v0) / s1;
     const wallH = wallBot - wallTop;
     const iw = this.bgTex.w || 1, ih = this.bgTex.h || 1;
     const fit = Math.max(W / iw, wallH / ih) * (E.picScale || 1);
@@ -7539,6 +7783,8 @@ const Scene = {
   particles: [],
   overlay: [],
   shadows: [],
+  /* signs over the fish, drawn after the last pass (SH.marksFS) */
+  marks: [],
   render(dt) {
     const gl = this.gl, cfg = this.cfg, g = this.geo, E = this.env;
     const W = this.W, H = this.H;
@@ -7550,6 +7796,8 @@ const Scene = {
     cam.x = lerp(cam.x, cam.tx, k); cam.y = lerp(cam.y, cam.ty, k); cam.z = lerp(cam.z, cam.tz, k);
     const pv = this.pivotShift(), camv = [cam.x + pv[0], cam.y + pv[1], cam.z];
     const par = [this.par.x, this.par.y];
+    /* the eye above the water: the front glass's waterline, above which what is under the surface shows faint */
+    const topY = g.vpY < g.yF - 1 ? g.yF + par[1] : -1e5;
     const lamp = (cfg.water.lamp === undefined ? 1 : cfg.water.lamp) * E.lamp;
     const wE = this.waterStrength();
     /* the sun's glow in the water turns with the view too */
@@ -7599,6 +7847,7 @@ const Scene = {
       ? { dive: true, cam: [W / 2, H / 2, 1], off: [0, 0], hz: (1 - (0.5 + 0.1 * smoothstep(0, 0.4, this.dive[0]))) * H }
       : { dive: false, cam: camv, off: [this.yawX() * 0.3 - par[0] * 0.02, -par[1] * 0.02], hz: g.yF + par[1] - (K ? K.P[0] : 0) };
     skyView.w = [wea.wind, wea.rain, this.seaState()];
+    this.skyOff = skyView.off;
     if (K && (diving || lineS > -90)) {
       const ps = this.pSky, uk = ps.u, SF = this.skyFbo;
       gl.bindFramebuffer(gl.FRAMEBUFFER, SF.fb); gl.viewport(0, 0, SF.w, SF.h);
@@ -7628,6 +7877,7 @@ const Scene = {
     gl.useProgram(pb.p);
     gl.uniform2f(ub.u_res, W, H); gl.uniform1f(ub.u_px, this.px); gl.uniform3fv(ub.u_cam, camv); gl.uniform2fv(ub.u_par, par);
     gl.uniform1f(ub.u_vpY, g.vpY); gl.uniform1f(ub.u_s1, g.s1); gl.uniform1f(ub.u_yF, g.yF + par[1]); gl.uniform1f(ub.u_bgFog, this.fogK);
+    gl.uniform1f(ub.u_dvp, g.vpY - (g.vpY0 || g.vpY));
     setWater(ub); gl.uniform1f(ub.u_time, this.skyT);
     const picture = E.backdrop && this.bgTex.w > 1;
     gl.uniform1i(ub.u_mode, picture ? (E.backdrop ? 2 : 1) : 0);
@@ -7659,7 +7909,9 @@ const Scene = {
     gl.uniform1f(uf.u_contrast, cfg.sand.contrast * 1.4 + 0.15);
     gl.uniform1f(uf.u_grain, lerp(90, 900, cfg.sand.grain));
     gl.uniform1f(uf.u_depthLen, g.depthLen);
-    gl.uniform1f(uf.u_caus, (0.08 + wE * 0.3) * E.caus);
+    /* caustics and the sun's pool need the sun: almost gone at night (the moon leaves a trace) */
+    const sunK = 1 - 0.92 * (typeof Daytime !== 'undefined' ? Daytime.night : 0);
+    gl.uniform1f(uf.u_caus, (0.08 + wE * 0.3) * E.caus * sunK); gl.uniform1f(uf.u_sunK, sunK); gl.uniform1f(uf.u_topY, topY);
     gl.uniform1f(uf.u_fogBase, E.open ? 0.0 : 0.04 * Math.min(1, this.fogK * 6));
     gl.uniform1f(uf.u_fogK, this.fogK);
     gl.uniform1f(uf.u_murk, this.murk);
@@ -7698,15 +7950,18 @@ const Scene = {
     }
     const parts = this.particles;
     parts.sort((a, b) => b.z - a.z);
+    /* the eye above the water: specks, bubbles and lights under the surface but above the front glass's waterline are
+       seen through the surface, faint (the sky's things, far back, are above it) */
+    if (topY > -1e4) for (const q of parts) if (q.z < 9 && q.y < g.yF && q.y > this.surfLineY(q.z) - 1) q.a *= 0.2;
     let pi = 0;
     const ps = this.pSprite, us = ps.u;
-    const causK = 0.3 + wE * 0.5;
+    const causK = (0.3 + wE * 0.5) * (1 - 0.92 * (typeof Daytime !== 'undefined' ? Daytime.night : 0));
     const useSprite = () => {
       gl.useProgram(ps.p);
       gl.uniform2f(us.u_res, W, H); gl.uniform3fv(us.u_cam, camv); gl.uniform2fv(us.u_par, par);
       setWater(us);
       gl.uniform1f(us.u_time, t); gl.uniform1f(us.u_wt, wt); gl.uniform1f(us.u_murk, this.murk);
-      gl.uniform1f(us.u_clipS, 1.5 + hcMax * 0.7);
+      gl.uniform1f(us.u_clipS, 1.5 + hcMax * 0.7); gl.uniform1f(us.u_topY, topY);
       gl.uniform1i(us.u_tex, 0);
       gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, this.causFbo.tex.t); gl.uniform1i(us.u_causTex, 3);
       gl.activeTexture(gl.TEXTURE0);
@@ -7726,7 +7981,8 @@ const Scene = {
         const q = parts[pi++];
         const tex = q.tex || this.atlas;
         if (tex !== curTex) { this.batch.flush(); draws++; gl.bindTexture(gl.TEXTURE_2D, tex.t); curTex = tex; }
-        this.batch.quad(q.x, q.y, q.w, q.h, q.rot || 0, q.uv, q.r, q.g, q.b, q.a, q.add || 0, (q.z - 0.001) / ZD);
+        if (q.q4) this.batch.quad4(q.q4, q.uv, q.r, q.g, q.b, q.a, q.a1, q.add || 0, (q.z - 0.001) / ZD);
+        else this.batch.quad(q.x, q.y, q.w, q.h, q.rot || 0, q.uv, q.r, q.g, q.b, q.a, q.add || 0, (q.z - 0.001) / ZD);
       }
       this.batch.flush(); draws++;
       return true;
@@ -7779,7 +8035,7 @@ const Scene = {
       gl.uniform1f(us.u_dry, d.dry || 0);
       const cm = d.clip || 0;
       gl.uniform1f(us.u_clipMode, cm);
-      if (cm) gl.uniform1f(us.u_clipY, this.surfLineY(d.z) + par[1] * this.s(clamp(d.z, 0, 1)));
+      gl.uniform1f(us.u_clipY, this.surfLineY(d.z) + par[1] * this.s(clamp(d.z, 0, 1)));
       if (d.outline) {
         const O = d.outline;
         if (O.tex) { gl.bindTexture(gl.TEXTURE_2D, O.tex.t); gl.uniform4f(us.u_uvr, O.uvr[0], O.uvr[1], O.uvr[2], O.uvr[3]); }
@@ -7848,7 +8104,7 @@ const Scene = {
     gl.useProgram(pl.p);
     gl.uniform2f(ul.u_res, W, H); gl.uniform1f(ul.u_px, LF.w / W); gl.uniform3fv(ul.u_cam, camv); gl.uniform1f(ul.u_yawX, this.yawX());
     gl.uniform2f(ul.u_dive, this.dive ? this.dive[0] : 1, this.dive ? 1 : 0);
-    gl.uniform1f(ul.u_yF, g.yF + par[1]); gl.uniform1f(ul.u_wt, wt); gl.uniform1f(ul.u_rayTop, waveB);
+    gl.uniform1f(ul.u_yF, g.yF + par[1]); gl.uniform1f(ul.u_wt, wt); gl.uniform1f(ul.u_rayTop, waveB); gl.uniform1f(ul.u_rayHz, this.hazeK());
     gl.uniform1f(ul.u_rays, E.rays * this.lightRays() * (1 - (typeof Daytime !== 'undefined' ? Daytime.night : 0) * 0.88) * (1 - clamp(G.state.env.rain || 0, 0, 1) * 0.5)); gl.uniform3fv(ul.u_raySrc, raySrc); gl.uniform1f(ul.u_raySpread, E.raySpread);
     gl.uniform4fv(ul['u_fsh[0]'] || ul.u_fsh, fsh); gl.uniform1i(ul.u_fshN, fshN);
     gl.uniform4fv(ul['u_orb[0]'] || ul.u_orb, orbs.pos); gl.uniform3fv(ul['u_orbCol[0]'] || ul.u_orbCol, orbs.col); gl.uniform1i(ul.u_orbN, orbs.n);
@@ -7873,7 +8129,7 @@ const Scene = {
     /* rain clouds hide the sun: fewer shafts under rain, almost none in a storm */
     const wet = clamp(G.state.env.rain || 0, 0, 1) * (kindOf(RAIN_KINDS, 'rainType', 'ondee').storm ? 0.8 : 0.5);
     const dayRays = (1 - dn * 0.88) * (1 - dg * 0.2) * (1 - wet);
-    gl.uniform1f(up.u_rays, E.rays * this.lightRays() * dayRays);
+    gl.uniform1f(up.u_rays, E.rays * this.lightRays() * dayRays * (0.35 + 0.65 * Math.pow(this.hazeK(), 0.8)));
     gl.uniform3f(up.u_rayCol, E.rayCol[0] * (1 + dg * 0.25), E.rayCol[1] * (1 - dg * 0.04), E.rayCol[2] * (1 - dg * 0.3));
     gl.uniform3fv(up.u_raySrc, raySrc);
     gl.uniform1f(up.u_raySpread, E.raySpread);
@@ -7890,7 +8146,8 @@ const Scene = {
     gl.uniform4fv(up['u_splash[0]'] || up.u_splash, this.splashBuf); gl.uniform1i(up.u_splashN, this.splashes.length);
     gl.uniform1f(up.u_vpY, g.vpY + par[1]); gl.uniform1f(up.u_K, g.K); gl.uniform1f(up.u_dLen, g.depthLen);
     gl.uniform1f(up.u_ca, G.state.settings.quality !== 'low' && this.quality >= 0.95 ? 1 : 0);
-    gl.uniform1f(up.u_expo, E.expo * lerp(1, 0.56, dn) * (1 - dg * 0.1) * (1 - wet * 0.18)); gl.uniform1f(up.u_litE, this.lightExpo()); gl.uniform1f(up.u_sat, E.sat); gl.uniform1f(up.u_con, E.con);
+    const expo = E.expo * lerp(1, 0.56, dn) * (1 - dg * 0.1) * (1 - wet * 0.18);
+    gl.uniform1f(up.u_expo, expo); gl.uniform1f(up.u_litE, this.lightExpo()); gl.uniform1f(up.u_sat, E.sat); gl.uniform1f(up.u_con, E.con);
     gl.uniform3f(up.u_tint, E.tint[0] * lerp(1, 0.74, dn), E.tint[1] * lerp(1, 0.87, dn), E.tint[2] * lerp(1, 1.1, dn));
     gl.uniform3f(up.u_tod, dg, dn, Daytime.hour() < 12 ? 1 : 0);
     gl.uniform1f(up.u_murk, this.murk);
@@ -7898,10 +8155,28 @@ const Scene = {
     gl.uniform1f(up.u_vig, E.vig * (1 + dn * 0.4));
     gl.uniform2f(up.u_dive, this.dive ? this.dive[0] : 1, this.dive ? 1 : 0);
     gl.uniform1f(up.u_dust, G.state.settings.quality === 'low' ? 0 : lightSpecks() * 2);
+    const cs = this.cardSpot;
+    gl.uniform4f(up.u_cardC, cs ? cs.x : 0, cs ? cs.y : 0, cs ? cs.w / 2 : 0, cs ? cs.h / 2 : 0);
+    gl.uniform2f(up.u_cardK, cs ? cs.k : 0, this.stillMotion() ? 0 : this.time);
     gl.bindVertexArray(this.tri);
     gl.drawArrays(gl.TRIANGLES, 0, 3); draws++;
+    /* the signs over the fish, on the finished picture (SH.marksFS) */
+    if (this.marks.length) {
+      const pm = this.pMarks, um = pm.u;
+      gl.enable(gl.BLEND); gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+      gl.useProgram(pm.p);
+      gl.uniform2f(um.u_res, W, H); gl.uniform3fv(um.u_cam, camv); gl.uniform2fv(um.u_par, par); gl.uniform1f(um.u_K, g.K);
+      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.sceneFbo.tex.t); gl.uniform1i(um.u_bg, 1);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, this.atlas.t); gl.uniform1i(um.u_tex, 0);
+      gl.uniform2f(um.u_vp, this.canvas.width, this.canvas.height);
+      gl.uniform1f(um.u_bgK, expo * this.lightExpo()); gl.uniform1f(um.u_cells, ATLAS.size / ATLAS.cell);
+      gl.uniform3fv(um.u_lite, MARK_LITE); gl.uniform3fv(um.u_deep, MARK_DEEP);
+      for (const q of this.marks) this.batch.quad(q.x, q.y, q.w, q.h, q.rot || 0, q.uv, q.r, q.g, q.b, q.a, q.add || 0, (q.z === undefined ? 0.35 : q.z) / ZD);
+      this.batch.flush(); draws++;
+      gl.disable(gl.BLEND);
+    }
     this.stats.draws = draws;
-    this.list.length = 0; this.particles.length = 0; this.overlay.length = 0; this.shadows.length = 0;
+    this.list.length = 0; this.particles.length = 0; this.overlay.length = 0; this.shadows.length = 0; this.marks.length = 0;
   },
   /* screen <-> world helpers that include the camera */
   /* a number gone wrong (a NaN slipping in) would blank the picture for good: put back to safe values */
@@ -7912,7 +8187,7 @@ const Scene = {
     for (const k of ['time', 'wt', 'skyT', 'surge', 'murk', 'yaw']) if (!ok(this[k])) this[k] = 0;
   },
   /* what is drawn is collected anew each frame (render empties the lists; a frame that failed half-way did not) */
-  clearLists() { this.list.length = 0; this.particles.length = 0; this.overlay.length = 0; this.shadows.length = 0; },
+  clearLists() { this.list.length = 0; this.particles.length = 0; this.overlay.length = 0; this.shadows.length = 0; this.marks.length = 0; },
   screenToScene(sx, sy) { const c = this.cam, p = this.pivotShift(); return [(sx - this.W / 2) / c.z + c.x + p[0], (sy - this.H / 2) / c.z + c.y + p[1]]; },
   sceneToScreen(x, y) { const c = this.cam, p = this.pivotShift(); return [(x - c.x - p[0]) * c.z + this.W / 2, (y - c.y - p[1]) * c.z + this.H / 2]; },
   /* the drifting camera turns around the middle of the tank: things there stay put on screen */
@@ -7957,6 +8232,10 @@ const TRICKS = {
 };
 /* how fast a leaping fish falls back (px/s²), and how close to the glass it leaps: right at the waterline you see */
 const LEAP_G = 1250, LEAP_Z = 0.05;
+/* the signs over the fish, by kind: their colours over dark and over bright water are in SH.marksFS's tables */
+const MARK_KIND = { heart: 0, excl: 1, sad: 2, zzz: 3, note: 4, anger: 5, hungry: 6, star: 7 };
+/* how long the stirred water behind a dashing fish shows (s): Tank.wakeStep */
+const WAKE_LIFE = 0.6;
 /* a fish torn up (deleted): sad until RIP0, the rip runs down until RIP1, the halves are gone at END (seconds) */
 const TEAR_RIP0 = 0.6, TEAR_RIP1 = 1.05, TEAR_END = 2.8;
 /* the fish all swim in one thin layer just behind the glass: they never wander off into the scenery (now and then
@@ -8062,12 +8341,13 @@ const Ctl = {
 };
 
 const Tank = {
-  fish: [], plants: [], food: [], debris: [], bubbles: [], motes: [], drops: [], fx: [], ripples: [], sucks: [],
+  fish: [], plants: [], food: [], debris: [], bubbles: [], motes: [], drops: [], fx: [], ripples: [], sucks: [], wakes: [],
   t: 0, relT: 0, babyT: 0, selected: null, hover: null, vacuum: null, night: false, lampTarget: 1,
   hungerMul: 1,
   init() {
     this.motes = [];
-    for (let i = 0; i < 110; i++) this.motes.push({ x: rand(Scene.W), y: rand(-0.2, 1) * Scene.H, z: rand(), s: rand(0.6, 1.8), ph: rand(TAU), a: rand(0.15, 0.55) });
+    /* each speck has its own weight: most hang, some sink slowly, some rise (vy, px per second) */
+    for (let i = 0; i < 110; i++) this.motes.push({ x: rand(Scene.W), y: rand(-0.2, 1) * Scene.H, z: rand(), s: rand(0.6, 1.8), ph: rand(TAU), a: rand(0.15, 0.55), vy: rand(-2.2, 2.4) });
   },
   depthPx() { return Scene.geo.depthLen; },
   topY(z) { const g = Scene.geo; return Math.max(g.surfY + 18, Scene.unprojY(Scene.H * 0.07, z)); },
@@ -8640,6 +8920,37 @@ const Tank = {
     this.sfx('blip', 0.7, f);
   },
   sadFace(f, size, life) { this.fx.push({ type: 'sad', fish: f, follow: true, z: f.z, x: 0, y: 0, x0: 0, y0: 0, t: 0, life, s: size, vx: 0, vy: -10 }); },
+  /* a fish dashing (Space held): the water parts round it and closes behind it. Two fine lines of stirred water
+     peel off its back and its belly and stay where they were laid, spreading and fading (when it turns they curve
+     with its path), with a faint broad trail of troubled water between them; little whirls curl off its tail, one
+     side then the other, turning opposite ways, and tiny bubbles. By night the stirred water glows blue-green, like
+     the sea's own sparks */
+  wakeStep(f, dt, on) {
+    const s = Scene.s(f.z), sv = Math.hypot(f.vx, f.vy * s);
+    let w = f.wake;
+    if (!on || sv < 140 || (f.leap && f.leap.out)) { if (w) { w.done = true; f.wake = null; } return; }
+    if (!w || w.done) { w = f.wake = { z: f.z, s, lines: [[], [], []], done: false, side: 1, whirlT: 0 }; this.wakes.push(w); }
+    const dx = f.vx / sv, dy = f.vy * s / sv, nx = -dy, ny = dx;
+    const cx = f.x, cy = Scene.projY(f.y, f.z), hh = f.h * s * 0.36, back = f.w * s * 0.1, k = clamp((sv - 140) / 220, 0.25, 1);
+    w.z = f.z; w.s = s;
+    for (let i = 0; i < 2; i++) {
+      const sd = i ? -1 : 1;
+      w.lines[i].push({ x: cx - dx * back + nx * hh * sd, y: cy - dy * back + ny * hh * sd, a: 0, k });
+    }
+    w.lines[2].push({ x: cx - dx * f.w * s * 0.45, y: cy - dy * f.w * s * 0.45, a: 0, k });
+    w.whirlT -= dt;
+    if (w.whirlT <= 0) {
+      w.whirlT = rand(0.07, 0.11); w.side = -w.side;
+      const tail = f.w * s * 0.5, sd = w.side;
+      this.fx.push({ type: 'whirl', x: cx - dx * tail + nx * hh * 0.5 * sd, y: cy - dy * tail + ny * hh * 0.5 * sd, z: f.z + 0.003, t: 0, life: rand(0.5, 0.75), s: f.h * s * rand(0.55, 0.8), spin: sd, rot: Math.atan2(dy, dx) + rand(-0.4, 0.4), vx: -dx * 30 + nx * sd * 22, vy: -dy * 30 + ny * sd * 22 });
+    }
+    if (Math.random() < dt * 30) this.bubbles.push({ x: f.x - dx * f.w * 0.5 + rand(-3, 3), y: f.y - (dy / s) * f.w * 0.5 + rand(-4, 4), z: f.z, r: rand(0.6, 1.7), vy: -rand(10, 30), ph: rand(TAU) });
+  },
+  /* a sign over a fish, on the finished picture (Scene.marks): flat as ever, its colour chosen by the water behind
+     it, light over dark water and deep over bright water (SH.marksFS; add carries its kind) */
+  mark(uv, x, y, sz, rot, a, z, kind) {
+    Scene.marks.push({ uv, x, y, w: sz, h: sz, rot, r: 1, g: 1, b: 1, a, add: kind || 0, z });
+  },
   emote(f, type, n = 1) {
     for (let i = 0; i < n; i++) this.fx.push({ type, fish: f, z: f.z, x: f.screen.x + rand(-8, 8), y: f.screen.y - f.screen.h * 0.6 - 6, t: -i * 0.18, life: 1.6, s: type === 'heart' ? 22 : 20, vx: rand(-6, 6), vy: -26 });
   },
@@ -8894,7 +9205,9 @@ const Tank = {
     } else { f.flip = 1; f.yaw = 0; f.yawV = 0; }
     this.curlStep(f, dt);
     const spd = Math.hypot(f.vx, f.vy, f.vz);
-    f.phase += dt * K.freq * (0.45 + 0.9 * spd / K.speed + f.wig * 2.5);
+    /* carried by the hand it does not swim: its tail sways gently, however fast it is moved */
+    if (f.drag) f.phase += dt * K.freq * (0.45 + 0.55 * Math.min(2, spd / K.speed) + f.wig * 1.6);
+    else f.phase += dt * K.freq * (0.45 + 0.9 * spd / K.speed + f.wig * 2.5);
     /* eating */
     if (f.mode === 'food' && f.tgt && !f.tgt.dead) {
       const mx = f.x - f.w * 0.42 * f.flip, my = f.y;
@@ -8913,8 +9226,7 @@ const Tank = {
     /* ambient emotes */
     if (f.emoteT <= 0) {
       f.emoteT = rand(12, 30);
-      if (f.satiety < 0.22) this.emote(f, 'hungry');
-      else if (f.mode === 'sleep' && f.asleep) { this.emote(f, 'zzz', 2); f.emoteT = rand(6, 11); }
+      if (f.mode === 'sleep' && f.asleep) { this.emote(f, 'zzz', 2); f.emoteT = rand(6, 11); }
       else if (this.night) { /* awake at night: quiet */ }
       else if (f.partner && Math.random() < 0.5) { const p = this.fish.find((o) => o.id === f.partner); if (p && Math.hypot(p.x - f.x, p.y - f.y) < 180) this.emote(f, 'heart'); }
       else if (Math.random() < 0.15) this.blowBubbles(f, 3);
@@ -8964,18 +9276,8 @@ const Tank = {
     this.sandFloor(f, bot, dt, false);
     /* brought down low, it keeps close over the sand as the bottom rises and falls (unless steered up) */
     if (!keys.has('arrowup') && f.y < bot && f.y > bot - f.h * 0.3) f.y += (bot - f.y) * (1 - Math.exp(-dt * 4));
-    /* going fast (Space held): thin trails stream out behind it, and a few bubbles */
-    if (Ctl.boost) {
-      const s = Scene.s(f.z), sv = Math.hypot(f.vx, f.vy * s);
-      if (sv > 140) {
-        const dx = f.vx / sv, dy = f.vy * s / sv, len = rand(40, 90) * s * Math.min(1.7, sv / 280);
-        if (Math.random() < dt * 70) {
-          const off = rand(-0.4, 0.4) * f.h * s, back = f.w * s * 0.45 + len * 0.42;
-          this.fx.push({ type: 'streak', x: f.x - dx * back - dy * off, y: Scene.projY(f.y, f.z) - dy * back + dx * off, z: f.z + 0.002, t: 0, life: rand(0.22, 0.38), s: len, vx: dx * 25, vy: dy * 25, rot: Math.atan2(dy, dx), al: 0.75 });
-        }
-        if (Math.random() < dt * 22) this.bubbles.push({ x: f.x - dx * f.w * 0.5, y: f.y - (dy / s) * f.w * 0.5 + rand(-4, 4), z: f.z, r: rand(1, 2.6), vy: -rand(10, 30), ph: rand(TAU) });
-      }
-    }
+    /* going fast (Space held): the water parts round it and swirls behind it */
+    this.wakeStep(f, dt, Ctl.boost);
     /* rushing at the others scatters them */
     if (Ctl.boost) {
       const v = Math.hypot(f.vx, f.vy);
@@ -9797,21 +10099,25 @@ const Tank = {
         if (bot > top) this.fx.push({ type: 'bio', x, y: rand(top, bot), z, t: 0, life: rand(1.2, 2.4), s: rand(1.4, 3) * Scene.s(z), vx: rand(-4, 4), vy: rand(-4, 2), hue: Math.random() });
       }
     }
-    /* now and then (rarely) a tiny stone in the sand catches the light, like a speck of diamond, and is gone */
+    /* now and then (rarely) a tiny stone in the sand catches the light, like a speck of diamond, and is gone; not
+       by night: there is no sun for it to catch */
     this.gemT = (this.gemT === undefined ? rand(5, 12) : this.gemT) - dt;
+    if (this.gemT <= 0 && Daytime.night > 0.5) this.gemT = rand(9, 24);
     if (this.gemT <= 0) {
       this.gemT = rand(9, 24);
       const x = rand(0.06, 0.94) * W, z = rand(0.12, 0.85), y = Scene.floorScreenY(x, z) - 1;
       if (y < H - 6 && y > Scene.projY(Scene.geo.surfY, z) + 30) this.fx.push({ type: 'gem', x, y, z: z - 0.003, t: 0, life: rand(0.55, 0.95), s: rand(12, 20) * Scene.s(z), rot: rand(-0.3, 0.3), hue: Math.random(), vx: 0, vy: 0 });
     }
-    /* rain: drops bursting on the surface leave small bubbles just under it */
-    const rain = G.state.env.rain || 0;
-    if (rain > 0 && Scene.geo.yF > -20 && Math.random() < dt * rain * 14) this.bubbles.push({ x: rand(W), y: Scene.geo.surfY + rand(4, 26), z: rand(0.05, 0.6), r: rand(0.8, 2.2), vy: -rand(15, 50), ph: rand(TAU), drift: rand(-20, 20) });
+    /* specks in the water go where it takes them: a slow current that turns and swirls (neighbours drift alike),
+       each with its own weight on top, so some sink, some rise, most just wander */
+    const tc = this.t;
     for (const m of this.motes) {
       m.ph += dt * 0.3;
-      m.x += Math.sin(m.ph) * 4 * dt;
-      m.y += (Math.cos(m.ph * 0.7) * 2 + 1.5) * dt;
-      if (m.y > H * 1.05) { m.y = -0.2 * H; m.x = rand(W); }
+      const cx = Math.sin(m.y * 0.006 + tc * 0.07 + m.z * 2) + 0.5 * Math.sin(m.x * 0.0045 - tc * 0.05);
+      const cy = Math.cos(m.x * 0.005 - tc * 0.06 + m.z * 3) * 0.8 + 0.4 * Math.sin(m.y * 0.008 + tc * 0.09);
+      m.x += (cx * 6 + Math.sin(m.ph) * 2.5) * dt;
+      m.y += (cy * 4 + (m.vy === undefined ? 1 : m.vy) + Math.cos(m.ph * 0.7) * 1.2) * dt;
+      if (m.y > H * 1.05) { m.y = -0.2 * H; m.x = rand(W); } else if (m.y < -0.2 * H) { m.y = H * 1.05; m.x = rand(W); }
       if (m.x < -10) m.x = W + 10; if (m.x > W + 10) m.x = -10;
     }
     for (let i = this.drops.length - 1; i >= 0; i--) {
@@ -9831,6 +10137,7 @@ const Tank = {
       else if (e.type === 'bit') { e.vy += 620 * dt; e.vx *= Math.exp(-dt * 1.8); e.rot += e.spin * dt; }
       else if (e.type === 'drop') { e.vy += (e.mist ? 520 : 1150) * dt; e.vx *= Math.exp(-dt * (e.mist ? 2.6 : 0.25)); e.vy *= e.mist ? Math.exp(-dt * 1.4) : 1; }
       else if (e.type === 'foam') { e.vx *= Math.exp(-dt * 2); }
+      else if (e.type === 'whirl') { e.vx *= Math.exp(-dt * 3); e.vy *= Math.exp(-dt * 3); }
       else if (e.type === 'grain') { e.vy += e.g * dt; e.vx *= Math.exp(-dt * 2.5); e.vy *= Math.exp(-dt * 1.3); }
       e.x += e.vx * dt; e.y += e.vy * dt;
       if (e.type === 'sand' && e.floor !== undefined && e.y > e.floor) { e.y = e.floor; e.vy = 0; }
@@ -9844,6 +10151,12 @@ const Tank = {
       if (e.t > e.life) this.fx.splice(i, 1);
     }
     for (let i = this.ripples.length - 1; i >= 0; i--) { const r = this.ripples[i]; r.t += dt; if (r.t > 1.1) this.ripples.splice(i, 1); }
+    for (let i = this.wakes.length - 1; i >= 0; i--) {
+      const w = this.wakes[i];
+      let left = 0;
+      for (const L of w.lines) { for (const q of L) q.a += dt; while (L.length && L[0].a > WAKE_LIFE) L.shift(); left += L.length; }
+      if (w.done && !left) this.wakes.splice(i, 1);
+    }
     for (let i = this.sucks.length - 1; i >= 0; i--) {
       const s = this.sucks[i]; s.t += dt * 2.4;
       if (s.t >= 1) { this.sucks.splice(i, 1); if (Math.random() < 0.6) this.fx.push({ type: 'glint', x: s.tx, y: s.ty + 8, z: s.z, t: 0, life: 0.55, s: rand(16, 26), vx: 0, vy: 0 }); }
@@ -9980,6 +10293,13 @@ const Tank = {
       SL.push(piece({ x: cx + ox, y: cy + oy, rot: th, tint: [1, 1, 1, a], tear: [side, T.seed, 1, W0] }, a));
     }
   },
+  /* something really in hand: a fish being carried, or litter caught (a fish gone or set down, litter swept away
+     while held, and the hand opens again) */
+  holding() {
+    if (this.dragged && (!this.dragged.drag || this.fish.indexOf(this.dragged) < 0)) this.dragged = null;
+    if (this.held && (!this.held.held || this.debris.indexOf(this.held) < 0)) this.held = null;
+    return !!(this.dragged || this.held);
+  },
   /* ----- a fish taken in hand and moved about (the default mode) ----- */
   /* it follows the hand lazily, as through thick water, turning to where it is pulled; shaken hard (quick back and
      forths) it gets dizzy, and sad */
@@ -10011,9 +10331,9 @@ const Tank = {
   },
   dragStep(f, dt) {
     const D = f.drag, W = Scene.W;
-    /* lazy: a soft, well damped spring, a little behind the hand */
-    const k = 1 - Math.exp(-dt * 3.2);
-    f.vx += ((D.x - f.x) * 4 - f.vx) * k; f.vy += ((D.y - f.y) * 4 - f.vy) * k; f.vz *= Math.exp(-dt * 4);
+    /* lazy: a soft, well damped spring, a little behind the hand (it sways back less, and more slowly) */
+    const k = 1 - Math.exp(-dt * 4);
+    f.vx += ((D.x - f.x) * 3 - f.vx) * k; f.vy += ((D.y - f.y) * 3 - f.vy) * k; f.vz *= Math.exp(-dt * 4);
     f.x += f.vx * dt; f.y += f.vy * dt;
     this.zKeep(f, dt);
     f.x = clamp(f.x, f.w * 0.35, W - f.w * 0.35);
@@ -10024,6 +10344,8 @@ const Tank = {
     D.agit *= Math.exp(-dt * 0.9);
     D.woozyT -= dt;
     if (D.agit > 1 && D.woozyT <= 0) { D.agit = 0.35; D.woozyT = 3; this.shaken(f); }
+    /* carried fast, the water parts round it as when it dashes */
+    this.wakeStep(f, dt, true);
   },
   /* shaken too hard: its head spins, stars go round it, a sad little face */
   shaken(f) {
@@ -10035,6 +10357,7 @@ const Tank = {
     if (!f || !f.drag) return;
     f.drag = null; f.retarget = 0;
     if (this.dragged === f) this.dragged = null;
+    if (f.wake) { f.wake.done = true; f.wake = null; }
     f.vx *= 0.6; f.vy *= 0.6;
   },
   swimAway(f, cb) {
@@ -10201,10 +10524,46 @@ const Tank = {
       SO.push({ uv: ATLAS.map.ring, x: m.x, y, w: (26 + 30 * k) * s, h: (26 + 30 * k) * s * 0.55, r: 0.49, g: 0.97, b: 0.92, a: (1 - k) * 0.9, add: 1, z: m.z });
       SO.push({ uv: ATLAS.map.dot, x: m.x, y, w: 10 * s, h: 10 * s, r: 0.7, g: 1, b: 0.97, a: (1 - k), add: 1, z: m.z });
     }
+    /* the stirred water behind a dashing fish (wakeStep): each line drawn piece by piece along the points it left,
+       fine and clear where it was just laid, wider and fainter as it spreads; the broad trail between them barely
+       there. By night it glows blue-green */
+    if (this.wakes.length) {
+      const nt = Daytime.night, cr = lerp(0.86, 0.32, nt), cg = lerp(0.95, 1, nt), cb = lerp(1, 0.84, nt), glowK = lerp(1, 1.6, nt);
+      const uv = ATLAS.map.band;
+      for (const w of this.wakes) {
+        for (let li = 0; li < 3; li++) {
+          const L = w.lines[li], broad = li === 2, n = L.length;
+          if (n < 2) continue;
+          /* each point: its side vector (across the path, averaged over its two neighbours), its half width (the
+             band's soft line is about half the cell) and its alpha */
+          const side = [], hw = [], al = [];
+          for (let j = 0; j < n; j++) {
+            const a = L[Math.max(0, j - 1)], b = L[Math.min(n - 1, j + 1)];
+            let dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+            const age = clamp(L[j].a / WAKE_LIFE, 0, 1);
+            const thick = (broad ? 8 + 18 * age : 1.7 + 4.5 * Math.sqrt(age)) * w.s;
+            side.push(-dy, dx); hw.push(thick);
+            al.push(Math.min(1, Math.pow(1 - age, 1.25) * smoothstep(0, 0.05, age) * (broad ? 0.16 : 0.75) * (0.6 + 0.4 * L[j].k) * glowK));
+          }
+          for (let j = 1; j < n; j++) {
+            const p0 = L[j - 1], p1 = L[j];
+            if (Math.abs(p1.x - p0.x) + Math.abs(p1.y - p0.y) > 90 || al[j - 1] + al[j] < 0.006) continue;
+            const s0x = side[j * 2 - 2] * hw[j - 1], s0y = side[j * 2 - 1] * hw[j - 1], s1x = side[j * 2] * hw[j], s1y = side[j * 2 + 1] * hw[j];
+            SP.push({ q4: [p0.x + s0x, p0.y + s0y, p0.x - s0x, p0.y - s0y, p1.x + s1x, p1.y + s1y, p1.x - s1x, p1.y - s1y], uv, r: cr, g: cg, b: cb, a: al[j - 1], a1: al[j], add: broad ? 0.5 : 0.85, z: w.z + 0.003 });
+          }
+        }
+      }
+    }
     for (const e of this.fx) {
       if (e.t < 0) continue;
       const k = e.t / e.life;
       const a = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.6) / 0.4);
+      /* a little whirl curled off a dashing fish's tail: it opens out, turning, and fades */
+      if (e.type === 'whirl') {
+        const nt = Daytime.night, g2 = 0.5 + 0.9 * Math.sqrt(k);
+        SP.push({ uv: ATLAS.map.wisp, x: e.x, y: e.y, w: e.s * g2 * e.spin, h: e.s * g2, rot: e.rot + e.spin * k * 4.5, r: lerp(0.9, 0.35, nt), g: lerp(0.97, 1, nt), b: lerp(1, 0.86, nt), a: Math.pow(1 - k, 1.4) * lerp(0.5, 0.85, nt) * Math.min(1, k * 8), add: 1, z: e.z });
+        continue;
+      }
       if (e.type === 'sand') { const sc = Scene.env ? Scene.env.sand : [0.8, 0.76, 0.7], g2 = 1.4 + k * 2.2; SO.push({ uv: ATLAS.map.puff, x: e.x, y: e.y - e.s * k * 0.3, w: e.s * g2, h: e.s * g2 * 0.62, r: sc[0] * 0.8, g: sc[1] * 0.78, b: sc[2] * 0.74, a: (k < 0.1 ? k / 0.1 : 1 - (k - 0.1) / 0.9) * 0.62, z: e.z }); continue; }
       if (e.type === 'grain' || e.type === 'curl') { this.drawTouch(e, k, SP); continue; }
       if (e.type === 'spray') { SO.push({ uv: ATLAS.map.dot, x: e.x, y: e.y, w: e.s, h: e.s, r: 0.95, g: 0.98, b: 1, a: (1 - k) * 0.8, add: 0.5, z: e.z }); continue; }
@@ -10241,16 +10600,16 @@ const Tank = {
         const ang = e.t * 5.5 + e.k * TAU / e.n;
         const R = Math.max(14, F.screen.w * 0.3);
         const back = Math.sin(ang) < 0;
-        SO.push({ uv: ATLAS.map.star, x: F.screen.x + Math.cos(ang) * R, y: F.screen.y - F.screen.h * 0.6 + Math.sin(ang) * R * 0.3, w: e.s * (back ? 0.8 : 1), h: e.s * (back ? 0.8 : 1), rot: e.t * 4, r: 1, g: 1, b: 1, a: a * (back ? 0.55 : 1), z: F.z });
+        this.mark(ATLAS.map.star, F.screen.x + Math.cos(ang) * R, F.screen.y - F.screen.h * 0.6 + Math.sin(ang) * R * 0.3, e.s * (back ? 0.8 : 1), e.t * 4, a * (back ? 0.55 : 1), F.z, MARK_KIND.star);
         continue;
       }
       if (e.type === 'streak') { SP.push({ uv: ATLAS.map.streak, x: e.x, y: e.y, w: e.s * (1 - k * 0.4), h: Math.max(2.5, e.s * 0.1), rot: e.rot || 0, r: 0.9, g: 0.96, b: 1, a: a * (e.al || 0.6), add: 1, z: e.z }); continue; }
       const sz = e.s * (0.7 + 0.3 * Math.min(1, k * 4));
-      const col = e.type === 'heart' ? [1, 0.62, 0.72] : [1, 1, 1];
       /* a face that stays over its fish while it rises */
       let ex = e.x, ey = e.y;
       if (e.follow && e.fish) { const F = e.fish.screen; ex = F.x + (e.x - e.x0); ey = F.y - F.h * 0.6 - 12 + (e.y - e.y0); }
-      SO.push({ uv: ATLAS.map[e.type] || ATLAS.map.heart, x: ex, y: ey, w: sz, h: sz, rot: Math.sin(e.t * 4) * 0.15, r: col[0], g: col[1], b: col[2], a, z: e.z });
+      /* the sad face, a whole disc, a little see-through so that it does not weigh on the fish */
+      this.mark(ATLAS.map[e.type] || ATLAS.map.heart, ex, ey, sz, Math.sin(e.t * 4) * 0.15, e.type === 'sad' ? a * 0.78 : a, e.z, MARK_KIND[e.type]);
     }
     for (const r of this.ripples) {
       const k = r.t / 1.1;
@@ -11249,11 +11608,12 @@ const UI = {
     this.syncDockStates();
     this.refreshCard(true);
   },
-  /* the hint shows while its tool is in use, unless the tool's picker is open (the picker says the same) */
+  /* the hint shows while its tool is in use, unless the tool's picker is open (the picker says the same) or a fish's
+     card, which sits in its place */
   syncHint() {
     const hint = this.modeHint;
     if (!hint) return;
-    hint.hidden = !hint.dataset.has || ['fishPop', 'feedPop', 'plantPop', 'litterPop'].some((k) => this.panels[k]);
+    hint.hidden = !hint.dataset.has || ['fishPop', 'feedPop', 'plantPop', 'litterPop', 'card'].some((k) => this.panels[k]);
     /* steering on a touch screen: the arrows take the place of the bar */
     document.body.classList.toggle('steering', G.mode === 'control' && matchMedia('(pointer: coarse)').matches);
   },
@@ -11315,7 +11675,7 @@ const UI = {
       return (b && Cursors.image(b.img, 72, 48, 'center')) || (t && Cursors.image(t.thumb, 72, 48, 'center')) || Cursors.icon('fish');
     }
     /* the default mode: litter can be caught and thrown; the surface of the water can be pulled up or down */
-    if (m === 'normal') { if (Tank.held || Tank.dragged) return 'grabbing'; if (Tank.pickLitter(sx, sy)) return 'grab'; }
+    if (m === 'normal') { if (Tank.holding()) return 'grabbing'; if (Tank.pickLitter(sx, sy)) return 'grab'; }
     if ((m === 'normal' || m === 'control') && !Tank.pickFish(sx, sy, 8)) {
       const over = onSurface(sy, Scene.sceneToScreen(sx, sy)[1]);
       Scene.lineHi = over || (Main.pointer && Main.pointer.down && Scene.lineHi) ? 1 : 0;
@@ -11567,6 +11927,27 @@ const UI = {
     P.refs = { nameEl, sub, rel, aboutTx, muteB, vol, voiceInfo };
     this.refreshCard(true);
     this.syncPad();
+  },
+  /* the fish whose card is open stands in a living light, the rest of the tank dimmed round it: the guided tour's
+     light (Tour.drawSpot), drawn by the last pass (SH.postFS cardSpot). It comes and goes softly and keeps on the
+     fish as it swims */
+  cardSpotStep(dt) {
+    const S = Scene.cardSpot || (Scene.cardSpot = { k: 0, x: 0, y: 0, w: 0, h: 0 });
+    const f = this.panels.card ? this.cardFish : null;
+    const on = !!(f && Tank.fish.indexOf(f) >= 0 && f.screen && f.screen.w && !Tour.open);
+    if (on) {
+      const s = f.screen, P = Scene.par, z = Scene.cam.z;
+      const [x, y] = Scene.sceneToScreen(s.x + P.x * s.s, s.y + P.y * s.s);
+      const w = s.w * z + 34, hh = s.h * z + 34, k = S.k < 0.01 ? 1 : 1 - Math.exp(-dt * 14);
+      S.x += (x - S.x) * k; S.y += (y - S.y) * k; S.w += (w - S.w) * k; S.h += (hh - S.h) * k;
+    }
+    S.k += ((on ? 1 : 0) - S.k) * (1 - Math.exp(-dt * 7));
+    if (!on && S.k < 0.002) S.k = 0;
+    /* the view slides so the fish sits in the middle of the water left above the card (main's camera reads it; the
+       card's place is read from its style, which asks the page for no layout) */
+    const P = this.panels.card, top = P ? parseFloat(P.el.style.top) : NaN;
+    const lift = on && Number.isFinite(top) ? Math.max(0, innerHeight / 2 - top / 2) : 0;
+    this.cardLift = lerp(this.cardLift || 0, lift, 1 - Math.exp(-dt * 5));
   },
   askTrick(f) {
     if (Tank.fish.indexOf(f) < 0) return;
@@ -12262,6 +12643,8 @@ Object.assign(UI, {
       if (this.panels.lab && this.panels.lab.tick) this.panels.lab.tick();
       if (this.panels.settings && this.panels.settings.tick) this.panels.settings.tick();
       if (this.cardFish && Tank.fish.indexOf(this.cardFish) < 0 && this.panels.card) this.closePanel('card');
+      /* a closed hand left over with nothing in it opens again */
+      if ($('#gl')._cur === 'grabbing' && !Tank.holding()) this.refreshCursor();
     }
     this.updateLabels();
     const fpsEl = $('#fps');
@@ -12281,8 +12664,11 @@ Object.assign(UI, {
       const el = box.children[i];
       const [x, y] = Scene.sceneToScreen(f.screen.x + Scene.par.x * f.screen.s, f.screen.y - f.screen.h * 0.6 - 8 + Scene.par.y * f.screen.s);
       el.style.left = x + 'px'; el.style.top = y + 'px';
-      const txt = escapeHtml(f.name) + '<i>Niv. ' + f.level + '</i>';
+      const txt = escapeHtml(f.name);
       if (el._t !== txt) { el._t = txt; el.innerHTML = txt; }
+      /* a card open: the other names stay back in the dimmed water */
+      const back = this.panels.card && this.cardFish !== f;
+      if (el._b !== back) { el._b = back; el.style.opacity = back ? '0.3' : ''; }
     });
   },
 });
@@ -12538,15 +12924,15 @@ const TPL = {
 const TOUR_STEPS = [
   { title: 'Bienvenue !', text: 'Voici ton aquarium. Quelques gestes suffisent pour tout faire.' },
   { at: 'fish', title: 'Les poissons', text: 'Touche un poisson : il réagit. Appuie longtemps : tu le diriges avec les flèches, Entrée pour une figure. Fais-le glisser : il te suit.' },
-  { at: 'fish', title: 'De plus près', text: 'Clic droit sur un poisson : la vue s\'approche et le suit. La molette rapproche aussi ; un clic sur l\'eau revient.', touch: 'Écarte deux doigts pour t\'approcher ; touche l\'eau pour revenir.' },
+  { at: 'fish', title: 'De plus près', text: 'Clic droit sur un poisson : la vue s\'approche et le suit ; clique-le encore pour voir sa fiche. La molette rapproche aussi ; un clic sur l\'eau revient.', touch: 'Écarte deux doigts pour t\'approcher ; touche un poisson pour le suivre, encore une fois pour sa fiche ; touche l\'eau pour revenir.' },
   { at: 'add', title: 'Ajouter', text: 'Des poissons, à manger, des plantes, des déchets à jeter, et le balai. Le + du menu dessine les tiens.' },
   { at: 'env', title: 'Le paysage', text: 'Change de décor, ou crée le tien avec tes images.' },
-  { at: 'weather', title: 'Météo et journée', text: 'Pluie, vent, vagues, oiseaux, l\'heure du jour, et les petites lumières.' },
+  { at: 'weather', title: 'Météo et journée', text: 'Pluie, vent, vagues, oiseaux, l\'heure du jour, et les petites lumières. La nuit, touche le ciel : une étoile filante part.' },
   { at: 'music', title: 'La musique', text: 'Choisis ce qui joue, ou ajoute tes propres morceaux.' },
   { at: 'sounds', title: 'Les sons', text: 'Le volume de chaque famille : musique, poissons, météo, eau, interface.' },
   { at: 'hide', title: 'Masquer', text: 'Pour ne voir que l\'aquarium. Approche la souris du bas (ou touche l\'œil) pour retrouver les boutons.' },
   { at: 'settings', title: 'Réglages', text: 'L\'activité des poissons, la qualité de l\'image, la sauvegarde.' },
-  { at: 'surface', title: 'La surface', text: 'Attrape la ligne de l\'eau pour la monter ou la baisser.', hidden: 'Attrape le haut de l\'écran et tire vers le bas pour faire descendre l\'eau.' },
+  { at: 'surface', title: 'La surface', text: 'Attrape la ligne de l\'eau pour la monter ou la baisser : tout en bas, tu sors la tête de l\'eau.', hidden: 'Attrape le haut de l\'écran et tire vers le bas pour faire descendre l\'eau.' },
   { title: 'À toi de jouer !', text: 'Le bouton ? te remontre ce guide quand tu veux.' },
 ];
 const Tour = {
@@ -12576,7 +12962,8 @@ const Tour = {
     this.back = h('button', { class: 'roundbtn small ghost tback', 'aria-label': 'Étape précédente', html: icon('chevl'), onclick: () => this.go(this.i - 1) });
     this.next = h('button', { class: 'btn primary tnext', onclick: () => this.go(this.i + 1) });
     this.skip = h('button', { class: 'tskip', text: 'Passer', onclick: () => this.close() });
-    this.card = h('div', { class: 'tcard' }, this.title, this.text, h('div', { class: 'tfoot' }, this.dots, this.skip, this.back, this.next));
+    /* the dots get their own row: twelve of them beside the buttons pushed Suivant out of the card */
+    this.card = h('div', { class: 'tcard' }, this.title, this.text, this.dots, h('div', { class: 'tfoot' }, this.skip, this.back, this.next));
     el.append(this.spotEl, this.card);
     document.body.appendChild(el);
     this.el = el;
@@ -14666,7 +15053,8 @@ function bindTankInput() {
         else if (d.follow === f) { G.modeData.follow = f; Sound.play('click'); if (UI.cardFish === f && UI.isOpen('card')) UI.closePanel('card'); else UI.openCard(f); }
         else { Sound.play('click'); G.modeData.follow = f; Scene.cam.tz = Math.max(Scene.cam.tz, 2.2); UI.closePanel('card', true); }
       } else if (f) tapFish(f);
-      else Tank.poke(sx, sy);
+      /* the night sky touched: a shooting star sets off from there */
+      else if (!Sky.tapSky(sx, sy)) Tank.poke(sx, sy);
     } else if (m === 'release') {
       UI.releaseAt(sx, sy);
     } else if (m === 'litter') {
@@ -14684,6 +15072,9 @@ function bindTankInput() {
   };
   c.addEventListener('pointerup', up);
   c.addEventListener('pointercancel', up);
+  /* the pointer lost without a pointerup (another window, a system gesture): whatever was held is let go */
+  c.addEventListener('lostpointercapture', (e) => { if (down && down.id === e.pointerId) up(Object.assign({}, { pointerId: e.pointerId, type: 'pointercancel', clientX: e.clientX, clientY: e.clientY })); });
+  window.addEventListener('blur', () => { if (down) up({ pointerId: down.id, type: 'pointercancel', clientX: down.x, clientY: down.y }); });
   c.addEventListener('pointerleave', () => { UI._lastPtr = null; Main.hover = null; if (!down) Scene.lineHi = 0; });
   /* the wheel looks closer where the pointer is, and back out to the whole tank */
   c.addEventListener('wheel', (e) => {
@@ -14701,14 +15092,19 @@ function bindTankInput() {
     clampCam();
   }, { passive: false });
   /* right click: looks closer at a fish (its name shows; a click on it then opens its card, a click elsewhere comes
-     back); on the water it leaves the current tool */
+     back); on the water it leaves the current tool. A second right click on the fish followed opens its card too
+     (and closes it again), like a click */
   c.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     const [sx, sy] = Scene.screenToScene(e.clientX, e.clientY);
     const f = hit(sx, sy);
-    if (f) {
+    if (f && G.mode === 'zoom' && G.modeData.follow === f) {
+      Sound.play('click');
+      if (UI.cardFish === f && UI.isOpen('card')) UI.closePanel('card'); else UI.openCard(f);
+    } else if (f) {
       if (G.mode !== 'zoom') G.setMode('zoom', { viaRight: true });
       G.modeData.follow = f; Scene.cam.tz = Math.max(Scene.cam.tz, 2.2);
+      UI.closePanel('card', true);
       Sound.play('click');
     } else if (G.mode === 'zoom') zoomBack();
     else if (G.mode !== 'normal') G.setMode('normal');
@@ -14926,7 +15322,7 @@ function frame(tNow) {
   if (G.mode === 'zoom' && G.modeData.follow) {
     const f = G.modeData.follow;
     if (Tank.fish.indexOf(f) < 0) G.modeData.follow = null;
-    else { const k = f.screen.s || 1, [px, py] = Scene.pivotShift(); cam.tx = f.screen.x + Scene.par.x * k - px; cam.ty = f.screen.y + Scene.par.y * k - py; clampCam(); }
+    else { const k = f.screen.s || 1, [px, py] = Scene.pivotShift(); cam.tx = f.screen.x + Scene.par.x * k - px; cam.ty = f.screen.y + Scene.par.y * k - py + (UI.cardLift || 0) / cam.tz; clampCam(); }
   } else if (G.mode === 'control' && Ctl.fish && Tank.fish.indexOf(Ctl.fish) >= 0) {
     /* the fish in hand: the view leans in a little and follows it */
     const f = Ctl.fish, k = f.screen.s || 1, [px, py] = Scene.pivotShift();
@@ -14942,6 +15338,7 @@ function frame(tNow) {
   if (!skip) {
     Scene.clearLists();
     stage(() => Tank.draw()); stage(() => Env.draw(Main.envDt)); stage(() => Sky.draw(Main.envDt)); Main.envDt = 0;
+    stage(() => UI.cardSpotStep(dt));
     stage(() => Scene.render(Editor.open || !modal.hidden ? dt * 3 : dt));
     /* a still picture of the tank, taken right after drawing (the editor's size preview uses it) */
     if (Main.snapReq) {

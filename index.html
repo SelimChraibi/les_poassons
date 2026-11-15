@@ -126,12 +126,12 @@ body.inspace #spacecompass { opacity: 1; transform: translate(-50%, 0); }
 @keyframes skv { 0%, 100% { transform: translate(-50%, -58%); } 50% { transform: translate(-50%, -42%); } }
 @keyframes skh { 0%, 100% { transform: translate(-58%, -50%); } 50% { transform: translate(-42%, -50%); } }
 @media (prefers-reduced-motion: reduce) { .skmark.v, .skmark.h { animation: none; } }
-#dial .dring { position: relative; width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 50%; }
-#dial .dring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#dial .dring { position: relative; width: 36px; height: 36px; flex: none; display: block; padding: 0; margin: 0; border: 0; background: none; border-radius: 50%; }
+#dial .dring > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 #dial .drbg { fill: none; stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
 #dial .drfg { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 3px rgba(124, 247, 234, .55)); }
 #dial .dring.off .drfg { opacity: 0; }
-#dial .dric { display: grid; place-items: center; color: var(--ink); }
+#dial .dric { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--ink); }
 #dial .dric .ic { width: 18px; height: 18px; }
 #dial .dname { font-size: 13.5px; color: var(--muted); white-space: nowrap; }
 body.dialon #toasts { top: calc(var(--gutter-t, 12px) + 56px); }
@@ -156,7 +156,7 @@ body.dialon .objectives { opacity: .25; transition: opacity .3s; }
 .setrow.kindrow .kindlab { font-size: 13.5px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { #dial, #dial.show { transform: translate(-50%, 0); transition: opacity .2s; } }
 /* (a finger: the tape and its arrows are 44 px tall to the touch) */
-@media (pointer: coarse) { .ktview { height: 44px; } .ktchev { width: 32px; height: 44px; } .ktape.big .ktview { height: 44px; } #dial .dring { width: 44px; height: 44px; } #dial .dring svg { inset: 4px; width: 36px; height: 36px; } #dial { padding: 0 2px 0 0; gap: 2px; } }
+@media (pointer: coarse) { .ktview { height: 44px; } .ktchev { width: 32px; height: 44px; } .ktape.big .ktview { height: 44px; } #dial .dring { width: 44px; height: 44px; } #dial .dring > svg { inset: 4px; width: 36px; height: 36px; } #dial { padding: 0 2px 0 0; gap: 2px; } }
 @media (max-width: 720px) { .ktape.big .ktview { width: 220px; } .ktape.big .ktitem { font-size: 12.5px; } #dial .dname { display: none; } }
 #spacecompass .ctape { position: relative; width: 300px; height: 30px; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent); }
 #spacecompass .ctrack { position: absolute; left: 0; top: 0; height: 100%; will-change: transform; }
@@ -320,6 +320,7 @@ input[type=range].vert::-webkit-slider-thumb { margin-top: 0; margin-left: -6px;
 .toast b { color: #ffd2a6; font-weight: 400; }
 /* (an action inside a notice: putting back what was just removed) */
 .toast .tundo { margin-left: 8px; padding: 2px 11px; border-radius: 999px; background: var(--accent-bg); border: 1px solid var(--accent-line); color: #dffffb; font-size: 13px; pointer-events: auto; }
+body.inspace .toast { pointer-events: none; }
 .toast .tundo:hover { background: rgba(124, 247, 234, .24); color: #fff; }
 .toast.out { animation: toastout .4s ease-in forwards; }
 @keyframes toastin { from { opacity: 0; transform: translateY(-10px); } }
@@ -2410,6 +2411,14 @@ const I18N_EN = {
   "Tire l'eau vers le bas depuis le haut de l'écran pour voir le ciel.": "Pull the water down from the top of the screen to see the sky.",
   "La surface et le ciel": "The surface and the sky",
   "Monte ou baisse la ligne d'eau. Dans le ciel, tire vers le bas pour la pluie, de côté pour le vent. Sur la ligne d'eau, de côté pour les vagues.": "Drag the waterline up or down. In the sky, pull down for rain, sideways for wind. On the waterline, sideways for waves.",
+  "Le bruit": "The noise",
+  "Fais glisser le ciel : de côté le bruit change (après le dernier revient le premier), vers le bas il t'enveloppe, vers le haut il s'éclaircit.": "Drag the sky: sideways the noise changes (after the last comes the first again), downward it wraps round you, upward it clears.",
+  "Son sur iPhone": "Sound on iPhone",
+  "En arrière-plan": "In the background",
+  "Avec les autres sons": "With other sounds",
+  "Joue avec la musique d'une autre app ; s'arrête quand tu quittes la page.": "Plays along with another app's music; stops when you leave the page.",
+  "Continue quand tu changes d'app ou verrouilles ; le son d'une autre app le coupe.": "Keeps playing when you switch apps or lock; another app's sound stops it.",
+  "L'aquarium": "The aquarium",
 };
 /* the page's own words, written before the scripts: its language, the message without WebGL 2, the eye's name */
 document.documentElement.lang = LANG;
@@ -3135,6 +3144,7 @@ const LN = {
   magnet: '<path d="M6.5 4v8.5a5.5 5.5 0 0 0 11 0V4"/><path d="M6.5 4h4v8.5a1.5 1.5 0 0 0 3 0V4h4"/><path d="M6.5 8.2h4M13.5 8.2h4"/>',
   snow: '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M9.8 5.2L12 7.4l2.2-2.2M9.8 18.8L12 16.6l2.2 2.2M4.6 10.6l2.9 1-1 2.9M19.4 13.4l-2.9-1 1-2.9"/>',
   shield: '<path d="M12 3.5l7 2.8v5.2c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6.3z"/><path d="M9 12l2 2 4-4.5"/>',
+  umbrella: '<path d="M3.5 12a8.5 8.5 0 0117 0z"/><path d="M12 12v6a2 2 0 01-4 0"/><path d="M12 3.5V2.5"/>',
 };
 /* cursors: the line icons drawn in white over a dark halo, so they read on bright and dark water */
 const CURSOR_SPOTS = { broom: [6, 19], hand: [10.5, 2.8], target: [12, 12], close: [12, 12], cupid: [9, 12] };
@@ -3149,6 +3159,19 @@ const Cursors = {
       '<g stroke="#061026" stroke-opacity=".8" stroke-width="4.4">' + body + '</g><g stroke="' + col + '" stroke-width="1.9">' + body + '</g></svg>';
     const spot = CURSOR_SPOTS[name] || [12, 12];
     const css = 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '") ' + Math.round(spot[0] * 32 / 24) + ' ' + Math.round(spot[1] * 32 / 24) + ', pointer';
+    this.cache.set(key, css);
+    return css;
+  },
+  /* what the hand moves, as the cursor (the computer): its picture, and small arrows for the ways it goes (axis 'x':
+     along, 'y': up and down, 'xy': both, none: no arrows). The hot spot in the middle */
+  act(name, axis) {
+    const key = 'act|' + name + '|' + (axis || '');
+    if (this.cache.has(key)) return this.cache.get(key);
+    const body = LN[name] || LN.close;
+    const ar = (axis && axis.includes('x') ? '<path d="M4.5 13l-3 3 3 3"/><path d="M27.5 13l3 3-3 3"/>' : '') + (axis && axis.includes('y') ? '<path d="M13 4.5l3-3 3 3"/><path d="M13 27.5l3 3 3-3"/>' : '');
+    const g = (st, w) => '<g stroke="' + st + '" stroke-width="' + w + '">' + ar + '<g transform="translate(7 7) scale(.75)" stroke-width="' + (w / 0.75).toFixed(2) + '">' + body + '</g></g>';
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round">' + g('#061026" stroke-opacity=".8', 4) + g('#ffffff', 1.7) + '</svg>';
+    const css = 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '") 16 16, ' + (axis === 'x' ? 'ew-resize' : axis === 'y' ? 'ns-resize' : axis ? 'move' : 'pointer');
     this.cache.set(key, css);
     return css;
   },
@@ -3338,6 +3361,11 @@ const Sound = {
     try { this._warm = c.createPanner(); this._warm.panningModel = 'HRTF'; } catch (e) { /* no panner */ }
     /* (sounds asked for just before it ran, gate: made now, in their order; older ones are let go: a sound long after
        its picture would only puzzle) */
+    /* (interrupted by iOS: a call, another app's sound, Siri: tried again every two seconds, so that it comes back
+       by itself once that is over, without a touch) */
+    c.addEventListener('statechange', () => {
+      if (c.state === 'interrupted' && !this._intT) this._intT = setInterval(() => { if (c.state === 'running' || c.state === 'closed') { clearInterval(this._intT); this._intT = null; return; } try { const p = c.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) { /* not yet */ } }, 2000);
+    });
     c.addEventListener('statechange', () => {
       if (c.state !== 'running' || !this._q) return;
       const q = this._q.filter((x) => performance.now() - x.t < 600);
@@ -3424,14 +3452,47 @@ const Sound = {
     }
     return false;
   },
+  /* on an iPhone (Settings: Sound on iPhone): 'bg', the default, plays like a music app: through the silent switch,
+     on when you go to another app or lock the phone (as far as iOS lets a web page), but another app's sound takes
+     its place; 'mix': plays along with the music or podcast of another app, but stops when you leave and follows the
+     silent switch. A web page cannot have both: iOS gives it one or the other */
+  iosLike() { try { return /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform)); } catch (e) { return false; } },
+  sessionType() { const s = G.state && G.state.settings; return s && s.iosAudio === 'mix' ? 'ambient' : 'playback'; },
+  /* (playing on in the background, on an iPhone: iOS keeps a page's sound going while one of its own media is
+     playing: a near-silent loop, started by the touch that starts the sound, with the lock screen's name and its
+     play and pause: the sound's own switch) */
+  keepAlive(on) {
+    if (!this.iosLike()) return;
+    try {
+      if (!on) { if (this._ka) this._ka.pause(); return; }
+      if (!this._ka) {
+        const sr = 8000, n = sr, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+        const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+        str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+        v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, n * 2, true);
+        for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, (i % 2 ? 1 : -1), true);
+        const a = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
+        a.loop = true; a.setAttribute('playsinline', ''); a.volume = 0.01;
+        this._ka = a;
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({ title: 'Doodle Tank', artist: _T('L\'aquarium') });
+          navigator.mediaSession.setActionHandler('pause', () => { G.state.settings.sound = false; this.configure(G.state.settings); G.save(); try { a.pause(); } catch (e) { /* ignore */ } });
+          navigator.mediaSession.setActionHandler('play', () => { G.state.settings.sound = true; this.configure(G.state.settings); G.save(); this.unlock(); try { a.play(); } catch (e) { /* ignore */ } });
+        }
+      }
+      if (this._ka.paused) { const p = this._ka.play(); if (p && p.catch) p.catch(() => {}); }
+    } catch (e) { /* no media here */ }
+  },
   /* true when sound is wanted but the browser has not let it start yet */
   unlock() {
     /* iPhone: play through the silent switch like any music app (but not while the microphone records) */
     let recording = false;
     try { recording = MicRec.active; } catch (e) { /* recorder not loaded */ }
-    try { if (!recording && navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ }
+    const want = this.sessionType();
+    try { if (!recording && navigator.audioSession && navigator.audioSession.type !== want) navigator.audioSession.type = want; } catch (e) { /* not supported */ }
     const c = this.ensure();
     if (!c) return;
+    this.keepAlive(want === 'playback');
     if (c.state !== 'running') { try { const p = c.resume(); if (p && p.then) p.catch(() => {}); } catch (e) { /* ignore */ } }
     if (!this.started) {
       this.started = true; this.startAmbient(); this.nextChord = c.currentTime + 0.5; this.nextNote = c.currentTime + 2;
@@ -4817,7 +4878,7 @@ const MicRec = {
     if (this.kept) { try { this.kept.getTracks().forEach((t) => t.stop()); } catch (e) { /* ignore */ } }
     this.kept = null;
   },
-  restoreSession() { try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ } },
+  restoreSession() { try { if (navigator.audioSession) navigator.audioSession.type = Sound.sessionType(); } catch (e) { /* not supported */ } },
   /* the recorder's last data arrives after stop() */
   finishRecorder() {
     const rec = this.rec;
@@ -5129,7 +5190,8 @@ const Ambience = {
   startSea(c) {
     const kind = (G.state && G.state.env.seaType) || 'deferlantes', K = SEA_KINDS[kind] || SEA_KINDS.deferlantes;
     const V = [];
-    const swell = this.curve((s) => Math.pow(0.5 + 0.5 * s, 2.4)), wash = this.curve((s) => Math.pow(0.5 + 0.5 * s, 3));
+    /* (a broad swell, no sudden swelling: rounded at its top) */
+    const swell = this.curve((s) => Math.pow(0.5 + 0.5 * s, 1.7)), wash = this.curve((s) => Math.pow(0.5 + 0.5 * s, 3));
     const t0 = c.currentTime, out = this.way(c, this.deep.f);
     /* (replacing another kind: each wave goes on from the point of its swell where the old one was) */
     const ph0 = this.carry.sea; this.carry.sea = null;
@@ -5137,8 +5199,10 @@ const Ambience = {
       const per = per0 * K.per;
       const low = this.noise(c, 5, true), hi = this.noise(c, 3, false);
       const lp = this.filt(c, 'lowpass', 170 * K.lp, 0.6), bp = this.filt(c, 'bandpass', 2200 * Math.sqrt(K.hiss), 0.5);
+      /* (no infrasound: the rumble of the sea is a roar, not a pressure felt in the chest; below 60 Hz it only booms) */
+      const hpl = this.filt(c, 'highpass', 60, 0.5);
       const gl = this.gain(c, 0), gh = this.gain(c, 0), p = this.panner(c, x, y, z);
-      low.connect(lp); lp.connect(gl); gl.connect(p);
+      low.connect(hpl); hpl.connect(lp); lp.connect(gl); gl.connect(p);
       hi.connect(bp); bp.connect(gh); gh.connect(p);
       p.connect(out);
       /* the swell (e, 0..1) opens the rumble and its filter; the wash follows a little after it */
@@ -5152,7 +5216,7 @@ const Ambience = {
       lfo.connect(sh); sh.connect(ke); ke.connect(gl.gain); sh.connect(kf); kf.connect(lp.frequency);
       lfo.connect(dl); dl.connect(sh2); sh2.connect(kw); kw.connect(gh.gain);
       lfo.start(t0);
-      V.push({ low, hi, lp, bp, gl, gh, p, lfo, sh, sh2, dl, ke, kw, kf, per, phi, t0, level: -1, e: 0 });
+      V.push({ low, hi, hpl, lp, bp, gl, gh, p, lfo, sh, sh2, dl, ke, kw, kf, per, phi, t0, level: -1, e: 0 });
     });
     V.kind = kind; V.K = K; V.out = out;
     this.sea = V;
@@ -5162,7 +5226,8 @@ const Ambience = {
     for (const v of this.sea) {
       if (Math.abs(v.level - level) > 0.002) {
         v.level = level;
-        v.gl.gain.setTargetAtTime(level * 0.22, t, 0.15); v.ke.gain.setTargetAtTime(level * 1.9, t, 0.15); v.kw.gain.setTargetAtTime(level * 0.9 * this.sea.K.hiss, t, 0.15);
+        /* (the swell moves the roar by some 9 dB, not 20: it breathes, it does not pound) */
+        v.gl.gain.setTargetAtTime(level * 0.16, t, 0.15); v.ke.gain.setTargetAtTime(level * 0.62, t, 0.15); v.kw.gain.setTargetAtTime(level * 0.62 * this.sea.K.hiss, t, 0.15);
       }
       /* where the swell is now, for the moving bars of the Weather window */
       v.e = Math.pow(0.5 + 0.5 * Math.sin(TAU * (t - v.t0) / v.per + v.phi), 2.4);
@@ -5486,26 +5551,31 @@ const Ambience = {
   crash(x01, k) {
     const c = this.ctx(); if (!c || !Sound.on || !Sound.ambiOn || !this.ensure()) return;
     const t = c.currentTime;
-    if (t - (this.lastCrash || -9) < 0.35) return;
+    if (t - (this.lastCrash || -9) < 0.6) return;
     this.lastCrash = t;
     if (!this.crashN) { this.crashN = this.panner(c, 0, 0.5, -3); this.crashN.connect(this.deep.f); }
     this.pos(this.crashN, (x01 - 0.5) * 9, 0.5, -3);
-    k = clamp(k, 0.2, 1.3);
-    const thump = c.createBufferSource(); thump.buffer = this.crashBuf || (this.crashBuf = Sound.noiseBuf(2.6, true));
-    const lp = this.filt(c, 'lowpass', 900, 0.7);
-    lp.frequency.setValueAtTime(1400, t); lp.frequency.exponentialRampToValueAtTime(160, t + 1.6);
+    k = clamp(k, 0.2, 1.2) * rand(0.8, 1.05);
+    /* a wave breaking is no blow: the lip falls over a little at a time along the crest, so its roar rises over a
+       quarter of a second (a spread of small impacts, never one), broad in the low mids and without any sub-bass;
+       then the white water seethes and fizzes as it spreads and dies (the hiss, longer, falling in pitch) */
+    const roar = c.createBufferSource(); roar.buffer = this.crashBuf || (this.crashBuf = Sound.noiseBuf(3.2, true));
+    const hp = this.filt(c, 'highpass', 110, 0.6), lp = this.filt(c, 'lowpass', 900, 0.5);
+    lp.frequency.setValueAtTime(700, t); lp.frequency.linearRampToValueAtTime(1500, t + 0.35); lp.frequency.exponentialRampToValueAtTime(380, t + 2.4);
     const g1 = c.createGain();
-    g1.gain.setValueAtTime(0.0001, t); g1.gain.exponentialRampToValueAtTime(1.4 * k, t + 0.05); g1.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
-    thump.connect(lp); lp.connect(g1); g1.connect(this.crashN);
+    g1.gain.setValueAtTime(0.0001, t); g1.gain.exponentialRampToValueAtTime(0.03 * k, t + 0.1); g1.gain.linearRampToValueAtTime(0.34 * k, t + 0.32);
+    g1.gain.setTargetAtTime(0.0001, t + 0.42, 0.55);
+    roar.connect(hp); hp.connect(lp); lp.connect(g1); g1.connect(this.crashN);
     const hiss = c.createBufferSource(); hiss.buffer = this.washBuf || (this.washBuf = Sound.noiseBuf(1.6));
-    hiss.loop = true;
-    const bp = this.filt(c, 'bandpass', 3200, 0.6);
-    bp.frequency.setValueAtTime(4200, t + 0.1); bp.frequency.exponentialRampToValueAtTime(1800, t + 2.4);
+    hiss.loop = true; hiss.playbackRate.value = rand(0.92, 1.08);
+    const bp = this.filt(c, 'bandpass', 3000, 0.45);
+    bp.frequency.setValueAtTime(3600, t + 0.15); bp.frequency.exponentialRampToValueAtTime(1500, t + 3.2);
     const g2 = c.createGain();
-    g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(0.55 * k, t + 0.25); g2.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+    g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(0.02 * k, t + 0.15); g2.gain.linearRampToValueAtTime(0.3 * k, t + 0.5);
+    g2.gain.setTargetAtTime(0.0001, t + 0.7, 0.8);
     hiss.connect(bp); bp.connect(g2); g2.connect(this.crashN);
-    thump.start(t); thump.stop(t + 2.4); hiss.start(t); hiss.stop(t + 2.7);
-    hiss.onended = () => { try { g1.disconnect(); g2.disconnect(); } catch (e) { /* ignore */ } };
+    roar.start(t); roar.stop(t + 3.1); hiss.start(t); hiss.stop(t + 4.6);
+    hiss.onended = () => { try { g1.disconnect(); g2.disconnect(); hp.disconnect(); } catch (e) { /* ignore */ } };
   },
   /* ----- thunder: the crack of a near strike, then the long roll rumbling away (dist: 0 near .. 1 far) ----- */
   /* A real thunderclap is no single boom: the sound comes from the whole length of the bolt, so it arrives as
@@ -5587,15 +5657,15 @@ const Ambience = {
   swash(x01, k) {
     const c = this.ctx(); if (!c || !this.ensure()) return;
     const t = c.currentTime;
-    if (t - this.lastSwash < 0.22) return;
+    if (t - this.lastSwash < 0.4) return;
     this.lastSwash = t;
     if (!this.swashN) { this.swashN = this.panner(c, 0, 0.3, -1.5); this.swashN.connect(this.deep.f); }
     this.pos(this.swashN, (x01 - 0.5) * 7, 0.3, -1.5);
     const s = c.createBufferSource(); s.buffer = this.washBuf || (this.washBuf = Sound.noiseBuf(1.6));
     const bp = this.filt(c, 'bandpass', 500, 0.7);
     bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(2600, t + 0.5); bp.frequency.exponentialRampToValueAtTime(700, t + 1.4);
-    const g = c.createGain(), v = 0.2 + 0.8 * k;
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.09); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.3);
+    const g = c.createGain(), v = 0.14 + 0.5 * k;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.18); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.3);
     s.connect(bp); bp.connect(g); g.connect(this.swashN);
     s.start(t); s.stop(t + 1.4);
     s.onended = () => { try { g.disconnect(); } catch (e) { /* ignore */ } };
@@ -9459,7 +9529,17 @@ vec3 spaceSky(vec2 q, vec2 uv){
   /* (the Doppler tint, as on the stars: blue the way you go, red the way you leave) */
   float dsh = clamp(u_dopV.z * U * .5 - u_dopV.x * d.x * (1. + U) * .5 * .55, -1., 1.);
   vec3 dop = dsh > 0. ? mix(vec3(1.), vec3(.62, .8, 1.35), dsh) : mix(vec3(1.), vec3(1.35, .7, .45), -dsh);
-  c += vec3(.55, .58, .7) * dop * max(mw, 0.) * .15 * (1. + .14 * u_spaceL.z) * mix(1., .35, u_spaceL.w) * smoothstep(.3, .9, u_spaceW.z);
+  float skyK = (1. + .14 * u_spaceL.z) * mix(1., .35, u_spaceL.w) * smoothstep(.3, .9, u_spaceW.z);
+  c += vec3(.55, .58, .7) * dop * max(mw, 0.) * .21 * skyK;
+  /* clouds of gas, barely there: glowing hydrogen (rose), here and there the blue of dust lit by young stars; wisps
+     (the noise bent by itself), most of them near the plane of the galaxy, a few far from it. Read on the direction
+     itself (no seam where the longitude goes round) */
+  vec2 gq = gv.xy * 2.3 + vec2(gv.z * 1.9, -gv.z * .7);
+  vec2 wq = gq + vec2(fbm(gq * 1.3 + 4.1, 3), fbm(gq * 1.3 + 9.7, 3)) * 1.1;
+  float nb = fbm(wq * 1.7 + 2.3, 5), fil = 1. - abs(fbm(wq * 3.9 + 6.1, 3)) * 2.2;
+  float neb = smoothstep(.04, .3, nb) * (.55 + .45 * clamp(fil, 0., 1.)) * (.25 + .75 * exp(-b * b * 9.));
+  vec3 ncol = mix(vec3(.95, .36, .5), vec3(.4, .62, 1.), smoothstep(.0, .25, fbm(gq * .9 + 13.3, 3)));
+  c += ncol * dop * neb * .048 * skyK;
   /* where you are, seen: the whole sky takes the hue of the kind of noise you are in (the stars and the Milky Way
      tinted, the black a little coloured); and the deeper the sound surrounds you, the more a faint haze veils it */
   float tz = u_spaceC.w, nz = .55 + .9 * fbm(q * .0035 + vec2(tz * .01, 0.), 3);
@@ -10762,6 +10842,32 @@ const Scene = {
   s(z) { return 1 / (1 + z * this.geo.K); },
   /* the water surface seen at depth z, on screen: it recedes from the front glass to the back glass;
      beyond the back glass the open water keeps that line (the far surface is not drawn) */
+  /* how far below the still waterline the surface is at x (scene px; a crest: negative): SH.waves' ripple and swell
+     worked out the same way, for the hand that takes the surface where it shows (11_main onSurface) */
+  waveAt(x) {
+    const U = this.seaU;
+    if (!U) return 0;
+    const wx = x + this.yawX(), t = this.wt || 0, f = U[3], sf = Math.sqrt(f);
+    const cr = (ph) => -(Math.cos(ph) + 0.22 * Math.cos(2 * ph));
+    const a = (0.4 + 3.6 * U[0]) * (1 + U[1] * 1.4);
+    const grp = 0.68 + 0.32 * Math.sin(wx * 0.0017 * f - t * 0.19) * Math.sin(wx * 0.00093 * f + t * 0.07 + 1.3);
+    let y = (cr(wx * 0.0094 * f - t * 1.3 * sf) * 2.3 * grp + cr(wx * 0.0186 * f - t * 1.95 * sf + 1.7) * 1.15 * (0.6 + 0.4 * grp)
+      + cr(wx * 0.0133 * f + t * 1.05 * sf + 0.6) * 0.55 + Math.sin(wx * 0.053 * f - t * 2.7) * (0.6 * U[1] + 0.5 * Math.max(f - 1, 0))
+      + Math.sin(wx * 0.094 * f - t * 3.6 + 2) * 0.3 * (0.4 + U[1])) * a;
+    const B = this.crestBuf, n = this.crestN || 0;
+    const L = n > 1 ? Math.max(B[4] - B[0], 40) : 1e4;
+    for (let i = 0; i < n; i++) {
+      const d = x - B[i * 4];
+      if (Math.abs(d) >= L) continue;
+      let wgt = Math.cos(1.5708 * d / L); wgt *= wgt;
+      const w = B[i * 4 + 3], lean = 0.12 + 0.38 * w;
+      let u = d / L - 0.02 * w;
+      u = clamp(u > 0 ? u * (1 + lean) : u * (1 - lean * 0.6), -0.5, 0.5);
+      const ph = 6.2832 * u;
+      y += wgt * B[i * 4 + 1] * (-(Math.cos(ph) + 0.22 * Math.cos(2 * ph)) / 1.22 - w * 0.2 * Math.exp(-Math.pow(u / 0.045, 2)));
+    }
+    return y;
+  },
   surfLineY(z) { const g = this.geo; return g.vpY + (g.surfY - g.vpY) * this.s(clamp(z, 0, 1)); },
   projY(y, z) { const g = this.geo; return g.vpY + (y - g.vpY) * this.s(z); },
   unprojY(sy, z) { const g = this.geo; return g.vpY + (sy - g.vpY) / this.s(z); },
@@ -11540,6 +11646,7 @@ const Scene = {
     this.updateCrests(dt);
     const SK = kindOf(SEA_KINDS, 'seaType', 'deferlantes');
     const seaU = [(G.state.env.sea === undefined ? 0.5 : G.state.env.sea) * SK.amp, this.surge, this.crestC || 62, SK.chop];
+    this.seaU = seaU;
     let hcMax = 0;
     for (let i = 0; i < this.crestN; i++) hcMax = Math.max(hcMax, this.crestBuf[i * 4 + 1]);
     const waveB = (5.6 + 1.2 * this.surge) * (0.4 + 3.6 * seaU[0]) * (1 + this.surge * 1.4) + hcMax * 1.6 + 8 + this.updateSplashes(dt);
@@ -12609,17 +12716,20 @@ const Space = {
          the top following the finger (drawn to the left, the next kind on the right comes); up and down: how deep it
          surrounds you. Which of the two, the way the hand set off decides, for the whole gesture */
       else if (!D.f && S && S.phase === 'full' && !this.autoT) {
-        if (!D.axis) {
-          const ax = strokeAxis(cx - D.x, cy - D.y, D.mouse);
-          if (ax && !(ax === 'x' && edgeStart(e, D.x))) {
-            D.axis = ax === 'x' ? 'x' : 'z';
-            D.lx = cx; D.ly = cy; D.hx = this.pos[0]; D.hz = this.pos[1];
-            this.goal = null; this.keys.clear(); this.handRest = false; SpaceEv.hover = null;
-          }
+        /* (once the hand has clearly set off, both ways at once for the rest of the stroke: back and forth, up and
+           down, as it likes; a stroke begun at the very edge of a touch screen, the browser's own, sets only the
+           depth) */
+        if (!D.axis && Math.hypot(cx - D.x, cy - D.y) >= (D.mouse ? 8 : 12)) {
+          D.axis = edgeStart(e, D.x) ? 'z' : 'xz';
+          D.lx = cx; D.ly = cy; D.hx = this.pos[0]; D.hz = this.pos[1];
+          this.goal = null; this.keys.clear(); this.handRest = false; SpaceEv.hover = null;
         }
         /* (step by step: at either end of the depth the hand is never owed any way back) */
-        if (D.axis === 'x') { D.hx = spaceWrap(D.hx - (cx - D.lx) * 0.5 / UI.compassSp()); this.hand = [D.hx, D.hz]; }
-        else if (D.axis === 'z') { D.hz = clamp(D.hz + (cy - D.ly) / spaceDepthPx() * 2 * SPACE_DEPTH_DIR, -1, 1); this.hand = [D.hx, D.hz]; }
+        if (D.axis) {
+          if (D.axis !== 'z') D.hx = spaceWrap(D.hx - (cx - D.lx) * 0.5 / UI.compassSp());
+          D.hz = clamp(D.hz + (cy - D.ly) / spaceDepthPx() * 2 * SPACE_DEPTH_DIR, -1, 1);
+          this.hand = [D.hx, D.hz];
+        }
         D.lx = cx; D.ly = cy;
       }
       return;
@@ -13196,10 +13306,6 @@ const SpaceEv = {
     const V = { voice: { g } }, kind = e.kind;
     /* (each touch a little higher or lower than the last, within a semitone: touched again and again it never rattles) */
     this.det = Math.pow(2, rand(-1, 1) / 12);
-    this.shot(V, 0.2, (c2, t, mk, out) => {
-      const n = this.noise(c2, mk, 'w', t, 0.06), bp = this.filt(c2, mk, 'bandpass', 2600 * this.det, 2);
-      const gg = this.env(c2, mk, t, 0.12 * SPACE_EV_LV, 0.003, 0.03); n.connect(bp); bp.connect(gg); gg.connect(out);
-    });
     if (kind === 'nova') { this.sNova(V); this.bumps(e, 0.08, 0.55, 0.08, 0.22, 0.9 * k); }
     else if (kind === 'super') { this.sSuper(V); this.bumps(e, 0.05, 0, 0.03, 0.15, 1.1 * k); this.bumps(e, 0.3, 0.45, 0.08, 0.22, 0.9 * k); }
     else if (kind === 'flare') { this.sFlare(V); this.bumps(e, 0.03, 0.3, 0.04, 0.12, 0.8 * k); }
@@ -13211,7 +13317,7 @@ const SpaceEv = {
       this.tick(V, now, 1); this.tick(V, now + d2, 0.4);
       this.bumps(e, 0.02, 0.06, 0.012, 0.07, 0.9 * k, 1); this.bumps(e, 0.02 + d2, 0.08, 0.012, 0.07, 0.7 * k, 2);
     }
-    setTimeout(() => { try { g.disconnect(); p.disconnect(); } catch (err) { /* gone */ } }, 2400);
+    setTimeout(() => { try { g.disconnect(); p.disconnect(); } catch (err) { /* gone */ } }, 4200);
   },
   /* a short-lived sound in a voice (V.voice.g: where it goes): its nodes taken down after */
   shot(e, sec, build, at) {
@@ -13235,58 +13341,46 @@ const SpaceEv = {
       const og = this.env(c, mk, at, a * g * SPACE_EV_LV, rise, fall); o.connect(og); og.connect(out); o.start(at); o.stop(at + rise + fall + 0.05);
     }
   },
-  /* a nova: far off something gives way: a low swell sinking, there at once and gone within the second, and a dark
-     breath opening and closing */
+  /* a deep rumble (every star touched speaks so): brown noise kept under lp0..lp1 Hz (two filters: a steep slope, no
+     hiss), rolling (its strength wandered by a much slower noise: roll, 0..1), and under it a sub-bass note gliding
+     sub0 -> sub1 with a little of its second harmonic, the part a phone's small speaker can give. a: how loud; rise,
+     fall: its envelope (s); at: when */
+  rumble(c, mk, out, at, o) {
+    const dur = o.rise + o.fall + 0.1;
+    const n = this.noise(c, mk, 'b', at, dur), f1 = this.filt(c, mk, 'lowpass', o.lp0, 0.7), f2 = this.filt(c, mk, 'lowpass', o.lp0 * 1.3, 0.5);
+    f1.frequency.setValueAtTime(o.lp0, at); f1.frequency.exponentialRampToValueAtTime(o.lp1, at + o.rise + o.fall * 0.8);
+    /* (the roll: two slow swayings of its strength, a few a second, never in step; rollRate: how fast) */
+    const roll = mk(c.createGain()); roll.gain.value = 1 - (o.roll || 0) * 0.45;
+    if (o.roll) for (const f of [rand(1.2, 2.2), rand(2.8, 4.5)]) {
+      const lo = mk(c.createOscillator()); lo.frequency.value = f * (o.rollRate || 1);
+      const lg = mk(c.createGain()); lg.gain.value = o.roll * 0.24; lo.connect(lg); lg.connect(roll.gain); lo.start(at, 0); lo.stop(at + dur);
+    }
+    const ng = this.env(c, mk, at, o.a * SPACE_EV_LV, o.rise, o.fall);
+    n.connect(f1); f1.connect(f2); f2.connect(roll); roll.connect(ng); ng.connect(out);
+    if (o.sub0) this.tone(c, mk, out, o.sub0, o.sub1, o.rise + o.fall, at, o.subA || o.a * 0.6, Math.max(0.02, o.rise * 0.8), o.fall, 0.22, 0.07);
+  },
+  /* a nova: far off something gives way: a deep swell rolling up and sinking away */
   sNova(V) {
-    this.shot(V, 1.6, (c, t, mk, out) => {
-      this.tone(c, mk, out, 96, 70, 1.2, t, 0.32, 0.03, 1.15, 0.4, 0.16);
-      const n = this.noise(c, mk, 'b', t, 1.4), lp = this.filt(c, mk, 'lowpass', 200, 0.7);
-      lp.frequency.setValueAtTime(180, t); lp.frequency.exponentialRampToValueAtTime(700, t + 0.2); lp.frequency.exponentialRampToValueAtTime(170, t + 1.25);
-      const ng = this.env(c, mk, t, 0.38 * SPACE_EV_LV, 0.1, 1.1); n.connect(lp); lp.connect(ng); ng.connect(out);
-    });
+    this.shot(V, 2.8, (c, t, mk, out) => this.rumble(c, mk, out, t, { a: 0.9, rise: 0.35, fall: 2.2, lp0: 150, lp1: 70, roll: 0.7, sub0: 46, sub1: 36, subA: 0.36 }));
   },
-  /* a supernova: the dull far crack of it, a boom, its rumble rolling a moment */
+  /* a supernova: the far dull blow of it, then its rumble rolling on and on, down into the deepest */
   sSuper(V) {
-    this.shot(V, 1.8, (c, t, mk, out) => {
-      this.tone(c, mk, out, 90, 60, 1.4, t, 0.39, 0.02, 1.35, 0.4, 0.14);
-      const n = this.noise(c, mk, 'b', t, 1.6), lp = this.filt(c, mk, 'lowpass', 600, 0.7);
-      lp.frequency.setValueAtTime(600, t); lp.frequency.exponentialRampToValueAtTime(90, t + 1.4);
-      const roll = mk(c.createGain()); roll.gain.value = 0.6;
-      const rl = mk(c.createBufferSource()); rl.buffer = this.buf(c, 'b'); rl.loop = true; rl.playbackRate.value = 0.006;
-      const rlg = mk(c.createGain()); rlg.gain.value = 1; rl.connect(rlg); rlg.connect(roll.gain); rl.start(t, rand(6)); rl.stop(t + 1.7);
-      const ng = this.env(c, mk, t, 0.44 * SPACE_EV_LV, 0.08, 1.35); n.connect(lp); lp.connect(roll); roll.connect(ng); ng.connect(out);
-      const cr = this.noise(c, mk, 'b', t, 0.6), cb = this.filt(c, mk, 'bandpass', 900, 0.8);
-      cb.frequency.setValueAtTime(900, t); cb.frequency.exponentialRampToValueAtTime(200, t + 0.45);
-      const cg = this.env(c, mk, t, 0.22 * SPACE_EV_LV, 0.012, 0.5); cr.connect(cb); cb.connect(cg); cg.connect(out);
+    this.shot(V, 3.8, (c, t, mk, out) => {
+      this.rumble(c, mk, out, t, { a: 1.05, rise: 0.12, fall: 3.2, lp0: 190, lp1: 55, roll: 0.9, rollRate: 0.7, sub0: 52, sub1: 30, subA: 0.42 });
+      this.rumble(c, mk, out, t + 0.5, { a: 0.6, rise: 0.6, fall: 2.4, lp0: 110, lp1: 50, roll: 1, rollRate: 0.5 });
     });
   },
-  /* a pulsar's beat (at: on the sound's clock): a low thump, and over it a quick sweep down (the high frequencies of
-     a pulse arrive first, as radio telescopes hear them); k: how strong */
+  /* a pulsar's beat (at: on the sound's clock): a deep thud, its rumble short; k: how strong */
   tick(V, at, k) {
-    this.shot(V, 0.3, (c, t, mk, out) => {
-      this.tone(c, mk, out, 110, 70, 0.14, t, 0.42 * k, 0.004, 0.15, 0.43, 0);
-      const n = this.noise(c, mk, 'w', t, 0.12), bp = this.filt(c, mk, 'bandpass', 2400, 2.5);
-      bp.frequency.setValueAtTime(2400, t); bp.frequency.exponentialRampToValueAtTime(300, t + 0.07);
-      const g = this.env(c, mk, t, 0.4 * k * SPACE_EV_LV, 0.002, 0.08); n.connect(bp); bp.connect(g); g.connect(out);
-    }, at);
+    this.shot(V, 1, (c, t, mk, out) => this.rumble(c, mk, out, t, { a: 0.85 * k, rise: 0.03, fall: 0.75, lp0: 170, lp1: 70, roll: 0.3, sub0: 58, sub1: 40, subA: 0.5 * k }), at);
   },
-  /* a flare: a radio burst: one rush of noise falling from high to low, and a soft thump */
+  /* a flare: a quick deep surge, shuddering (its roll fast) */
   sFlare(V) {
-    this.shot(V, 1, (c, t, mk, out) => {
-      const n = this.noise(c, mk, 'w', t, 0.75), bp = this.filt(c, mk, 'bandpass', 1800, 1.8);
-      bp.frequency.setValueAtTime(1800, t); bp.frequency.exponentialRampToValueAtTime(160, t + 0.6);
-      const g = this.env(c, mk, t, 0.8 * SPACE_EV_LV, 0.015, 0.6); n.connect(bp); bp.connect(g); g.connect(out);
-      this.tone(c, mk, out, 96, 64, 0.3, t, 0.36, 0.01, 0.4, 0.39, 0);
-    });
+    this.shot(V, 2.1, (c, t, mk, out) => this.rumble(c, mk, out, t, { a: 0.9, rise: 0.1, fall: 1.7, lp0: 220, lp1: 65, roll: 1, rollRate: 2.4, sub0: 50, sub1: 38, subA: 0.3 }));
   },
-  /* a pulsating star: one slow dark breath, with its low throb */
+  /* a pulsating star: one slow dark breath of rumble, in and out */
   sBreath(V) {
-    this.shot(V, 1.6, (c, t, mk, out) => {
-      const n = this.noise(c, mk, 'b', t, 1.45), lp = this.filt(c, mk, 'lowpass', 140, 0.8);
-      lp.frequency.setValueAtTime(140, t); lp.frequency.exponentialRampToValueAtTime(520, t + 0.4); lp.frequency.exponentialRampToValueAtTime(140, t + 1.35);
-      const g = this.env(c, mk, t, 0.34 * SPACE_EV_LV, 0.35, 1); n.connect(lp); lp.connect(g); g.connect(out);
-      this.tone(c, mk, out, 74, 70, 1.3, t, 0.13, 0.35, 1, 0.5, 0);
-    });
+    this.shot(V, 3, (c, t, mk, out) => this.rumble(c, mk, out, t, { a: 0.8, rise: 0.9, fall: 1.9, lp0: 90, lp1: 120, roll: 0.5, sub0: 40, sub1: 42, subA: 0.34 }));
   },
   /* a touch in the void: a dark breath drawn away where it was touched; the third, longer and deeper, everything
      settling */
@@ -20682,14 +20776,19 @@ const UI = {
     const [ux, uy] = Scene.sceneToScreen(sx, sy), onUmb = (m === 'normal' || m === 'control') && Scene.umbGrab(ux, uy);
     Scene.umbHi = onUmb || (Main.pointer && Main.pointer.down && Scene.umbHi) ? 1 : 0;
     Scene.umbPeek = onUmb || (Main.pointer && Main.pointer.down && Scene.umbPeek);
-    if (onUmb) { Scene.lineHi = 0; return 'ns-resize'; }
+    if (onUmb) { Scene.lineHi = 0; return Cursors.act('umbrella', 'y'); }
     if ((m === 'normal' || m === 'control') && !Tank.pickFish(sx, sy, 8)) {
-      const over = onSurface(sy, Scene.sceneToScreen(sx, sy)[1]);
+      const over = onSurface(sy, uy, sx);
       Scene.lineHi = over || (Main.pointer && Main.pointer.down && Scene.lineHi) ? 1 : 0;
-      if (over) return 'ns-resize';
+      /* (on the waterline: up and down the water, along it the waves; in the sky above: down the rain, along it the
+         wind; a cloud can be wrung) */
+      if (over) return Cursors.act('wave', 'xy');
+      if (m === 'normal' && sy < waveLine(sx) - SKY_GAP && Scene.geo.yF + Scene.par.y > 6) return Scene.cloudAt(ux, uy) > 0.3 ? Cursors.act('rain', 'xy') : Cursors.act('wind', 'xy');
     } else Scene.lineHi = 0;
     return 'default';
   },
+  /* a cursor set while the hand works (11_main), known to refreshCursor so that it is put back after */
+  setCursor(css) { const gl = $('#gl'); if (gl._cur !== css) { gl._cur = css; gl.style.cursor = css; } },
   refreshCursor(sx, sy) {
     if (sx === undefined && this._lastPtr) [sx, sy] = this._lastPtr;
     const css = this.cursorFor(sx, sy);
@@ -21202,6 +21301,14 @@ const UI = {
     P.tick = syncQ;
     /* the language first, each named in its own words: the page starts again in it, straight into the tank */
     list.appendChild(seg(_T('Langue'), [['en', 'English'], ['fr', 'Français']], () => LANG, (v) => this.setLang(v)));
+    /* the sound on an iPhone (03 Sound.sessionType): on in the background, or along with another app's sound */
+    if (Sound.iosLike() || navigator.audioSession) {
+      const ia = seg(_T('Son sur iPhone'), [['bg', _T('En arrière-plan')], ['mix', _T('Avec les autres sons')]], () => (S.iosAudio === 'mix' ? 'mix' : 'bg'), (v) => { S.iosAudio = v; Sound.unlock(); syncIa(); });
+      const iaNote = h('small', { class: 'setnote' });
+      const syncIa = () => { iaNote.textContent = S.iosAudio === 'mix' ? _T('Joue avec la musique d\'une autre app ; s\'arrête quand tu quittes la page.') : _T('Continue quand tu changes d\'app ou verrouilles ; le son d\'une autre app le coupe.'); };
+      syncIa(); ia.firstChild.appendChild(iaNote);
+      list.appendChild(ia);
+    }
     /* the help (it was the ? at the top left): the guided tour of the tank; out in space, how things go there */
     const space = this.inSpace;
     list.append(head(_T('Aide')));
@@ -21279,13 +21386,14 @@ const UI = {
       inp.addEventListener('input', () => { E[key] = Number(inp.value); sync(); });
       inp.addEventListener('change', () => G.save());
       /* (while a strength is being set the window clears but for its line: what it does to the tank is seen) */
-      const held = (on) => { P.el.classList.toggle('peek', on); row.classList.toggle('held', on); };
+      let holding = false;
+      const held = (on) => { holding = on; P.el.classList.toggle('peek', on); row.classList.toggle('held', on); };
       inp.addEventListener('pointerdown', () => held(true));
       for (const ev of ['pointerup', 'pointercancel', 'blur']) inp.addEventListener(ev, () => held(false));
       sync();
       row.append(h('div', { class: 'welh' }, h('span', { class: 'wic', html: icon(ic) }), h('span', { class: 'wname', text: label }), tape.el, sw), inp);
       /* (set on the sky itself while this window is open: the line follows) */
-      row._sync = () => { if (document.activeElement !== inp) sync(); tape.sync(); };
+      row._sync = () => { if (!holding && document.activeElement !== inp) sync(); tape.sync(); };
       return row;
     };
     /* (no umbrella here: whenever it rains one can be pulled down from the top of the view) */
@@ -21507,20 +21615,8 @@ const UI = {
       r.onchange = () => G.save();
       return h('div', { class: 'tunerow', dataset: { tip } }, h('span', { class: 'tname', text: label }), h('div', { class: 'tctl' }, h('small', { text: lo }), r, h('small', { text: hi })));
     };
-    /* the map: across, the kinds of noise, going round (the way the left and right arrows take you); up and down, how
-       deep it surrounds you (up, ahead: all round you; down, behind: close); you the dot. A point touched is flown to
-       by itself (the shorter way round), a kind touched keeps how deep you are */
-    const field = h('div', { class: 'sfield', role: 'group', 'aria-label': _T('Le bruit et sa profondeur') });
-    for (const m of SPACE_TYPES) field.appendChild(h('i', { class: 'scol', style: 'left:' + (50 + m.x * 40) + '%;--zc:rgb(' + m.col.map((v) => Math.round(v * 255)).join(',') + ')' }));
-    const dot = h('b', { class: 'sdot', 'aria-hidden': 'true' });
-    field.appendChild(dot);
-    const toMap = (x, z) => [(50 + spaceWrap(x) * 40).toFixed(2) + '%', (50 + z * 40).toFixed(2) + '%'];
-    field.addEventListener('pointerdown', (e) => {
-      const r = field.getBoundingClientRect();
-      Sound.unlock();
-      Space.hand = null; Space.handRest = false;
-      Space.goal = [clamp(((e.clientX - r.left) / r.width * 100 - 50) / 40, -1.25, 1.24), clamp(((e.clientY - r.top) / r.height * 100 - 50) / 40, -1, 1)];
-    });
+    /* the kinds of noise (no map of them: the sky drawn by hand is the way to travel; a kind touched keeps how deep
+       you are) */
     const kinds = h('div', { class: 'skinds' });
     const btns = SPACE_TYPES.map((m) => {
       const bb = h('button', { class: 'smode', style: '--zc:rgb(' + m.col.map((v) => Math.round(v * 255)).join(',') + ')', 'aria-label': _T('Bruit : ') + m.name, html: '<i></i><span>' + escapeHtml(m.name) + '</span>' });
@@ -21529,16 +21625,14 @@ const UI = {
       return bb;
     });
     const tickMap = () => {
-      if (!field.isConnected) return;
-      const [l, tp] = toMap(Space.pos[0], Space.pos[1]);
-      dot.style.left = l; dot.style.top = tp;
+      if (!kinds.isConnected) return;
       btns.forEach((bb, i) => bb.classList.toggle('on', i === Space.mode));
       requestAnimationFrame(tickMap);
     };
     requestAnimationFrame(tickMap);
-    b.appendChild(h('h5', { class: 'sndsec', text: _T('Le bruit et sa profondeur') }));
-    b.append(field, kinds);
-    b.appendChild(h('p', { class: 'snote', text: _T('Fais glisser le ciel, ou touche ce plan : de côté le bruit change (après le dernier revient le premier), vers le bas il t\'enveloppe, vers le haut il s\'éclaircit.') }));
+    b.appendChild(h('h5', { class: 'sndsec', text: _T('Le bruit') }));
+    b.append(kinds);
+    b.appendChild(h('p', { class: 'snote', text: _T('Fais glisser le ciel : de côté le bruit change (après le dernier revient le premier), vers le bas il t\'enveloppe, vers le haut il s\'éclaircit.') }));
     b.appendChild(h('h5', { class: 'sndsec', text: _T('Le son') }));
     b.appendChild(h('div', { class: 'setlist' },
       h('div', { class: 'setrow chrow sndrow' }, h('span', { class: 'sndname', html: icon('wave') + '<span><b>Volume</b></span>' }), h('div', { class: 'chctl' }, mute, vol)),
@@ -22728,7 +22822,8 @@ const Dial = {
     /* (a gauge of three quarters of a turn, open at the bottom) */
     const ring = h('button', { class: 'dring', 'aria-label': _T('Famille suivante'), html: '<svg viewBox="0 0 36 36" aria-hidden="true"><circle class="drbg" cx="18" cy="18" r="15.5" transform="rotate(135 18 18)" stroke-dasharray="' + A + ' ' + L.toFixed(2) + '"/><circle class="drfg" cx="18" cy="18" r="15.5" transform="rotate(135 18 18)"/></svg><i class="dric"></i>' });
     const name = h('span', { class: 'dname' }), host = h('div', { class: 'dtape' });
-    const el = h('div', { id: 'dial', role: 'status', 'aria-live': 'polite' }, ring, name, host);
+    /* (the picture says what it is: no name beside it) */
+    const el = h('div', { id: 'dial', role: 'status', 'aria-live': 'polite' }, ring, host);
     /* a touch on the dial is the dial's (the tank under it is not touched), but for a stroke up or down, handed on:
        the picture touched and let go passes to the next family */
     let D = null;
@@ -24666,14 +24761,17 @@ async function startCloud(userInitiated) {
    when it is above it (then it is pulled down from there: Scene.topBand, below the status bar on a phone, so that
    the phone's notifications do not come down instead). A generous band, wider still under a finger.
    cy: the pointer's height on the screen */
-function onSurface(sy, cy) {
-  const line = Scene.geo.yF + Scene.par.y, r = matchMedia('(pointer: coarse)').matches ? 52 : 40;
+function onSurface(sy, cy, sx) {
+  const line = waveLine(sx), r = matchMedia('(pointer: coarse)').matches ? 52 : 40;
   /* (a finger: a waterline right at the top is taken from the band under the status bar too) */
   const top = r > 50 ? Scene.safeTop() + 30 : 6;
   /* (and one at the very bottom, behind the bar of buttons, from just above the bar) */
   if (r > 50 && !UI.hidden) { const [, ly] = Scene.sceneToScreen(0, line), by = UI.barTop() - 40; if (ly > by) return Math.abs(cy - by) < r; }
   return line > top ? Math.abs(sy - line) < r / Scene.cam.z : Scene.topBand(cy, r + 6, 84);
 }
+/* the waterline where it shows at sx (scene px): with waves, on the crest or down in the trough, where the eye sees
+   it (Scene.waveAt, the same shape as drawn) */
+function waveLine(sx) { const y = Scene.geo.yF + Scene.par.y; return sx === undefined ? y : y + Scene.waveAt(sx); }
 /* where the waterline shows for a water level, and the level for a place of the waterline: from the top down to the
    tank's lowest (level 0) the water itself goes down; below that, to level -1, the view rises over the open sea and
    the waterline goes on down nearly to the bottom of the screen (Scene.rise) */
@@ -24777,7 +24875,7 @@ function bindTankInput() {
     }
     /* the surface taken by hand (no fish under the finger): pulled up or down it changes the water's height,
        swept along its line it stirs the water; which of the two, the first move decides */
-    else if ((m === 'normal' || m === 'control') && !hit(sx, sy) && !down.litter && onSurface(sy, e.clientY)) {
+    else if ((m === 'normal' || m === 'control') && !hit(sx, sy) && !down.litter && onSurface(sy, e.clientY, sx)) {
       down.surf = true; down.lx = e.clientX; down.lt = performance.now(); down.lvl0 = G.state.decor.water.level; down.sy0 = sy;
       Scene.lineHi = 1;
     }
@@ -24786,7 +24884,7 @@ function bindTankInput() {
        first move decides (pointermove). A cloud pressed and held still is wrung as before: a shower falls from it
        while the press lasts, and a bolt of lightning if it is held long (Scene.pressCloud) */
     /* (on a touch screen not from the very top: that edge is the phone's own, its notifications) */
-    else if ((m === 'normal' || m === 'control') && !down.litter && !down.fish && !hit(sx, sy) && sy < Scene.geo.yF + Scene.par.y - SKY_GAP && (down.mouse || e.clientY > Scene.safeTop() + 16)) {
+    else if ((m === 'normal' || m === 'control') && !down.litter && !down.fish && !hit(sx, sy) && sy < waveLine(sx) - SKY_GAP && (down.mouse || e.clientY > Scene.safeTop() + 16)) {
       const E = G.state.env, d0 = down;
       down.sky = { wind0: E.wind || 0, rain0: E.rain || 0, axis: null };
       if (m === 'normal' && Scene.cloudAt(e.clientX, e.clientY) > 0.3) down.wring = setTimeout(() => { if (down === d0 && !d0.moved && !d0.sky.axis) { d0.cloud = true; Scene.press.hw = 110; Scene.press.drag = false; Scene.pressCloud(d0.sx, d0.sy, true); } }, SKY_WRING_MS);
@@ -24860,14 +24958,14 @@ function bindTankInput() {
         }
         Scene.wxHand = performance.now();
         Dial.show(S.axis, true);
-        c.style.cursor = S.axis === 'wind' ? 'ew-resize' : 'ns-resize';
+        UI.setCursor(S.axis === 'wind' ? Cursors.act('wind', 'x') : Cursors.act('rain', 'y'));
         return;
       }
     }
     if (down.umb) {
       /* (how far down it may come: Scene.umbD's own range) */
       Scene.umbDrop = Scene.umbDropFor(down.umb.D0 + (e.clientY - down.umb.y) / Scene.H);
-      c.style.cursor = 'ns-resize';
+      UI.setCursor(Cursors.act('umbrella', 'y'));
       return;
     }
     if (down.litter) { Tank.moveLitter(down.litter, sx, sy); return; }
@@ -24887,7 +24985,7 @@ function bindTankInput() {
     if (down.level) {
       G.state.decor.water.level = levelForLine(lineForLevel(down.lvl0) + (e.clientY - down.y) / Scene.cam.z);
       Scene.updateGeo();
-      c.style.cursor = 'ns-resize';
+      UI.setCursor(Cursors.act('level', 'y'));
       return;
     }
     const m = G.mode;
@@ -24902,7 +25000,7 @@ function bindTankInput() {
       down.lx = e.clientX; down.lt = nowT;
       Scene.lineHi = 1;
       Dial.show('sea', true);
-      c.style.cursor = 'ew-resize';
+      UI.setCursor(Cursors.act('wave', 'x'));
       return;
     }
     /* pressed and drawn over the sand, the hand rubs it */
@@ -24936,7 +25034,8 @@ function bindTankInput() {
     if (d.cloud) { Scene.pressCloud(0, 0, false); cur(); return; }
     if (d.sky && d.sky.axis) {
       /* (taken away by the system, another finger: the weather as it was) */
-      if (e.type === 'pointercancel') { G.state.env.wind = d.sky.wind0; G.state.env.rain = d.sky.rain0; }
+      /* (taken away by the system or another finger: the weather stays where the hand had brought it; put back as
+         it was, it fell at once to nothing) */
       Scene.pressCloud(0, 0, false); Scene.press.drag = false;
       Dial.release(); G.save(); cur(); return;
     }
@@ -24946,7 +25045,7 @@ function bindTankInput() {
     if (d.surf) Scene.lineHi = 0;
     /* (the water brought down: a fish or two leap, then no more) */
     if (d.level) { if (G.state.decor.water.level < d.lvl0 - 0.04) Tank.waterLowered(); G.save(); UI.refreshCursor(d.sx, d.sy); return; }
-    if (d.stir && d.moved) { if (e.type === 'pointercancel' && d.sea0 !== undefined) G.state.env.sea = d.sea0; Dial.release(); G.save(); cur(); return; }
+    if (d.stir && d.moved) { Dial.release(); G.save(); cur(); return; }
     if (d.long) return;
     if (G.mode === 'clean') { Sound.vacuum(false); Tank.vacuum = null; }
     if (Main.dragPlant) { Main.dragPlant = null; G.save(); UI.refreshCursor(d.sx, d.sy); return; }

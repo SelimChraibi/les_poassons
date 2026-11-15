@@ -111,7 +111,7 @@ body.inspace #spacecompass { opacity: 1; transform: translate(-50%, 0); }
    space, in the tank's own glass. Its strength on a gauge round its picture (three quarters of a turn, open at the
    bottom), its kinds on a tape that goes round under a mark (the same tape, smaller, in the Weather and Sound
    windows). It comes at once and goes slowly; while a gesture on the world is setting it, it lets every touch through */
-#dial { position: fixed; left: 50%; top: var(--gutter-t, 12px); transform: translate(-50%, -8px); z-index: 31; display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 6px 0 4px; border-radius: 999px; background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); box-shadow: 0 8px 26px rgba(0, 10, 30, .28); color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s ease; touch-action: none; user-select: none; -webkit-user-select: none; }
+#dial { position: fixed; left: 50%; top: var(--gutter-t, 12px); transform: translate(-50%, -8px); z-index: 31; display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 6px 0 4px; border-radius: 999px; background: rgba(16, 28, 64, .66); border: 1px solid var(--glass-line); backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); box-shadow: 0 8px 26px rgba(0, 10, 30, .28); color: var(--ink); opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s ease; touch-action: none; user-select: none; -webkit-user-select: none; }
 #dial.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; transition: opacity .14s ease, transform .22s cubic-bezier(.2, .8, .2, 1); }
 #dial.show.gest { pointer-events: none; }
 #dial.show.dim { opacity: .7; transition: opacity .5s ease; }
@@ -143,6 +143,9 @@ body.dialon .objectives { opacity: .25; transition: opacity .3s; }
 .kttrack { position: absolute; left: 0; top: 0; height: 100%; will-change: transform; }
 .ktitem { position: absolute; top: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: rgba(214, 230, 255, .62); white-space: nowrap; transition: color .25s; pointer-events: none; }
 .ktitem.on { color: #fff; }
+/* (over a white cloud the dial stays readable: darker glass, names a little brighter) */
+#dial .ktitem { color: rgba(214, 230, 255, .8); text-shadow: 0 1px 2px rgba(0, 10, 30, .55); }
+#dial .ktitem.on { color: #fff; }
 .ktape.flash .ktitem.on { animation: cflash .6s ease-out; }
 /* (the mark: the compass's own, a small white point at the top) */
 .ktmark { position: absolute; left: 50%; top: 0; width: 0; height: 0; margin-left: -4px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid rgba(255, 255, 255, .85); pointer-events: none; }
@@ -321,6 +324,9 @@ input[type=range].vert::-webkit-slider-thumb { margin-top: 0; margin-left: -6px;
 /* (an action inside a notice: putting back what was just removed) */
 .toast .tundo { margin-left: 8px; padding: 2px 11px; border-radius: 999px; background: var(--accent-bg); border: 1px solid var(--accent-line); color: #dffffb; font-size: 13px; pointer-events: auto; }
 body.inspace .toast { pointer-events: none; }
+/* (a phone with a window open: the window fills the top of the screen, a message there would hide its title; it
+   comes at the bottom instead, over the bar, a moment) */
+@media (max-width: 720px) { body:has(.panel.main[data-key]) #toasts { top: auto; bottom: calc(var(--gutter-b, 12px) + 6px); flex-direction: column-reverse; } }
 .toast .tundo:hover { background: rgba(124, 247, 234, .24); color: #fff; }
 .toast.out { animation: toastout .4s ease-in forwards; }
 @keyframes toastin { from { opacity: 0; transform: translateY(-10px); } }
@@ -594,6 +600,8 @@ b, strong { font-weight: 400; }
 input.dim { opacity: .4; }
 .pnote { margin: 10px 2px 0; font-size: 13px; color: var(--muted); line-height: 1.35; }
 @media (pointer: coarse) {
+  /* (the close button keeps its look, but the finger may land 6 px around it: 44 px) */
+  .panel .x::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; }
   input[type=range] { height: 32px; }
   input[type=range]::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -9px; }
   input[type=range]::-moz-range-thumb { width: 24px; height: 24px; }
@@ -666,7 +674,7 @@ input.dim { opacity: .4; }
 .welh.wsub .wname { font-size: 13.5px; color: var(--muted); }
 .wel.off .welh.wsub { opacity: .6; }
 .wel > input[type=range] { display: block; width: calc(100% - 29px); margin: 6px 0 0 29px; }
-.wel.off .wname, .wel.off .wic { color: var(--dim); }
+.wel.off .wname, .wel.off .wic { color: var(--muted); }
 .wel.off > input[type=range] { opacity: .45; }
 .wkind { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px 0 11px; border-radius: 999px; font-size: 13px; color: var(--ink); background: var(--gbtn); border: 1px solid var(--gbtn-line); transition: background .15s, color .15s; }
 .wkind:hover { background: var(--gbtn-hi); color: #fff; }
@@ -3414,6 +3422,9 @@ const Sound = {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.master.gain.setTargetAtTime(this.on && !this.ducked ? this.vol : 0, t, 0.05);
+    /* (all sound off: the iPhone's silent loop stops too, so another app's music may play and the lock screen no
+       longer shows the tank as playing; unlock starts it again when sound comes back) */
+    if (!this.on) this.keepAlive(false);
     this.sfx.gain.setTargetAtTime(this.uiOn ? this.uiVol : 0, t, 0.05);
     this.fishBus.gain.setTargetAtTime(this.fishOn ? this.fishVol : 0, t, 0.05);
     this.mus.gain.setTargetAtTime(this.musicOn ? this.musicVol * 1.1 : 0, t, 0.3);
@@ -3665,22 +3676,26 @@ const Sound = {
     const c = this.ctx; if (!c) return;
     if (![dur, freq, q, gain, delay].every(Number.isFinite)) return;
     const t = c.currentTime + delay;
-    const s = c.createBufferSource(); s.buffer = this.noiseBuf(dur + 0.05);
+    /* (a slice of the shared noise, from anywhere in it, rather than a new one each time) */
+    const s = c.createBufferSource(), nb = this.nz('w'), off = Math.random() * Math.max(0, nb.duration - dur - 0.1);
+    s.buffer = nb;
     const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q;
     const g = c.createGain(); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    s.connect(f); f.connect(g); g.connect(bus || this._bus || this.sfx); s.start(t); s.stop(t + dur + 0.05);
+    s.connect(f); f.connect(g); g.connect(bus || this._bus || this.sfx); s.start(t, off); s.stop(t + dur + 0.05);
   },
   /* name: a built-in effect; fish: the fish making it (its own volume and mute apply) */
-  play(name, fish) {
+  /* x01: where across the view it happens (0 left, 1 right), for the sounds placed left or right */
+  play(name, fish, x01) {
     if (!this.ctx || !this.on) return;
     const isFish = FISH_SFX.has(name);
     if (isFish && (!this.fishOn || (fish && fish.muted))) return;
     if (!isFish && !this.uiOn) return;
-    if (!this.gate(isFish ? null : () => this.play(name))) return;
+    if (!this.gate(isFish ? null : () => this.play(name, null, x01))) return;
     this._bus = isFish ? this.fishOut(fish) : this.sfx;
     this._wet = isFish ? this.fishVol * (fish && fish.vol !== undefined ? fish.vol : 1) : this.uiVol;
     this._pitch = isFish ? fishPitch(fish) : 1;
-    try { this.playNamed(name); } finally { this._bus = null; this._wet = 1; this._pitch = 1; }
+    this._x = x01;
+    try { this.playNamed(name); } finally { this._bus = null; this._wet = 1; this._pitch = 1; this._x = undefined; }
   },
   /* heard in the editor, as a recorded voice is: whatever the fish and interface switches say */
   preview(name) {
@@ -4217,16 +4232,17 @@ const Sound = {
   playNamed(name) {
     const T = (f, d, ty, g, o) => this.tone(f, d, ty, g, o);
     switch (name) {
-      case 'click': T(720, 0.07, 'sine', 0.08, { to: 520 }); break;
-      case 'open': T(380, 0.12, 'sine', 0.07, { to: 760 }); break;
-      case 'close': T(700, 0.1, 'sine', 0.06, { to: 380 }); break;
+      /* (a hair higher or lower each time, half a semitone at most: the same sound, never a machine) */
+      case 'click': { const k = 0.97 + Math.random() * 0.06; T(720 * k, 0.07, 'sine', 0.08, { to: 520 * k }); break; }
+      case 'open': { const k = 0.97 + Math.random() * 0.06; T(380 * k, 0.12, 'sine', 0.07, { to: 760 * k }); break; }
+      case 'close': { const k = 0.97 + Math.random() * 0.06; T(700 * k, 0.1, 'sine', 0.06, { to: 380 * k }); break; }
       case 'bubble': T(320 + Math.random() * 200, 0.09, 'sine', 0.07, { to: 1100 + Math.random() * 400, glide: 0.06 }); break;
       case 'nom': T(330, 0.06, 'triangle', 0.12, { to: 210 }); T(280, 0.07, 'triangle', 0.1, { to: 170, delay: 0.08 }); break;
       /* something small dropped in (food, litter): a real little splash (makeSplash), a bigger one at the dive */
-      case 'splash': this.smallSplash(); break;
+      case 'splash': this.smallSplash(this._x); break;
       /* litter caught in the water: a soft, round bloop; thrown: a short rush of water */
       case 'grab': T(430, 0.1, 'sine', 0.07, { to: 240 }); this.noise(0.06, 900, 1.2, 0.03); break;
-      case 'toss': this.noise(0.24, 650, 0.7, 0.08); T(240, 0.16, 'sine', 0.03, { to: 520 }); break;
+      case 'toss': this.noise(0.24, 650, 0.7, 0.13); T(240, 0.16, 'sine', 0.05, { to: 520 }); break;
       case 'coin': T(988, 0.12, 'sine', 0.1, { wet: 0.3 }); T(1319, 0.22, 'sine', 0.09, { delay: 0.07, wet: 0.4 }); break;
       case 'level': [523, 659, 784, 1047].forEach((f, i) => T(f, 0.25, 'triangle', 0.09, { delay: i * 0.07, wet: 0.3 })); break;
       case 'goal': [659, 784, 988, 1319].forEach((f, i) => { T(f, 0.6, 'sine', 0.08, { delay: i * 0.09, wet: 0.5 }); T(f * 2, 0.4, 'sine', 0.02, { delay: i * 0.09 }); }); break;
@@ -4241,7 +4257,7 @@ const Sound = {
       case 'stamp': T(260, 0.08, 'sine', 0.1, { to: 160 }); break;
       case 'rec': T(660, 0.09, 'sine', 0.07, { to: 880 }); break;
       /* fish tricks */
-      case 'whoosh': this.sweep(0.42, 450, 2600, 0.09); break;
+      case 'whoosh': this.sweep(0.42, 450, 2600, 0.18); break;
       case 'wee': T(420, 0.55, 'sine', 0.06, { to: 980, glide: 0.4, wet: 0.3 }); break;
       case 'spin': T(300, 1.1, 'triangle', 0.04, { to: 1500, glide: 1 }); T(310, 1.1, 'sine', 0.03, { to: 1530, glide: 1 }); break;
       case 'boing': this.boing(); break;
@@ -4320,16 +4336,19 @@ const Sound = {
     src.start();
   },
   /* something small dropped in (a pinch of food, litter): a little real splash, a plip */
-  smallSplash() {
+  smallSplash(x01) {
     const c = this.ctx;
     if (!c || c.state !== 'running') return;
     const bank = this.splashBank.small || (this.splashBank.small = []);
     if (bank.length < 4) bank.push(this.makeSplash(true, 0.35));
     this.splashN = (this.splashN || 0) + 1;
+    /* (as loud as the other little sounds, and heard where it falls, left or right, as the dives are) */
     const src = c.createBufferSource(), g = c.createGain();
-    src.buffer = bank[this.splashN % bank.length]; src.playbackRate.value = rand(0.9, 1.15); g.gain.value = 0.32;
-    src.connect(g); g.connect(this._bus || this.sfx); src.start();
-    src.onended = () => { try { g.disconnect(); } catch (e) { /* gone */ } };
+    src.buffer = bank[this.splashN % bank.length]; src.playbackRate.value = rand(0.9, 1.15); g.gain.value = 0.16;
+    let p = null;
+    if (Number.isFinite(x01)) { p = c.createStereoPanner(); p.pan.value = clamp((x01 - 0.5) * 1.4, -0.8, 0.8); p.connect(this._bus || this.sfx); }
+    src.connect(g); g.connect(p || this._bus || this.sfx); src.start();
+    src.onended = () => { try { g.disconnect(); if (p) p.disconnect(); } catch (e) { /* gone */ } };
   },
   /* a dive, made from what is heard at a real one (bubbles in water ring as van den Doel modelled them): the slap of
      the body on the water; the crown of spray, hundreds of droplets ticking; the water thrown up falling back as a
@@ -4519,11 +4538,11 @@ const Sound = {
   sweep(dur, f0, f1, gain) {
     const c = this.ctx; if (!c) return;
     const t = c.currentTime;
-    const s = c.createBufferSource(); s.buffer = this.noiseBuf(dur + 0.05);
+    const s = c.createBufferSource(), nb = this.nz('w'); s.buffer = nb;
     const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.3;
     f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.65);
     const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + 0.06); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    s.connect(f); f.connect(g); g.connect(this._bus || this.sfx); s.start(t); s.stop(t + dur + 0.05);
+    s.connect(f); f.connect(g); g.connect(this._bus || this.sfx); s.start(t, Math.random() * Math.max(0, nb.duration - dur - 0.1)); s.stop(t + dur + 0.05);
   },
   boing() {
     const c = this.ctx; if (!c) return;
@@ -4966,12 +4985,22 @@ const FishVoice = {
     if (!buf) { if (onEnd) onEnd(); return; }
     const src = c.createBufferSource();
     src.buffer = buf;
-    src.connect(Sound.master);
-    src.onended = () => { if (this.preview === src) this.preview = null; if (onEnd) onEnd(); };
-    this.preview = src;
+    const g = c.createGain(); src.connect(g); g.connect(Sound.master);
+    src.onended = () => { if (this.preview === src) this.preview = null; try { g.disconnect(); } catch (e) { /* gone */ } if (onEnd) onEnd(); };
+    this.preview = src; this.previewG = g;
     src.start();
   },
-  stopListen() { if (this.preview) { try { this.preview.onended = null; this.preview.stop(); } catch (e) { /* ended */ } this.preview = null; } },
+  /* (stopped in a hundredth of a second's fade, never cut mid-wave: no click) */
+  stopListen() {
+    if (!this.preview) return;
+    const src = this.preview, g = this.previewG;
+    this.preview = null;
+    try {
+      src.onended = null;
+      const t = Sound.ctx.currentTime;
+      if (g) { g.gain.setTargetAtTime(0, t, 0.012); src.stop(t + 0.08); setTimeout(() => { try { g.disconnect(); } catch (e) { /* gone */ } }, 200); } else src.stop();
+    } catch (e) { /* ended */ }
+  },
   queue(f, slot, delay) {
     if (!this.has(f, slot)) return;
     f.voiceQ = f.voiceQ || [];
@@ -5068,12 +5097,15 @@ const Ambience = {
     f.connect(g); g.connect(Sound.ambi);
     return { f, g };
   },
-  panner(c, x, y, z) {
+  /* light: a short sound (the drops of rain) on a phone: placed left and right only (equal power), not round the
+     head: each HRTF placement is a convolution that never stops, too much for a phone sixteen times over */
+  panner(c, x, y, z, light) {
     const p = c.createPanner();
-    p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.45; p.maxDistance = 100;
+    p.panningModel = light && this.lite() ? 'equalpower' : 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.45; p.maxDistance = 100;
     this.pos(p, x, y, z);
     return p;
   },
+  lite() { if (this._lite === undefined) { try { this._lite = matchMedia('(pointer: coarse)').matches; } catch (e) { this._lite = false; } } return this._lite; },
   /* x to the right, y up, z toward you (negative = in front); tc > 0 glides there */
   pos(p, x, y, z, tc) {
     if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
@@ -5329,11 +5361,11 @@ const Ambience = {
     ms.connect(ml); ml.connect(md); md.connect(pg.gain);
     const canopy = { under, inp, b1, b2, top, out, dl, fb, wet, ps: srcs[0], ps2: srcs[1], pm, ph, pb, pg, ms, ml, md };
     /* the drops land all over the dome, close over your head */
-    for (let i = 0; i < 6; i++) { const a = (i + 0.5) / 6 * TAU, rr = i % 2 ? 0.55 : 0.3; const p = this.panner(c, Math.sin(a) * rr, 0.62 + (i % 2 ? 0 : 0.14), -Math.cos(a) * rr * 0.8); p.connect(inp); pool.push(p); }
+    for (let i = 0; i < 6; i++) { const a = (i + 0.5) / 6 * TAU, rr = i % 2 ? 0.55 : 0.3; const p = this.panner(c, Math.sin(a) * rr, 0.62 + (i % 2 ? 0 : 0.14), -Math.cos(a) * rr * 0.8, true); p.connect(inp); pool.push(p); }
     /* (and the heavy drops that fall off its rim into the water, to the sides and in front) */
-    for (const [x, z] of [[-1.25, -0.5], [1.25, -0.5], [0, -1.5]]) { const p = this.panner(c, x, -0.9, z); p.connect(air); pool.push(p); }
+    for (const [x, z] of [[-1.25, -0.5], [1.25, -0.5], [0, -1.5]]) { const p = this.panner(c, x, -0.9, z, true); p.connect(air); pool.push(p); }
     /* (the drops in the open: all round you) */
-    for (let i = 0; i < 4; i++) { const a = (i + 0.5) / 4 * TAU; const p = this.panner(c, Math.sin(a) * 2, 1.2, -Math.cos(a) * 2); p.connect(air); open.push(p); }
+    for (let i = 0; i < 4; i++) { const a = (i + 0.5) / 4 * TAU; const p = this.panner(c, Math.sin(a) * 2, 1.2, -Math.cos(a) * 2, true); p.connect(air); open.push(p); }
     this.rain = { kind, K, beds, pool, open, next: 0, drip: 0, tick: Sound.noiseBuf(0.08), u: cr ? cr.u : 0, canopy, taps: this.umbTaps(c), out: air };
   },
   /* the sound of one drop on the cloth of an umbrella, worked out once (ten of them, the last three heavy drops):
@@ -5553,8 +5585,10 @@ const Ambience = {
     const t = c.currentTime;
     if (t - (this.lastCrash || -9) < 0.6) return;
     this.lastCrash = t;
-    if (!this.crashN) { this.crashN = this.panner(c, 0, 0.5, -3); this.crashN.connect(this.deep.f); }
-    this.pos(this.crashN, (x01 - 0.5) * 9, 0.5, -3);
+    /* (three places taken in turn: a new crest no longer drags the foam of the last one across the ears) */
+    if (!this.crashP) this.crashP = [0, 1, 2].map(() => { const p = this.panner(c, 0, 0.5, -3); p.connect(this.deep.f); return p; });
+    const pn = this.crashP[this.crashI = ((this.crashI || 0) + 1) % 3];
+    this.pos(pn, (x01 - 0.5) * 9, 0.5, -3);
     k = clamp(k, 0.2, 1.2) * rand(0.8, 1.05);
     /* a wave breaking is no blow: the lip falls over a little at a time along the crest, so its roar rises over a
        quarter of a second (a spread of small impacts, never one), broad in the low mids and without any sub-bass;
@@ -5565,7 +5599,7 @@ const Ambience = {
     const g1 = c.createGain();
     g1.gain.setValueAtTime(0.0001, t); g1.gain.exponentialRampToValueAtTime(0.03 * k, t + 0.1); g1.gain.linearRampToValueAtTime(0.34 * k, t + 0.32);
     g1.gain.setTargetAtTime(0.0001, t + 0.42, 0.55);
-    roar.connect(hp); hp.connect(lp); lp.connect(g1); g1.connect(this.crashN);
+    roar.connect(hp); hp.connect(lp); lp.connect(g1); g1.connect(pn);
     const hiss = c.createBufferSource(); hiss.buffer = this.washBuf || (this.washBuf = Sound.noiseBuf(1.6));
     hiss.loop = true; hiss.playbackRate.value = rand(0.92, 1.08);
     const bp = this.filt(c, 'bandpass', 3000, 0.45);
@@ -5573,7 +5607,7 @@ const Ambience = {
     const g2 = c.createGain();
     g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(0.02 * k, t + 0.15); g2.gain.linearRampToValueAtTime(0.3 * k, t + 0.5);
     g2.gain.setTargetAtTime(0.0001, t + 0.7, 0.8);
-    hiss.connect(bp); bp.connect(g2); g2.connect(this.crashN);
+    hiss.connect(bp); bp.connect(g2); g2.connect(pn);
     roar.start(t); roar.stop(t + 3.1); hiss.start(t); hiss.stop(t + 4.6);
     hiss.onended = () => { try { g1.disconnect(); g2.disconnect(); hp.disconnect(); } catch (e) { /* ignore */ } };
   },
@@ -7855,7 +7889,7 @@ const Env = {
       const hh = it.fore ? Math.max(H * 0.2, Math.min(it.h * H, (H * 1.04 - Scene.geo.yF - 40) / s)) : it.h * H, ww = hh * it.v.aspect;
       const y = it.fore ? H * 1.04 : Scene.floorScreenY(x, Math.max(0, it.z)) + hh * s * 0.02;
       const fog = it.fore ? 0 : Scene.fogAt(it.z);
-      const base = { tex: it.v.tex, x, y, w: ww * s, h: hh * s, ax: 0.5, ay: 1, z: it.z, flip: it.flip, light: 0.25, caus: it.fore || it.z > 2.6 ? 0 : 0.32 * (1 - it.z / 2.6), fog, emit: it.emit, clip: 1 };
+      const base = { tex: it.v.tex, x, y, w: ww * s, h: hh * s, ax: 0.5, ay: 1, z: it.z, flip: it.flip, light: 0.25, caus: it.fore || it.z > 2.6 ? 0 : 0.32 * (1 - it.z / 2.6), fog, emit: it.emit, clip: 1, foot: it.fore ? 0 : smoothstep(1.6, 3, it.z) };
       /* the swell reaches the plants: they sway wider when the waves are strong */
       if (it.sway) Object.assign(base, { mode: 2, p0: it.ph, p1: hh * s * 0.035 * (0.4 + wE * 0.3), p2: 0.6, p3: 0 });
       if (it.fore) base.tint = [0.75, 0.78, 0.82, 1];
@@ -9113,7 +9147,7 @@ void main(){
   float fade = 0.;
   if (u_imgHW > 0. && v_xz.y > 1.02) {
     float d = abs(mod(v_xz.x - u_res.x * .5 + u_yawX + u_circ * .5, u_circ) - u_circ * .5);
-    fade = smoothstep(u_imgHW, u_imgHW * .55, d) * smoothstep(1.02, 1.12, v_xz.y);
+    fade = smoothstep(u_imgHW, u_imgHW * .55, d) * smoothstep(1.02, 1.45, v_xz.y);
   }
   col = mix(col, waterAt(v_scr), fog);
   o = vec4(col, (1. - fade) * (1. - sstep(u_topY + 1.5, u_topY - 1.5, v_scr.y)));
@@ -9221,6 +9255,7 @@ uniform float u_time, u_wt; uniform float u_seed; uniform float u_murk; uniform 
 uniform float u_sil; uniform vec3 u_silCol; uniform float u_emit; uniform sampler2D u_causTex;
 /* your own picture layers: the haze of the water they stand in, more the further back (0..1) */
 uniform float u_haze;
+uniform float u_foot;
 /* the fish you drew stand out from the water: their colours lifted (black stays black, white stays white) */
 uniform float u_pop;
 /* photographed scenery under water: red light is the first to go, the water's own hue takes over, tops catch the
@@ -9341,6 +9376,8 @@ void main(){
   rgb = mix(rgb, waterAt(v_scr), u_haze * (1. - above));
   rgb += lit * u_emit;
   float a = max(c.a, fib) * u_tint.a * (cut ? 1. - above : 1.);
+  /* (the far scenery melts into the water at its foot: no flat-bottomed slab, no straight seam along the far line) */
+  a *= 1. - u_foot * smoothstep(.8, 1., v_g.y);
   float overS = sstep(u_clipY + u_clipS, u_clipY - u_clipS, v_scr.y);
   a *= 1. - mix(.8, 1., u_far) * (1. - overS) * sstep(u_topY + 1.5, u_topY - 1.5, v_scr.y);
   a *= 1. - u_far * (1. - smoothstep(u_topY, u_topY + u_topB, v_scr.y));
@@ -11378,7 +11415,11 @@ const Scene = {
       if (a > 40) break;
     }
     this.bolt = { segs, branch, x0, dist, t: 0, life: (pulses[pulses.length - 1][0] + 0.12), pulses, k };
-    if (!document.hidden) setTimeout(() => Ambience.thunder(dist, wrung ? 0.95 : 0.6 + rain * 0.4), (0.35 + dist * 2.6) * 1000);
+    if (!document.hidden) setTimeout(() => {
+      Ambience.thunder(dist, wrung ? 0.95 : 0.6 + rain * 0.4);
+      /* (a near strike makes the fish start: a "!" and a jolt, the awake ones only) */
+      if (wrung || dist < 0.35) for (const f of Tank.fish) if (f.mode === 'wander' && !Tank.still(f) && f !== Ctl.fish && f.screen && Math.random() < 0.6) Tank.startTrick(f, 'jolt', { force: true });
+    }, (0.35 + dist * 2.6) * 1000);
   },
   /* a cloud wrung by a finger (Main: pressCloud): a shower falls from it while the press lasts (the shaders read
      u_press), it comes on in a moment and lets go slowly; held long on it, the cloud gives a bolt of lightning too */
@@ -11859,6 +11900,7 @@ const Scene = {
       gl.uniform4f(us.u_tint, tn[0], tn[1], tn[2], tn[3]);
       gl.uniform1f(us.u_fog, bare ? 0 : d.fog === undefined ? this.fogAt(d.z) : d.fog);
       gl.uniform1f(us.u_haze, bare ? 0 : d.haze || 0);
+      gl.uniform1f(us.u_foot, bare ? 0 : d.foot || 0);
       gl.uniform1f(us.u_pop, d.pop || 0);
       gl.uniform1f(us.u_shade, d.light || 0);
       gl.uniform1f(us.u_caus, bare ? 0 : (d.caus || 0) * causK);
@@ -14020,6 +14062,9 @@ const Tank = {
     const i = this.fish.indexOf(f);
     if (i >= 0) this.fish.splice(i, 1);
     if (this.selected === f) this.selected = null;
+    /* (its sound channel freed once its last sound has died away, unless it came back meanwhile) */
+    const id = f.id;
+    setTimeout(() => { if (!this.fish.some((x) => x.id === id)) Sound.dropFish(id); }, 3000);
   },
   splash(x, z) {
     const sy = Scene.projY(this.topY(z), z);
@@ -14208,6 +14253,9 @@ const Tank = {
     } else {
       this.taps.push({ x: rx, y: ry, z: 0.35, t: 0 });
       if (this.taps.length > 12) this.taps.shift();
+      /* (a plant touched bends away from the finger, as when a fish brushes past it) */
+      const pl = this.pickPlant(sx, sy);
+      if (pl && pl.screen) pl.push = clamp((pl.push || 0) + (sx < pl.screen.x ? 16 : -16), -18, 18);
     }
     /* at night the touch wakes the plankton: a little burst of living light */
     if (Daytime.night > 0.5 && !sand) for (let i = 0; i < 16; i++) { const a = rand(TAU), r = rand(4, 34); this.fx.push({ type: 'bio', x: bx + Math.cos(a) * r, y: by + Math.sin(a) * r * 0.8, z: 0.25 + rand(-0.02, 0.02), t: -rand(0, 0.15), life: rand(0.9, 1.8), s: rand(1.6, 3.4), vx: Math.cos(a) * rand(6, 18), vy: Math.sin(a) * rand(6, 18), hue: Math.random() }); }
@@ -14217,6 +14265,8 @@ const Tank = {
       if (f === Ctl.fish) continue;
       const k = f.screen.s || 1;
       const d = Math.sqrt(dist2(f.screen.x + P.x * k, f.screen.y + P.y * k, sx, sy));
+      /* (a fish doing a trick it was asked for is applauded, not frightened: a star, and it goes on) */
+      if (f.trick && TRICKS[f.trick.type] && TRICKS[f.trick.type].label) { if (d < 60 && this.t - (f.clapT || -9) > 0.6) { f.clapT = this.t; this.emote(f, 'star'); } continue; }
       if (d < 44) { f.curl = { type: 'flinch', t: 0, a: Math.random() < 0.5 ? -1.6 : 1.6 }; f.trick = null; f.vis = null; f.boost = 0; f.mode = 'flee'; f.modeT = 1.6; f.tgt = { x: f.x + (f.screen.x - sx) * 3, y: f.y + (f.screen.y - sy) * 2, z: f.z }; this.startTrick(f, 'jolt', { force: true }); this.fright(f); }
       else this.noticeOne(f, d, sx, sy, 1);
     }
@@ -14534,7 +14584,7 @@ const Tank = {
   floatGrab(f, on, vx, vy, sx, sy) {
     const F = f.float;
     if (!F) return;
-    if (on) { F.held = true; F.spin *= 0.3; Sound.play('blip', f); return; }
+    if (on) { F.held = true; F.spin *= 0.3; F.ox = undefined; Sound.play('blip', f); return; }
     F.held = false;
     if (vx === null || vx === undefined) {
       const dx = f.x - sx, dy = f.y - Scene.unprojY(sy, f.z), L = Math.hypot(dx, dy) || 1;
@@ -14546,7 +14596,8 @@ const Tank = {
       Sound.play('whoosh', f);
     }
   },
-  floatMove(f, sx, sy) { if (f.float) { f.x = sx; f.y = Scene.unprojY(sy, f.z); } },
+  /* (held where it was caught: it no longer jumps to put its middle under the finger) */
+  floatMove(f, sx, sy) { const F = f.float; if (!F) return; const y = Scene.unprojY(sy, f.z); if (F.ox === undefined) { F.ox = f.x - sx; F.oy = f.y - y; } f.x = sx + F.ox; f.y = y + F.oy; },
   updateFish(f, dt) {
     if (f.tear) { this.tearStep(f, dt); return; }
     /* out in space: weightless */
@@ -16186,6 +16237,9 @@ const Tank = {
       SP.push({ uv: ATLAS.map[o.kind] || ATLAS.map.pellet, x: o.x, y: Scene.projY(o.y, o.z) + 1, w: o.size * s * 1.6 * g, h: o.size * s * 1.6 * g, rot: o.rot, r: 1, g: 1, b: 1, a: o.air || o.held ? 1 : 0.95 - o.z * 0.3, z: o.z });
     }
     const btex = Scene.bubbleTex, buv = [0, 0, 1, 1];
+    /* (nothing of the water shows above the waterline at the front glass, where it is with its waves: with the
+       water low, the eye above it, the bubbles and specks far back near the surface would float over the sea) */
+    const L0 = Scene.geo.yF + Scene.par.y, under = (x, y) => smoothstep(L0 + Scene.waveAt(x) - 1, L0 + Scene.waveAt(x) + 5, y);
     for (const b of this.bubbles) {
       const s = Scene.s(b.z);
       /* an oblate bubble keeps its volume: wide across its path, short along it, wobbling */
@@ -16194,13 +16248,17 @@ const Tank = {
       const tilt = b.vx !== undefined ? clamp(Math.atan2(b.vx, -b.vy), -0.7, 0.7) : 0;
       const y = Scene.projY(b.y, b.z);
       const lit = 0.82 + 0.3 * clamp(1 - y / Scene.H, 0, 1);
-      SP.push({ tex: btex, uv: buv, x: b.x, y, w: D * Math.cbrt(chi), h: D / Math.pow(chi, 2 / 3), rot: tilt, r: lit, g: lit, b: lit * 1.04, a: (0.9 - b.z * 0.4) * (b.a || 1), add: 0.55, z: b.z });
+      const u = under(b.x, y);
+      if (u <= 0) continue;
+      SP.push({ tex: btex, uv: buv, x: b.x, y, w: D * Math.cbrt(chi), h: D / Math.pow(chi, 2 / 3), rot: tilt, r: lit, g: lit, b: lit * 1.04, a: (0.9 - b.z * 0.4) * (b.a || 1) * u, add: 0.55, z: b.z });
     }
     /* specks drifting in the water: they keep below the surface wherever it is */
     const mk = lightSpecks() * 2;
     if (mk > 0.01) for (const m of this.motes) {
       const s = Scene.s(m.z), top = Scene.projY(Scene.geo.surfY, m.z), y = top + clamp((m.y + 0.2 * Scene.H) / (1.25 * Scene.H), 0, 1) * (Scene.H - top);
-      SP.push({ uv: ATLAS.map.mote, x: m.x, y, w: 5 * m.s * s, h: 5 * m.s * s, r: 0.85, g: 0.92, b: 1, a: m.a * 0.35 * (0.4 + 0.6 * s) * mk, add: 1, z: m.z });
+      const u = under(m.x, y);
+      if (u <= 0) continue;
+      SP.push({ uv: ATLAS.map.mote, x: m.x, y, w: 5 * m.s * s, h: 5 * m.s * s, r: 0.85, g: 0.92, b: 1, a: m.a * 0.35 * (0.4 + 0.6 * s) * mk * u, add: 1, z: m.z });
     }
     for (const d of this.drops) {
       const s = Scene.s(d.z);
@@ -20234,7 +20292,7 @@ const UI = {
   dockBtn(name, ic, tip, cls, onClick, label, key) {
     const b = h('button', { class: 'db ' + (cls || ''), 'aria-label': tip, 'aria-keyshortcuts': key || null, dataset: { tip, k: name }, html: icon(ic) + (label ? '<span class="lb">' + label + '</span>' : '') });
     if (key) b.dataset.key = key;
-    b.addEventListener('click', (e) => { Sound.unlock(); Sound.play('click'); onClick(e, b); b.blur(); });
+    b.addEventListener('click', (e) => { Sound.unlock(); Sound.play('click'); onClick(e, b); if (e.detail) b.blur(); });
     return b;
   },
   /* the whole interface is one bar at the bottom in the middle, where the thumb and the eye fall, each button with
@@ -20493,13 +20551,14 @@ const UI = {
       m.appendChild(d);
       m.hidden = false;
       m.onclick = (e) => { if (e.target === m) done(false); };
-      const f = d.querySelector('input, .btn.primary, .btn.brown');
+      /* (a question about deleting puts the keys on "Cancel": a stray Enter never wipes the tank) */
+      const f = d.querySelector('[data-focus]') || d.querySelector('input, .btn.primary, .btn.brown');
       if (f) setTimeout(() => f.focus(), 30);
     });
   },
   confirm(title, text, ok = 'OK', cancel = _T('Annuler')) {
     return this.dialog((d, done) => {
-      d.append(h('h3', { text: title }), h('p', { text }), h('div', { class: 'row2' }, h('button', { class: 'btn', text: cancel, onclick: () => done(false) }), h('button', { class: 'btn brown', text: ok, onclick: () => done(true) })));
+      d.append(h('h3', { text: title }), h('p', { text }), h('div', { class: 'row2' }, h('button', { class: 'btn', text: cancel, dataset: { focus: '1' }, onclick: () => done(false) }), h('button', { class: 'btn brown', text: ok, onclick: () => done(true) })));
     });
   },
   /* three answers: returns the key of the chosen button, or false */
@@ -20578,6 +20637,8 @@ const UI = {
     P.owned.forEach((o) => { if (o && o.remove && o.dataset && o.dataset.temp) o.remove(); });
     /* (it leaves as it came: a short fade, already out of reach and no longer counted as that window) */
     const gone = P.el;
+    /* (the keys go back to the button that opened it) */
+    if (gone.contains(document.activeElement) && P.anchor && P.anchor.isConnected && P.anchor.focus) P.anchor.focus({ preventScroll: true });
     gone.removeAttribute('data-key'); gone.setAttribute('aria-hidden', 'true'); gone.classList.remove('pop'); gone.classList.add('closing');
     setTimeout(() => gone.remove(), 200);
     if (key === 'card') { Tank.selected = null; this.cardFish = null; this.syncPad(); }
@@ -20599,6 +20660,7 @@ const UI = {
     on(this.b_fish, G.mode === 'release' || this.panels.fishPop); on(this.b_feed, G.mode === 'feed'); on(this.b_plant, G.mode === 'plant'); on(this.b_litter, G.mode === 'litter');
     on(this.b_clean, G.mode === 'clean'); on(this.b_zoom, G.mode === 'zoom');
     on(this.b_env, this.panels.env); on(this.b_settings, this.panels.settings); on(this.b_weather, this.panels.weather); on(this.b_sound, this.panels.sound);
+    for (const [b, k] of [[this.b_env, 'env'], [this.b_settings, 'settings'], [this.b_weather, 'weather'], [this.b_sound, 'sound']]) if (b) b.setAttribute('aria-expanded', String(!!this.panels[k]));
     /* (the way back, while a star is coming home) */
     on(this.b_home, Space.S && (Space.S.phase === 'back' || Space.autoT));
     /* the sound button shows what is heard by its picture: a note while the music plays, a crossed note when it is
@@ -21280,7 +21342,7 @@ const UI = {
     b.appendChild(h('div', { class: 'ptitle', text: _T('Réglages') }));
     const list = h('div', { class: 'setlist' });
     const toggle = (label, get, set) => { const t = h('button', { class: 'toggle' + (get() ? ' on' : ''), role: 'switch', 'aria-checked': String(!!get()), 'aria-label': label }); t.onclick = () => { set(!get()); t.classList.toggle('on', !!get()); t.setAttribute('aria-checked', String(!!get())); G.save(); }; return h('div', { class: 'setrow' }, h('span', { text: label }), t); };
-    const seg = (label, opts, get, set) => { const s = h('div', { class: 'seg' }); opts.forEach(([v, t]) => { const bb = h('button', { class: get() === v ? 'on' : '', text: t }); bb.onclick = () => { set(v); $$('button', s).forEach((x) => x.classList.remove('on')); bb.classList.add('on'); G.save(); }; s.appendChild(bb); }); return h('div', { class: 'setrow' }, h('span', { text: label }), s); };
+    const seg = (label, opts, get, set) => { const s = h('div', { class: 'seg' }); opts.forEach(([v, t]) => { const bb = h('button', { class: get() === v ? 'on' : '', text: t, 'aria-pressed': String(get() === v) }); bb.onclick = () => { set(v); $$('button', s).forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); }); bb.classList.add('on'); bb.setAttribute('aria-pressed', 'true'); G.save(); }; s.appendChild(bb); }); return h('div', { class: 'setrow' }, h('span', { text: label }), s); };
     const head = (t) => h('div', { class: 'sethead', text: t });
     /* a slider row (0..1), saved when let go */
     const slide = (label, tip, get, set) => {
@@ -21405,7 +21467,7 @@ const UI = {
     b.appendChild(list);
     P.tick = () => { for (const r of list.children) if (r._sync) r._sync(); };
     /* (the surface out of view above: the sky and its weather are not seen; said once) */
-    if (!st.ui.skyUp && Scene.geo.yF + Scene.par.y < 20) { st.ui.skyUp = true; G.save(); setTimeout(() => this.toast(_T('Tire l\'eau vers le bas depuis le haut de l\'écran pour voir le ciel.'), 6000), 700); }
+    if (!st.ui.skyUp && Scene.geo.yF + Scene.par.y < 20) { st.ui.skyUp = true; G.save(); setTimeout(() => this.toast(matchMedia('(pointer: coarse)').matches ? _T('Pose le doigt un peu sous le haut de l\'écran et tire vers le bas pour faire descendre l\'eau.') : _T('Tire l\'eau vers le bas depuis le haut de l\'écran pour voir le ciel.'), 6000), 700); }
     const { rng, sec } = this.kit(b);
     const S = st.settings;
     if (S.glow === undefined) S.glow = 0.5;
@@ -21517,7 +21579,7 @@ const UI = {
     const foldB = h('button', { class: 'mfold' });
     const sync = () => {
       const on = S.music !== false;
-      playB.innerHTML = icon(on ? 'pause' : 'play'); playB.setAttribute('aria-label', on ? _T('Mettre la musique en pause') : _T('Lancer la musique')); playB.dataset.tip = on ? 'Pause' : _T('Lecture'); playB.dataset.key = 'M';
+      playB.innerHTML = icon(on ? 'pause' : 'play'); playB.setAttribute('aria-label', on ? _T('Mettre la musique en pause') : _T('Lancer la musique')); playB.dataset.tip = on ? 'Pause' : _T('Lecture');
       playB.classList.toggle('on', on);
       title.textContent = Music.title() || _T('Aucun morceau');
       const open = !!G.state.ui.tracksOpen;
@@ -23073,8 +23135,8 @@ const Editor = {
     /* clearing is an action, not a tool: it never stays selected */
     this.clearB = h('button', { class: 'tool danger', 'aria-label': _T('Effacer la toile'), dataset: { tip: _T('Tout effacer (Annuler permet de revenir en arrière)') }, html: icon('clear') + _T('<span class="tl">Effacer</span>'), onclick: () => this.clearCanvas() });
     tg.appendChild(this.clearB);
-    T('symH', 'symmetry', _T('Miroir'), _T('Dessiner en miroir, à gauche et à droite'));
-    T('symV', 'mirrorv', _T('Miroir'), _T('Dessiner en miroir, en haut et en bas'));
+    T('symH', 'symmetry', _T('Miroir') + ' ↔', _T('Dessiner en miroir, à gauche et à droite'));
+    T('symV', 'mirrorv', _T('Miroir') + ' ↕', _T('Dessiner en miroir, en haut et en bas'));
     T('move', 'move', _T('Déplacer'), _T('Déplacer (V)'));
     T('inside', 'paintin', _T('Dedans'), _T('Peindre seulement sur le dessin (P)'));
     T('line', 'line', _T('Ligne'), _T('Ligne droite (L)'));
@@ -25090,8 +25152,9 @@ function bindTankInput() {
     } else if (m === 'release') {
       UI.releaseAt(sx, sy);
     } else if (m === 'litter') {
-      if (sy < Scene.projY(Tank.topY(0.3), 0.3) - 20) return;
-      if (Tank.dropLitter(sx, sy, G.litterImage())) Sound.play('splash');
+      /* (a touch in the sky drops it just under the surface, as food is) */
+      const top = Scene.projY(Tank.topY(0.3), 0.3), ly = sy < top - 20 ? top + 10 : sy;
+      if (Tank.dropLitter(sx, ly, G.litterImage())) Sound.play('splash', null, sx / innerWidth);
     } else if (m === 'control') {
       /* steering: a touch on the fish in hand lets it go, on another fish makes it react; on the water (or the sand)
          the fish in hand swims there */
@@ -25208,7 +25271,8 @@ function feedAt(sx, sy) {
   if (!img) return;
   if (sy < Scene.projY(Tank.topY(0.3), 0.3) - 30) sy = Scene.projY(Tank.topY(0.3), 0.3) + 10;
   const n = Tank.dropFood(sx, sy, img);
-  if (n) Sound.play('splash');
+  /* (fish already full still come to look at what falls: feeding never goes dead) */
+  if (n) { Sound.play('splash', null, sx / innerWidth); Tank.noticeAt(sx, sy, 0.7); }
 }
 function plantDown(sx, sy) {
   const md = G.modeData;
@@ -25273,7 +25337,7 @@ function onKey(e) {
     if (UI.hidden) { UI.setHidden(false); return; }
     if (UI.trayOpen()) { UI.closeTray(); return; }
     const open = Object.keys(UI.panels).filter((x) => MAIN_PANELS.includes(x));
-    if (open.length) { UI.closePanel(open[open.length - 1]); return; }
+    if (open.length) { Sound.play('close'); UI.closePanel(open[open.length - 1]); return; }
     if (G.mode !== 'normal') { G.setMode('normal'); return; }
     /* nothing left to close: Escape hides the interface (and shows it again, above) */
     UI.setHidden(true);

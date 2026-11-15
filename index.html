@@ -83,7 +83,7 @@ input, textarea { font: inherit; color: inherit; user-select: text; -webkit-user
 /* docks: one frosted-glass capsule per group of buttons */
 .dock { position: absolute; display: flex; flex-direction: column; gap: 6px; padding: 10px; background: var(--glass); border: 1px solid var(--glass-line); border-radius: 34px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: var(--glass-shadow); }
 /* the tools: one bar at the bottom in the middle, each tool with its name under its picture */
-#toolbar { left: 50%; bottom: var(--gutter-b); transform: translateX(-50%); flex-direction: row; align-items: center; gap: 4px; padding: 6px; border-radius: 26px; transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .25s; }
+#toolbar { --tbgap: 4px; left: 50%; bottom: var(--gutter-b); transform: translateX(-50%); flex-direction: row; align-items: center; gap: var(--tbgap); padding: 6px; border-radius: 26px; transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .25s; }
 #toolbar .db.tb { width: 72px; height: 62px; border-radius: 19px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
 #toolbar .db.tb .ic { width: 26px; height: 26px; }
 #toolbar .lb { font-size: 12.5px; line-height: 1; color: var(--muted); white-space: nowrap; transition: color .15s; }
@@ -98,7 +98,7 @@ body.steering #toolbar { transform: translate(-50%, calc(100% + 30px)); opacity:
 /* out in space (UI.setSpace) the bar turns: the tank's buttons fold away one after the other, Rentrer opens out, with
    a little spring; the bar itself goes darker, night blue, a cooler line round it */
 #toolbar .db.tb { transition: width .55s cubic-bezier(.34, 1.36, .5, 1) var(--d, 0ms), margin .55s cubic-bezier(.34, 1.36, .5, 1) var(--d, 0ms), opacity .3s ease var(--d, 0ms), transform .55s cubic-bezier(.34, 1.36, .5, 1) var(--d, 0ms), background .2s ease, box-shadow .2s ease, color .2s ease, border-color .2s ease; }
-body.inspace #toolbar .db.tb.earthonly, body:not(.inspace) #toolbar .db.tb.spaceonly { width: 0; margin-left: -4px; opacity: 0; transform: scale(.4); pointer-events: none; overflow: hidden; border-width: 0; padding: 0; }
+body.inspace #toolbar .db.tb.earthonly, body:not(.inspace) #toolbar .db.tb.spaceonly { width: 0; margin-right: calc(-1 * var(--tbgap)); opacity: 0; transform: scale(.4); pointer-events: none; overflow: hidden; border-width: 0; padding: 0; }
 #toolbar { transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .25s, background .8s ease, border-color .8s ease, box-shadow .8s ease; }
 body.inspace #toolbar { background: rgba(8, 10, 26, .55); border-color: rgba(190, 205, 255, .16); box-shadow: 0 10px 40px rgba(0, 0, 10, .5); }
 body.inspace .objectives { opacity: 0; pointer-events: none; transition: opacity .6s; }
@@ -554,7 +554,7 @@ body.inspace .toast { pointer-events: none; }
   .db .ic { width: 22px; height: 22px; }
   .dock { gap: 4px; padding: 6px; border-radius: 28px; }
   :root { --barh: 52px; }
-  #toolbar { gap: 2px; padding: 4px; border-radius: 22px; }
+  #toolbar { --tbgap: 2px; padding: 4px; border-radius: 22px; }
   #toolbar .db.tb { width: 40px; height: 44px; border-radius: 17px; }
   #toolbar .db.invite::before { top: 5px; right: 5px; }
   #toolbar .db.pulse::after, #addtray .db.pulse::after { border-radius: 21px; }
@@ -578,7 +578,7 @@ body.inspace .toast { pointer-events: none; }
 }
 @media (max-width: 380px) {
   #toolbar .db.tb { width: 36px; border-radius: 18px; }
-  #toolbar { gap: 1px; padding: 3px; }
+  #toolbar { --tbgap: 1px; padding: 3px; }
 }
 @media (max-height: 560px) {
 }
@@ -2427,6 +2427,8 @@ const I18N_EN = {
   "Joue avec la musique d'une autre app ; s'arrête quand tu quittes la page.": "Plays along with another app's music; stops when you leave the page.",
   "Continue quand tu changes d'app ou verrouilles ; le son d'une autre app le coupe.": "Keeps playing when you switch apps or lock; another app's sound stops it.",
   "L'aquarium": "The aquarium",
+  "Fais glisser le ciel : de côté le bruit change (après le dernier revient le premier) ; vers le bas il devient plus grave et t'enveloppe, vers le haut il s'éclaircit.": "Drag the sky: sideways the noise changes (after the last comes the first again); down it grows deeper and surrounds you, up it clears.",
+  "Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en haut dit où tu es), vers le bas il devient plus grave et t'enveloppe, vers le haut il s'éclaircit. Les flèches font de même. Tes poissons flottent : attrape-les et lance-les. Touche une étoile : elle explose, très loin, dans un grondement. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière).": "Drag the sky to travel: sideways the noise changes (deep, cabin, brown, swell, wind, then deep again: the compass at the top says where you are), down it grows deeper and surrounds you, up it clears. The arrow keys do the same. Your fish float: catch them and throw them. Touch a star: it explodes, far away, with a rumble. To go home, touch a big star five times (the ones with a small cross of light).",
 };
 /* the page's own words, written before the scripts: its language, the message without WebGL 2, the eye's name */
 document.documentElement.lang = LANG;
@@ -3170,19 +3172,10 @@ const Cursors = {
     this.cache.set(key, css);
     return css;
   },
-  /* what the hand moves, as the cursor (the computer): its picture, and small arrows for the ways it goes (axis 'x':
-     along, 'y': up and down, 'xy': both, none: no arrows). The hot spot in the middle */
-  act(name, axis) {
-    const key = 'act|' + name + '|' + (axis || '');
-    if (this.cache.has(key)) return this.cache.get(key);
-    const body = LN[name] || LN.close;
-    const ar = (axis && axis.includes('x') ? '<path d="M4.5 13l-3 3 3 3"/><path d="M27.5 13l3 3-3 3"/>' : '') + (axis && axis.includes('y') ? '<path d="M13 4.5l3-3 3 3"/><path d="M13 27.5l3 3 3-3"/>' : '');
-    const g = (st, w) => '<g stroke="' + st + '" stroke-width="' + w + '">' + ar + '<g transform="translate(7 7) scale(.75)" stroke-width="' + (w / 0.75).toFixed(2) + '">' + body + '</g></g>';
-    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round">' + g('#061026" stroke-opacity=".8', 4) + g('#ffffff', 1.7) + '</svg>';
-    const css = 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '") 16 16, ' + (axis === 'x' ? 'ew-resize' : axis === 'y' ? 'ns-resize' : axis ? 'move' : 'pointer');
-    this.cache.set(key, css);
-    return css;
-  },
+  /* what the hand is about to move or is moving on the world (the waves, the wind, the rain, the umbrella, the level):
+     the system's own plain cursors, nothing drawn over the scene (a picture there distracted from it): along one way,
+     its double arrow; either way, a hand */
+  act(name, axis) { return axis === 'x' ? 'ew-resize' : axis === 'y' ? 'ns-resize' : axis ? 'grab' : 'pointer'; },
   /* a drawing as the cursor (the selected food, the selected plant), with a soft shadow */
   image(id, maxW, maxH, anchor) {
     const rec = IMAGES.get(id);
@@ -3887,8 +3880,11 @@ const Sound = {
     /* (a touch of that echo on the events out there: their one sound is short) */
     C.evRs.gain.setTargetAtTime(lerp(0.2, 0.38, d), t, T(0.15));
     /* the colour and the breath of it all */
-    C.lp.frequency.setTargetAtTime(250 * Math.pow(2, P.tone * 5.6) * (1 + 0.3 * P.swell * br) * lerp(1.45, 0.7, d), t, T(0.08));
-    C.sh.gain.setTargetAtTime(lerp(5, 0, P.tone), t, T(0.2));
+    /* (its colour follows how deep you are, set by the hand drawing the sky: close above, clear and open; deep below,
+       dark and low) */
+    const tone = lerp(0.95, 0.36, d);
+    C.lp.frequency.setTargetAtTime(250 * Math.pow(2, tone * 5.6) * (1 + 0.3 * P.swell * br) * lerp(1.45, 0.7, d), t, T(0.08));
+    C.sh.gain.setTargetAtTime(lerp(5, 0, tone), t, T(0.2));
     C.am.gain.setTargetAtTime((1 + 0.38 * P.swell * br) * lerp(1.31, 0.56, d), t, T(0.08));
     C.pan.pan.setTargetAtTime(clamp(st && st.pan ? st.pan : 0, -0.8, 0.8), t, T(0.15));
     const vol = P.on ? P.vol : 0;
@@ -10263,6 +10259,10 @@ void main(){
   vec3 dop = dsh > 0. ? mix(vec3(1.), vec3(.62, .8, 1.35), dsh) : mix(vec3(1.), vec3(1.35, .7, .45), -dsh);
   v_col = a_c.rgb * a_s.w * tw * (1. + fl * 2.2) * tint * dop * (1. + .3 * dsh) * mix(1., .22, u_warp.w * (1. - me)) * (1. - gone);
   v_r = a_s.z * (1. + fl * .7);
+  /* (a star that can be touched: a little brighter and wider, glimmering slowly, so that it invites the finger) */
+  float tch = step(.1, a_x.y) * step(a_x.y, .5);
+  v_col *= 1. + tch * (.38 + .14 * sin(u_t * .8 + s * 5.));
+  v_r *= 1. + .2 * tch;
   v_big = a_x.y;
   v_spk = a_x.y * (.6 + 2.4 * fl) * (1. + .2 * sin(u_t * 1.3 + s * 6.));
   v_sz = v_big > .5 ? 64. : v_r * 7.;
@@ -10302,7 +10302,8 @@ void main(){ o = vec4(v_c.rgb * v_c.a, 1.); }`;
    a_p: centre (px), half-size, kind; a_c: colour and strength; a_q: four numbers of its own. Kinds: 0 a speck of
    dust lit; 1 a star flaring (core, halo, four rays: a_q radius of its core, length of its rays, how much of them);
    2 a shell of gas (radius, thickness, seed, how torn); 3 a haze (radius, -, seed); 4 a pulsar's two jets (angle,
-   length, seed); 5 a thin ring (radius, width); 6 an echo, a ring of dust lit by a flash (radius, width, seed) */
+   length, seed); 5 a thin ring (radius, width); 6 an echo, a ring of dust lit by a flash (radius, width, seed); 7 a blast's ragged shock front of gas (radius,
+   width, seed) */
 SH.evVS = `#version 300 es
 precision highp float;
 layout(location = 0) in vec2 a_v; layout(location = 1) in vec4 a_p; layout(location = 2) in vec4 a_c; layout(location = 3) in vec4 a_q;
@@ -10371,6 +10372,16 @@ void main(){
   } else if (v_k == 5) {
     /* a thin ring */
     I = exp(-pow((r - v_q.x) / v_q.y, 2.));
+  } else if (v_k == 7) {
+    /* a blast's shock front: a ragged ring of glowing gas, its edge pushed out unevenly, brighter in knots, a soft
+       glow trailing inside it (radius, width, seed) */
+    float R = v_q.x, w = v_q.y;
+    vec2 dir = normalize(d + 1e-4);
+    float Rr = R * (1. + (ef(dir * 2.3 + v_q.z) - .5) * .24), x = (r - Rr) / w;
+    if (x > 3.) discard;
+    float knots = .3 + 1.4 * smoothstep(.3, .8, ef(d / max(R, 1.) * 5. + v_q.z * 1.9));
+    float lace = .5 + .8 * pow(1. - abs(2. * ef(dir * 7. + v_q.z * 3.1 + r * .02) - 1.), 3.);
+    I = exp(-x * x) * knots * lace + .25 * smoothstep(-7., 0., x) * (1. - step(0., x)) * knots;
   } else {
     /* an echo: the dust lit by a flash as its light passes: thin arcs where the sheets of dust are, in fine threads */
     float R = v_q.x, w = v_q.y;
@@ -12302,7 +12313,9 @@ function spaceWrap(x) { return x - SPACE_LOOP * Math.round(x / SPACE_LOOP); }
    (across: the kinds; up and down: how deep), for the whole gesture; the depth goes from one end to the other over
    SPACE_DEPTH_PX px. SPACE_DEPTH_DIR: 1, drawn down it deepens (and up it clears and comes close) */
 const SPACE_DEPTH_DIR = 1;
-function spaceDepthPx() { return clamp(innerHeight * 0.3, 200, 300); }
+/* (the whole depth, from clear and close to deep and all round: most of the screen's height, so that a stroke never
+   runs out at once) */
+function spaceDepthPx() { return clamp(innerHeight * 0.75, 420, 720); }
 const Space = {
   S: null,
   /* how weightless the fish are (0..1, eased) */
@@ -12378,6 +12391,9 @@ const Space = {
     if (U < 0.02) return null;
     let x = W / 2 - K.S * 2 * E / (1 + U) + (this.par[0] + this.lean[0]) * (dep || 0), y = H / 2 - K.S * 2 * N / (1 + U) + (this.par[1] + this.lean[1]) * (dep || 0);
     const F = this.fx;
+    /* (going ahead the sky opens out a little from its middle, going back it gathers: as SH.starVS does, so that what
+       is drawn on a star stays on it while you travel) */
+    if (!raw) { const k = 1 + 0.05 * this.vel[1]; x = W / 2 + (x - W / 2) * k; y = H / 2 + (y - H / 2) * k; }
     if (!raw && F.warpZ !== 1 && this.S) { x = this.S.x + (x - this.S.x) * F.warpZ; y = this.S.y + (y - this.S.y) * F.warpZ; }
     return [x, y];
   },
@@ -12851,12 +12867,16 @@ const Space = {
     K.big = inside.slice(0, 7).filter((r, i) => i < 4 || r.m < 2.2);
     for (const r of K.rows) r.big = 0;
     for (const b of K.big) b.big = 1;
-    if (K.big.map((b) => b.ra + ',' + b.de).join(';') !== was || !K.buf) {
+    if (K.big.map((b) => b.ra + ',' + b.de).join(';') !== was || !K.buf || K.bufWH !== W * H) {
+      K.bufWH = W * H;
       /* one point each: right ascension, declination, radius of its core, brightness | colour, nearness | seed, big */
       const buf = new Float32Array(K.rows.length * 10);
+      /* (the stars that can be touched, as SpaceEv.starAt picks them, marked 0.25: a little brighter, slowly
+         glimmering) */
+      const lim = W * H < 520000 ? 4.6 : 5.3;
       K.rows.forEach((r, i) => {
         const a = clamp(1.15 - 0.15 * r.m, 0.3, 1.1), rc = clamp(1.75 - 0.23 * r.m, 0.5, 2) * (r.big ? 1.3 : 1);
-        buf.set([r.ra, r.de, rc, a, r.col[0], r.col[1], r.col[2], r.d, r.seed, r.big], i * 10);
+        buf.set([r.ra, r.de, rc, a, r.col[0], r.col[1], r.col[2], r.d, r.seed, r.big ? 1 : r.m <= lim ? 0.25 : 0], i * 10);
       });
       K.buf = buf; K.dirty = true;
     }
@@ -12874,8 +12894,12 @@ const Space = {
 };
 
 /* ---------- what happens out in space on a star touched (07b Space): events very small and far away ----------
-   A star touched out there (any star seen well, but not the big stars with a cross: those bring you home) becomes
-   the place of an event, tiny and far off, as a telescope would show it:
+   A star touched out there (any star seen well, but not the big stars with a cross: those bring you home) EXPLODES
+   (boom), far off between the stars: a blinding flash lighting the sky round it, the sky shaken a moment, a shock
+   wave racing out as a thin bright ring and a warmer one behind, a fireball of hot gas swelling and cooling from gold
+   to red, then a torn shell of filaments in a wide faint cloud of red gas, swelling slowly for a minute; its flash runs
+   out through the dust three times. Heard as a deep rumbling explosion (sBoom). Touched again, it blasts once more.
+   By themselves, now and then and in silence, the stars live quieter lives, as a telescope would show them:
    - a nova: the star flares up in a moment, white-hot, then dims slowly, reddening (the glow of its hydrogen); the
      shell of gas it blew off swells round it, faint, red at its rim and sea-green inside (hydrogen, oxygen), torn
      into clumps; its flash runs out through the dust round it and lights it as it passes (a light echo), twice,
@@ -12954,7 +12978,9 @@ const SpaceEv = {
     this.voids.n = 0;
     if (this.autoAt !== null) this.autoAt = Math.max(this.autoAt, this.tm + 15);
     const e = this.list.find((x) => x.r === r && !x.dying);
-    if (e) { if (this.tm - e.kick > 0.4) this.again(e); } else this.start(r);
+    /* (a star touched explodes; one already exploding blasts again; one living its own quiet life gives way to it) */
+    if (e && e.kind === 'boom') { if (this.tm - e.kick > 0.4) this.again(e); }
+    else { if (e) this.end(e); this.start(r); }
   },
   /* which event a star gives: by its colour (how hot it is), never the same kind twice in a row */
   kindFor(r) {
@@ -12971,13 +12997,13 @@ const SpaceEv = {
     /* (room for one more: the oldest that came by itself goes first, else the oldest) */
     if (live.length >= SPACE_EV_MAX) this.end(live.find((x) => x.auto) || live[0]);
     /* (by itself: the first one a nova, the plainest to see; a supernova seldom, never first) */
-    let kind = this.kindFor(r);
+    let kind = auto ? this.kindFor(r) : 'boom';
     if (auto) { if (!this.autoN) kind = 'nova'; else if (kind === 'super' && Math.random() > 0.35) kind = 'nova'; this.autoN = (this.autoN || 0) + 1; }
     const t = this.tm;
     const e = { r, kind, auto: !!auto, t0: t, k: 1, fade: 1.6, dying: false, waves: [], seed: Math.random() * 97, x: -1e5, y: -1e5, vis: false, ph: 0, fl: [], next: 0.25, kick: -99, size: rand(0.8, 1.2) };
     /* (each ends by itself, the sky kept calm: a flare is soon over, a pulsating star after a few of its breaths, a
        supernova's remnant lingers longest; one touched lasts twice as long) */
-    e.life = (kind === 'super' ? 60 : kind === 'nova' ? 35 : kind === 'pulsar' ? 20 : kind === 'flare' ? 7 : 26) * (auto ? 1 : 2);
+    e.life = kind === 'boom' ? 80 : (kind === 'super' ? 60 : kind === 'nova' ? 35 : kind === 'pulsar' ? 20 : kind === 'flare' ? 7 : 26) * (auto ? 1 : 2);
     /* (never more than two flashes a second or so: gentle on the eyes) */
     if (kind === 'pulsar') { e.P = rand(0.5, 0.95); e.ang = rand(Math.PI); }
     else if (kind === 'super') { e.psr = Math.random() < 0.65; e.P = rand(0.5, 0.7); e.ang = rand(Math.PI); }
@@ -12988,8 +13014,9 @@ const SpaceEv = {
        three times */
     this.list.push(e);
     this.last = kind;
-    if (!auto) { this.used = true; e.kick = t; this.ring(e, 1); }
+    if (!auto) { this.used = true; e.blasts = [t]; this.ring(e, 1); }
     if (kind === 'nova') { this.wave(e, 0.12, 1, 150, 15, true); this.wave(e, 1.5, 0.55, 112, 22, true); }
+    else if (kind === 'boom') { this.wave(e, 0.05, 1.8, 260, 20, true); this.wave(e, 1.4, 1.1, 170, 26, true); this.wave(e, 3.6, 0.6, 130, 34, true); }
     else if (kind === 'super') { this.wave(e, 0.35, 1.6, 175, 18, true); this.wave(e, 2.2, 0.9, 140, 26, true); this.wave(e, 4.8, 0.55, 118, 34, true); }
     return e;
   },
@@ -13014,6 +13041,15 @@ const SpaceEv = {
     const t = this.tm, a = t - e.t0;
     e.kick = t; e.auto = false;
     /* (touched, it is yours: it lasts as long again from now, and is heard once more, a little softer) */
+    if (e.kind === 'boom') {
+      /* (touched again: it blasts once more, a little less, its wave out through the dust again) */
+      e.life = Math.max(e.life, a + 60);
+      e.blasts.push(t); if (e.blasts.length > 4) e.blasts.shift();
+      this.wave(e, 0.04, 1.2, 240, 20, true);
+      this.used = true;
+      this.ring(e, 0.75);
+      return;
+    }
     e.life = Math.max(e.life, a + (e.kind === 'super' ? 60 : e.kind === 'nova' ? 35 : e.kind === 'pulsar' ? 30 : e.kind === 'flare' ? 12 : 30));
     if (e.kind === 'pulsar' || (e.kind === 'super' && e.psr && a > 9)) { e.P = Math.max(0.4, e.P * 0.93); this.wave(e, 0, 0.9, 300, 14); }
     else if (e.kind === 'flare') { e.kick = -99; this.flare(e, 1.5); }
@@ -13095,7 +13131,19 @@ const SpaceEv = {
     const a = t - e.t0;
     let I = 0, col = e.r.col, spk = 0;
     const mix3 = (p, q, k) => [lerp(p[0], q[0], k), lerp(p[1], q[1], k), lerp(p[2], q[2], k)];
-    if (e.kind === 'nova') {
+    if (e.kind === 'boom') {
+      /* an explosion: blinding at once, then a long glow cooling from white to orange to deep red; each blast again
+         flares it */
+      for (const b of e.blasts) {
+        const u = t - b, s = b === e.t0 ? 1 : 0.6;
+        if (u < 0) continue;
+        I += s * (u < 0.1 ? 8 * Math.pow(smoothstep(0, 0.1, u), 1.5) : 8 * Math.exp(-(u - 0.1) / 1.4) + 1.3 * Math.exp(-u / 9));
+      }
+      I += 0.35 * Math.exp(-a / 60);
+      col = a < 2 ? mix3([0.86, 0.92, 1], [1, 0.9, 0.72], smoothstep(0.05, 2, a)) : mix3([1, 0.9, 0.72], [1, 0.5, 0.32], smoothstep(2, 16, a));
+      spk = I;
+      return { I, col, spk };
+    } else if (e.kind === 'nova') {
       I = a < 0.4 ? 2.4 * Math.pow(smoothstep(0, 0.4, a), 2) : 2.4 * Math.exp(-(a - 0.4) / 2.8) + 0.35 * Math.exp(-a / 28);
       col = mix3([0.86, 0.92, 1], [1, 0.6, 0.5], smoothstep(1.5, 9, a)); spk = I;
     } else if (e.kind === 'super') {
@@ -13138,6 +13186,11 @@ const SpaceEv = {
       if (e.dying) { e.k = Math.max(0, e.k - dt / e.fade); continue; }
       const a = t - e.t0;
       if (a > e.life) { this.end(e, true); continue; }
+      /* (the blast shakes the sky a moment, felt with the boom: none while the page is hidden or motion spared) */
+      if (e.kind === 'boom' && !hidden && !Dial.still()) for (const b of e.blasts) {
+        const u = t - b;
+        if (u >= 0 && u < 1.6) { const A = 5 * (b === e.t0 ? 1 : 0.6) * Math.exp(-u / 0.3) * e.k; Space.lean[0] += rand(-A, A); Space.lean[1] += rand(-A, A) * 0.8; }
+      }
       if (e.kind === 'pulsar' || (e.kind === 'super' && e.psr && a > 9)) {
         const was = Math.floor(e.ph);
         e.ph += dt / e.P;
@@ -13210,7 +13263,31 @@ const SpaceEv = {
         q(e.x, e.y, R + 3 * ww + 1, 6, lerp(0.74, c[0], 0.35), lerp(0.82, c[1], 0.35), lerp(1, c[2], 0.35), w.k * A * 0.42 / (1 + Math.pow(R / 110, 1.4)) * smoothstep(6, 26, R), R, ww, e.seed + w.t0 * 3.1, 0);
       }
       /* a nova's shell of gas; a supernova's remnant of filaments, the blue haze of its pulsar inside */
-      if (e.kind === 'nova' && a > 0.6) {
+      if (e.kind === 'boom') {
+        const sz = k * e.size;
+        for (const b of e.blasts) {
+          const u = t - b, s = b === e.t0 ? 1 : 0.65;
+          if (u < 0) continue;
+          /* the flash lighting the sky round it, wide and brief */
+          q(e.x, e.y, 170 * sz * s, 3, 1, 0.94, 0.84, 0.32 * s * Math.exp(-u / 0.45) * A, 70 * sz * s, 0, e.seed, 0);
+          /* the shock wave: a ragged front of glowing gas racing out and slowing, pale, and a warmer, slower one
+             behind it */
+          if (u < 4.5) {
+            const R1 = 170 * sz * s * (1 - Math.exp(-u / 0.8)), R2 = 105 * sz * s * (1 - Math.exp(-Math.max(0, u - 0.2) / 1.2)), w1 = 2 + R1 * 0.035, w2 = 3 + R2 * 0.06;
+            q(e.x, e.y, R1 * 1.15 + 3 * w1 + 2, 7, 0.8, 0.88, 1, 0.42 * s * smoothstep(0, 0.06, u) * (1 - smoothstep(0.4, 3.4, u)) * A, R1, w1, e.seed + b * 1.7, 0);
+            if (u > 0.2) q(e.x, e.y, R2 * 1.15 + 3 * w2 + 2, 7, 1, 0.66, 0.4, 0.34 * s * smoothstep(0.2, 0.5, u) * (1 - smoothstep(0.8, 4.5, u)) * A, R2, w2, e.seed + 3 + b, 0);
+          }
+          /* the fireball: hot gas swelling out, cooling from gold to red as it thins */
+          const Rf = sz * s * (8 + 40 * (1 - Math.exp(-u / 1.8)));
+          q(e.x, e.y, Rf * 2, 3, 1, lerp(0.78, 0.4, smoothstep(0, 10, u)), lerp(0.45, 0.3, smoothstep(0, 10, u)), 0.85 * s * smoothstep(0, 0.1, u) * Math.exp(-u / 6) * A, Rf, 0, e.seed + b, 0);
+        }
+        /* what is left: a torn shell of filaments swelling slowly, and a wide faint cloud of red gas round it */
+        if (a > 0.6) {
+          const R = sz * (16 + 34 * (1 - Math.exp(-a / 14)) + 0.05 * a), w = Math.max(2, 0.12 * R);
+          q(e.x, e.y, R * 1.35 + 3 * w, 2, 1, 0.7, 0.5, 0.8 * smoothstep(0.6, 5, a) * (0.55 + 0.45 * Math.exp(-a / 45)) * A, R, w, e.seed, 1);
+          q(e.x, e.y, R * 2.4, 3, 1, 0.32, 0.38, 0.16 * smoothstep(1.5, 8, a) * Math.exp(-a / 70) * A, R * 1.3, 0, e.seed + 5, 0);
+        }
+      } else if (e.kind === 'nova' && a > 0.6) {
         const R = k * e.size * 30 * (1 - Math.exp(-a / 9)), w = Math.max(1.6, 0.16 * R);
         q(e.x, e.y, R * 1.3 + 3 * w, 2, e.r.col[0], e.r.col[1], e.r.col[2], 0.5 * smoothstep(0.6, 4, a) * Math.exp(-a / 50) * A, R, w, e.seed, 0.4);
       } else if (e.kind === 'super' && a > 1.8) {
@@ -13230,7 +13307,7 @@ const SpaceEv = {
       }
       /* the star itself flaring: a white-hot core, a soft halo, four thin rays */
       /* (the brighter, the wider its core and glow and the longer its rays: a bright star seen through a telescope) */
-      const I = L.I * A, sp = Math.sqrt(Math.max(L.spk, 0)) * A, rc = 0.65 + 0.5 * Math.sqrt(I), Ls = 1.5 + (e.kind === 'super' ? 3.6 : 5) * sp;
+      const I = L.I * A, sp = Math.sqrt(Math.max(L.spk, 0)) * A, rc = 0.65 + 0.5 * Math.sqrt(I), Ls = 1.5 + (e.kind === 'super' || e.kind === 'boom' ? 3.6 : 5) * sp;
       /* (a flare and a swelling star bloom: a soft glow round them, plain to see even very small) */
       const bloom = e.kind === 'flare' || e.kind === 'ceph' ? Math.min(1, L.spk) : 0;
       q(e.x, e.y, Math.max(bloom ? 22 : 7, Ls * 4.2 + 3), 1, c[0], c[1], c[2], Math.min(I, 6), rc, Ls, Math.min(1, sp), bloom);
@@ -13348,7 +13425,8 @@ const SpaceEv = {
     const V = { voice: { g } }, kind = e.kind;
     /* (each touch a little higher or lower than the last, within a semitone: touched again and again it never rattles) */
     this.det = Math.pow(2, rand(-1, 1) / 12);
-    if (kind === 'nova') { this.sNova(V); this.bumps(e, 0.08, 0.55, 0.08, 0.22, 0.9 * k); }
+    if (kind === 'boom') { this.sBoom(V, k); this.bumps(e, 0.04, 0, 0.03, 0.25, 1.1 * k); this.bumps(e, 0.45, 1.3, 0.25, 0.7, 0.85 * k); }
+    else if (kind === 'nova') { this.sNova(V); this.bumps(e, 0.08, 0.55, 0.08, 0.22, 0.9 * k); }
     else if (kind === 'super') { this.sSuper(V); this.bumps(e, 0.05, 0, 0.03, 0.15, 1.1 * k); this.bumps(e, 0.3, 0.45, 0.08, 0.22, 0.9 * k); }
     else if (kind === 'flare') { this.sFlare(V); this.bumps(e, 0.03, 0.3, 0.04, 0.12, 0.8 * k); }
     else if (kind === 'ceph') { this.sBreath(V); this.bumps(e, 0.02, 0, 0.45, 0.28, 0.75 * k); }
@@ -13359,7 +13437,7 @@ const SpaceEv = {
       this.tick(V, now, 1); this.tick(V, now + d2, 0.4);
       this.bumps(e, 0.02, 0.06, 0.012, 0.07, 0.9 * k, 1); this.bumps(e, 0.02 + d2, 0.08, 0.012, 0.07, 0.7 * k, 2);
     }
-    setTimeout(() => { try { g.disconnect(); p.disconnect(); } catch (err) { /* gone */ } }, 4200);
+    setTimeout(() => { try { g.disconnect(); p.disconnect(); } catch (err) { /* gone */ } }, kind === 'boom' ? 9500 : 4200);
   },
   /* a short-lived sound in a voice (V.voice.g: where it goes): its nodes taken down after */
   shot(e, sec, build, at) {
@@ -13400,6 +13478,21 @@ const SpaceEv = {
     const ng = this.env(c, mk, at, o.a * SPACE_EV_LV, o.rise, o.fall);
     n.connect(f1); f1.connect(f2); f2.connect(roll); roll.connect(ng); ng.connect(out);
     if (o.sub0) this.tone(c, mk, out, o.sub0, o.sub1, o.rise + o.fall, at, o.subA || o.a * 0.6, Math.max(0.02, o.rise * 0.8), o.fall, 0.22, 0.07);
+  },
+  /* a star exploding, far off between the stars: the dull blow of it, felt more than heard (a low note dropping into
+     the deepest, a dark thud of noise); then its rumble rolling on round you, on and on, down into the deepest; a
+     second, slower roll under it; and a few far aftershocks dying away. k: the first blast 1, again a little less */
+  sBoom(V, k) {
+    const ag = k < 1 ? 0.8 : 1;
+    this.shot(V, 8, (c, t, mk, out) => {
+      this.tone(c, mk, out, 66, 24, 0.7, t, 0.8 * ag, 0.01, 1.2, 0.3, 0.1);
+      const n = this.noise(c, mk, 'b', t, 0.9), lp = this.filt(c, mk, 'lowpass', 600, 0.7);
+      lp.frequency.setValueAtTime(650, t); lp.frequency.exponentialRampToValueAtTime(80, t + 0.5);
+      const ng = this.env(c, mk, t, 0.75 * ag * SPACE_EV_LV, 0.012, 0.7); n.connect(lp); lp.connect(ng); ng.connect(out);
+      this.rumble(c, mk, out, t + 0.04, { a: 1.5 * ag, rise: 0.22, fall: 4.6, lp0: 210, lp1: 42, roll: 0.95, rollRate: 0.55, sub0: 44, sub1: 26, subA: 0.75 * ag });
+      this.rumble(c, mk, out, t + 0.9, { a: 0.95 * ag, rise: 1.3, fall: 4, lp0: 120, lp1: 38, roll: 1, rollRate: 0.35, sub0: 34, sub1: 28, subA: 0.3 * ag });
+      for (let i = 0; i < 3; i++) this.rumble(c, mk, out, t + rand(1.4, 4.2), { a: rand(0.2, 0.32) * ag, rise: 0.05, fall: rand(0.7, 1.2), lp0: 170, lp1: 60, roll: 0.4, sub0: rand(46, 54), sub1: 34, subA: 0.16 * ag });
+    });
   },
   /* a nova: far off something gives way: a deep swell rolling up and sinking away */
   sNova(V) {
@@ -20314,15 +20407,13 @@ const UI = {
     delete this.b_add.dataset.tip;
     B('env', 'scene', _T('Paysage'), _T('Changer de paysage'), () => this.togglePanel('env'));
     B('weather', 'weather', _T('Météo'), _T('Météo et journée'), () => this.togglePanel('weather'));
-    /* out in space (07b) the bar turns: what belongs to the tank folds away, and the way back appears (setSpace) */
-    B('home', 'house', _T('Rentrer'), _T('Rentrer : une grosse étoile redescend avec toi'), () => Space.autoHome());
+    /* out in space (07b) the bar turns: what belongs to the tank folds away (setSpace); the way home is a big star
+       touched five times */
     B('sound', 'music', _T('Son'), _T('Musique et sons'), () => this.togglePanel('sound'));
     bar.appendChild(h('div', { class: 'dsep', 'aria-hidden': 'true' }));
     B('hide', 'eyeoff', _T('Masquer'), _T('Masquer l\'interface'), () => this.setHidden(true), null, _T('Échap'));
     B('settings', 'gear', _T('Réglages'), _T('Réglages'), () => this.togglePanel('settings'));
     for (const k of ['add', 'env', 'weather']) this['b_' + k].classList.add('earthonly');
-    this.b_home.classList.add('spaceonly');
-    this.b_home.inert = true;
     this.layer.appendChild(tray);
     this.layer.appendChild(bar);
     const add = this.b_add;
@@ -20661,8 +20752,6 @@ const UI = {
     on(this.b_clean, G.mode === 'clean'); on(this.b_zoom, G.mode === 'zoom');
     on(this.b_env, this.panels.env); on(this.b_settings, this.panels.settings); on(this.b_weather, this.panels.weather); on(this.b_sound, this.panels.sound);
     for (const [b, k] of [[this.b_env, 'env'], [this.b_settings, 'settings'], [this.b_weather, 'weather'], [this.b_sound, 'sound']]) if (b) b.setAttribute('aria-expanded', String(!!this.panels[k]));
-    /* (the way back, while a star is coming home) */
-    on(this.b_home, Space.S && (Space.S.phase === 'back' || Space.autoT));
     /* the sound button shows what is heard by its picture: a note while the music plays, a crossed note when it is
        off, a crossed speaker when all sound is */
     const SS = G.state.settings, st = SS.sound === false ? 'mute' : SS.music !== false ? 'music' : 'musicoff';
@@ -20844,8 +20933,8 @@ const UI = {
       Scene.lineHi = over || (Main.pointer && Main.pointer.down && Scene.lineHi) ? 1 : 0;
       /* (on the waterline: up and down the water, along it the waves; in the sky above: down the rain, along it the
          wind; a cloud can be wrung) */
+      /* (the plain hand on the line it lights; over the sky the plain arrow: nothing to distract from it) */
       if (over) return Cursors.act('wave', 'xy');
-      if (m === 'normal' && sy < waveLine(sx) - SKY_GAP && Scene.geo.yF + Scene.par.y > 6) return Scene.cloudAt(ux, uy) > 0.3 ? Cursors.act('rain', 'xy') : Cursors.act('wind', 'xy');
     } else Scene.lineHi = 0;
     return 'default';
   },
@@ -20990,8 +21079,6 @@ const UI = {
     document.body.classList.toggle('inspace', on);
     const ks = ['add', 'env', 'weather'];
     ks.forEach((k, i) => { const b = this['b_' + k]; b.style.setProperty('--d', ((on ? i : ks.length - 1 - i) * 70) + 'ms'); b.inert = on; });
-    this.b_home.style.setProperty('--d', (on ? 230 : 0) + 'ms');
-    this.b_home.inert = !on;
     this.modeHint.hidden = true;
     this.syncDockStates();
     this.syncPad();
@@ -21374,7 +21461,7 @@ const UI = {
     /* the help (it was the ? at the top left): the guided tour of the tank; out in space, how things go there */
     const space = this.inSpace;
     list.append(head(_T('Aide')));
-    if (space) list.appendChild(h('p', { class: 'sethelp', text: _T('Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en haut dit où tu es), vers le bas il t\'enveloppe, vers le haut il s\'éclaircit. Les flèches font de même. Tes poissons flottent : attrape-les et lance-les. De temps en temps il se passe quelque chose sur une étoile, très loin ; touche une étoile pour le provoquer. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière), ou le bouton Rentrer.') }))
+    if (space) list.appendChild(h('p', { class: 'sethelp', text: _T('Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en haut dit où tu es), vers le bas il devient plus grave et t\'enveloppe, vers le haut il s\'éclaircit. Les flèches font de même. Tes poissons flottent : attrape-les et lance-les. Touche une étoile : elle explose, très loin, dans un grondement. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière).') }))
     else list.appendChild(h('div', { class: 'setrow' + (st.ui.tourSeen ? '' : ' invite') }, h('span', { text: _T('Visite guidée') }), h('button', { class: 'btn small', text: st.ui.tourSeen ? _T('Revoir') : _T('Commencer'), onclick: () => { this.closePanel('settings', true); Tour.start(); } })));
     if (!space) list.append(head('Aquarium'),
       slide(_T('Activité des poissons'), _T('Calmes à gauche, très actifs à droite : plus de figures, de farandoles et de petits bruits'), () => (S.activity === undefined ? 0.5 : S.activity), (v) => { S.activity = v; Tank.groupT = Math.min(Tank.groupT || 0, Tank.showGap()); }));
@@ -21653,9 +21740,9 @@ const UI = {
     Music.onChange = () => { if (list.isConnected) sync(); };
     sync();
   },
-  /* the sound of space: the map of the noise (its kinds across, how deep it surrounds you up and down; where you are;
-     a point touched is flown to), then what is yours to tune of it (Sound.cosmos): how loud, how deep or clear, how
-     much it breathes (the Milky Way breathes with it); then the music and the volume of everything, as on the ground */
+  /* the sound of space: only what the hand drawing the sky does not set (Sound.cosmos): how loud, and how much it
+     breathes (the Milky Way breathes with it). Nothing twice: the music and the volume of everything are on the
+     ground's own window */
   open_spaceSound() {
     const S = G.state.settings, C = S.space || (S.space = {});
     const P = this.makePanel('sound', 'soundpop spacesnd', { anchor: this.b_sound, label: _T('Le son de l\'espace'), pos: (w, hh) => this.aboveBtn(this.b_sound, w, hh), maxH: () => Math.max(260, this.barTop() - 24) });
@@ -21677,33 +21764,12 @@ const UI = {
       r.onchange = () => G.save();
       return h('div', { class: 'tunerow', dataset: { tip } }, h('span', { class: 'tname', text: label }), h('div', { class: 'tctl' }, h('small', { text: lo }), r, h('small', { text: hi })));
     };
-    /* the kinds of noise (no map of them: the sky drawn by hand is the way to travel; a kind touched keeps how deep
-       you are) */
-    const kinds = h('div', { class: 'skinds' });
-    const btns = SPACE_TYPES.map((m) => {
-      const bb = h('button', { class: 'smode', style: '--zc:rgb(' + m.col.map((v) => Math.round(v * 255)).join(',') + ')', 'aria-label': _T('Bruit : ') + m.name, html: '<i></i><span>' + escapeHtml(m.name) + '</span>' });
-      bb.onclick = () => { Sound.unlock(); Sound.play('click'); Space.hand = null; Space.handRest = false; Space.goal = [m.x, Space.pos[1]]; };
-      kinds.appendChild(bb);
-      return bb;
-    });
-    const tickMap = () => {
-      if (!kinds.isConnected) return;
-      btns.forEach((bb, i) => bb.classList.toggle('on', i === Space.mode));
-      requestAnimationFrame(tickMap);
-    };
-    requestAnimationFrame(tickMap);
-    b.appendChild(h('h5', { class: 'sndsec', text: _T('Le bruit') }));
-    b.append(kinds);
-    b.appendChild(h('p', { class: 'snote', text: _T('Fais glisser le ciel : de côté le bruit change (après le dernier revient le premier), vers le bas il t\'enveloppe, vers le haut il s\'éclaircit.') }));
-    b.appendChild(h('h5', { class: 'sndsec', text: _T('Le son') }));
+    /* (the kind of noise and how deep and clear it is are the sky drawn by hand, and the compass at the top says
+       where you are: no buttons for them here; only what the hand does not set) */
+    b.appendChild(h('p', { class: 'snote', text: _T('Fais glisser le ciel : de côté le bruit change (après le dernier revient le premier) ; vers le bas il devient plus grave et t\'enveloppe, vers le haut il s\'éclaircit.') }));
     b.appendChild(h('div', { class: 'setlist' },
       h('div', { class: 'setrow chrow sndrow' }, h('span', { class: 'sndname', html: icon('wave') + '<span><b>Volume</b></span>' }), h('div', { class: 'chctl' }, mute, vol)),
-      tune('tone', _T('Couleur', 'tone'), _T('Grave'), _T('Clair'), _T('Plus grave et sourd, ou plus clair et ouvert')),
       tune('swell', _T('Respiration'), _T('Calme'), _T('Houle'), _T('Comme il monte et redescend lentement ; le ciel respire avec lui'))));
-    b.appendChild(h('h5', { class: 'sndsec', text: _T('Et aussi') }));
-    b.appendChild(h('div', { class: 'setlist' },
-      this.soundChan(_T('Musique'), 'music', 'musicVol', 0.6, 'music'),
-      this.soundChan(_T('Volume général'), 'sound', 'volume', 0.75, 'speaker')));
   },
   trackRow() {
     const title = h('span', { class: 'ttitle', text: Music.title() || _T('Aucun morceau') });

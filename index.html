@@ -103,9 +103,10 @@ body.inspace #toolbar .db.tb.earthonly, body:not(.inspace) #toolbar .db.tb.space
 body.inspace #toolbar { background: rgba(8, 10, 26, .55); border-color: rgba(190, 205, 255, .16); box-shadow: 0 10px 40px rgba(0, 0, 10, .5); }
 body.inspace .objectives { opacity: 0; pointer-events: none; transition: opacity .6s; }
 body.inspace #toolbar .db.invite::before { display: none; }
-/* out in space, the compass at the top: the kinds of noise in a row that goes round, the one you are in under the
-   mark; it fades in and out with space */
-#spacecompass { position: absolute; left: 50%; top: var(--gutter-t, 12px); transform: translate(-50%, -8px); z-index: 30; display: flex; align-items: center; gap: 2px; padding: 4px 6px; border-radius: 999px; background: rgba(8, 10, 26, .45); border: 1px solid rgba(190, 205, 255, .14); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: opacity .8s ease, transform .8s cubic-bezier(.2, .8, .2, 1); }
+/* out in space, the compass just over the bar of buttons (under the thumb, the top of the screen left to the sky and
+   to the messages): the kinds of noise in a row that goes round, the one you are in over the mark; it fades in and
+   out with space */
+#spacecompass { position: absolute; left: 50%; bottom: calc(var(--gutter-b) + var(--barh) + 10px); transform: translate(-50%, 8px); z-index: 30; display: flex; align-items: center; gap: 2px; padding: 4px 6px; border-radius: 999px; background: rgba(8, 10, 26, .45); border: 1px solid rgba(190, 205, 255, .14); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); opacity: 0; pointer-events: none; transition: opacity .8s ease, transform .8s cubic-bezier(.2, .8, .2, 1); }
 body.inspace #spacecompass { opacity: 1; transform: translate(-50%, 0); }
 /* the dial (09f): what the hand is setting on the world itself (rain, wind, waves): the sibling of the compass of
    space, in the tank's own glass. Its strength on a gauge round its picture (three quarters of a turn, open at the
@@ -169,10 +170,9 @@ body.dialon .objectives { opacity: .25; transition: opacity .3s; }
 #spacecompass .citem.on i { box-shadow: 0 0 8px var(--zc); opacity: 1; }
 #spacecompass .cchev { display: grid; place-items: center; width: 22px; color: rgba(225, 232, 255, .55); }
 #spacecompass .cchev .ic { width: 16px; height: 16px; }
-#spacecompass .cmark { position: absolute; left: 50%; top: -1px; width: 0; height: 0; margin-left: -5px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid rgba(255, 255, 255, .85); }
+#spacecompass .cmark { position: absolute; left: 50%; bottom: -1px; width: 0; height: 0; margin-left: -5px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 6px solid rgba(255, 255, 255, .85); }
 #spacecompass.flash .citem.on { animation: cflash 1.2s ease-out; }
 @keyframes cflash { 0% { text-shadow: 0 0 12px rgba(255, 255, 255, .9); } 100% { text-shadow: none; } }
-body.inspace #toasts { top: calc(var(--gutter-t, 12px) + 52px); }
 @media (max-width: 720px) { #spacecompass .ctape { width: 220px; } #spacecompass .citem { font-size: 12.5px; } }
 /* the map of the noise (the sound window): across its kinds, up and down how deep it surrounds you, you the dot */
 .sfield { position: relative; height: 112px; margin: 2px 0 6px; border-radius: 16px; background: linear-gradient(to bottom, rgba(150, 165, 255, .14), rgba(255, 255, 255, .02)); border: 1px solid rgba(255, 255, 255, .07); cursor: crosshair; touch-action: none; overflow: hidden; }
@@ -2428,7 +2428,7 @@ const I18N_EN = {
   "Continue quand tu changes d'app ou verrouilles ; le son d'une autre app le coupe.": "Keeps playing when you switch apps or lock; another app's sound stops it.",
   "L'aquarium": "The aquarium",
   "Fais glisser le ciel : de côté le bruit change (après le dernier revient le premier) ; vers le bas il devient plus grave et t'enveloppe, vers le haut il s'éclaircit.": "Drag the sky: sideways the noise changes (after the last comes the first again); down it grows deeper and surrounds you, up it clears.",
-  "Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en haut dit où tu es), vers le bas il devient plus grave et t'enveloppe, vers le haut il s'éclaircit. Les flèches font de même. Tes poissons flottent : attrape-les et lance-les. Touche une étoile : elle explose, très loin, dans un grondement. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière).": "Drag the sky to travel: sideways the noise changes (deep, cabin, brown, swell, wind, then deep again: the compass at the top says where you are), down it grows deeper and surrounds you, up it clears. The arrow keys do the same. Your fish float: catch them and throw them. Touch a star: it explodes, far away, with a rumble. To go home, touch a big star five times (the ones with a small cross of light).",
+  "Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en bas dit où tu es), vers le bas il devient plus grave et t'enveloppe, vers le haut il s'éclaircit. Avec les flèches, \u2191 avance et t'enveloppe, \u2193 recule. Tes poissons flottent : attrape-les et lance-les. Touche une étoile : elle explose, très loin, dans un grondement. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière).": "Drag the sky to travel: sideways the noise changes (deep, cabin, brown, swell, wind, then deep again: the compass at the bottom says where you are), down it grows deeper and surrounds you, up it clears. With the arrow keys, \u2191 moves ahead and surrounds you, \u2193 moves back. Your fish float: catch them and throw them. Touch a star: it explodes, far away, with a rumble. To go home, touch a big star five times (the ones with a small cross of light).",
 };
 /* the page's own words, written before the scripts: its language, the message without WebGL 2, the eye's name */
 document.documentElement.lang = LANG;
@@ -2455,13 +2455,16 @@ const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2)
 
 function mulberry32(seed) {
   let s = seed >>> 0;
-  return function () {
+  const f = function () {
     s = (s + 0x6D2B79F5) >>> 0;
     let t = s;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+  /* (where it is in its run, and a jump to such a point: a painting done ahead of time is used as if done now, 06d) */
+  f.get = () => s; f.set = (v) => { s = v >>> 0; };
+  return f;
 }
 function hashStr(str) {
   let h = 2166136261 >>> 0;
@@ -3527,7 +3530,7 @@ const Sound = {
       const c = this.ctx;
       g = c.createGain();
       const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.5; lp.frequency.value = 14000;
-      const p = c.createPanner(); p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.35;
+      const p = c.createPanner(); p.panningModel = Ambience.lite() ? 'equalpower' : 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.35;
       g.connect(lp); lp.connect(p); p.connect(this.fishBus);
       g.lp = lp; g.pan = p;
       this.fishGains.set(f.id, g);
@@ -3551,7 +3554,12 @@ const Sound = {
     /* in the 3D world (08d): where it is seen from the view, in metres */
     if (f.at3) { Ambience.pos(g.pan, f.at3[0], f.at3[1], f.at3[2], tc); return; }
     const S = f.screen, sx = S && Number.isFinite(S.x) ? S.x : f.x, sy = S && Number.isFinite(S.y) ? S.y : Scene.H * 0.5, z = clamp(Number.isFinite(f.z) ? f.z : 0.3, 0, 1);
-    Ambience.pos(g.pan, clamp(sx / Scene.W - 0.5, -0.8, 0.8) * 6, clamp(0.5 - sy / Scene.H, -0.6, 0.6) * 3, -1.2 - z * 2.5, tc);
+    const px = clamp(sx / Scene.W - 0.5, -0.8, 0.8) * 6, py = clamp(0.5 - sy / Scene.H, -0.6, 0.6) * 3, pz = -1.2 - z * 2.5;
+    /* (a fish keeping still is not moved again: each move is a pile of scheduled changes for the audio thread) */
+    const L = g.last;
+    if (tc && L && Math.abs(L[0] - px) < 0.03 && Math.abs(L[1] - py) < 0.03 && Math.abs(L[2] - pz) < 0.02) return;
+    g.last = [px, py, pz];
+    Ambience.pos(g.pan, px, py, pz, tc);
     const fr = lerp(15000, 5200, smoothstep(0.15, 0.9, z));
     if (tc) g.lp.frequency.setTargetAtTime(fr, this.ctx.currentTime, tc); else g.lp.frequency.value = fr;
   },
@@ -3564,6 +3572,13 @@ const Sound = {
     const c = this.ctx, len = Math.floor(c.sampleRate * sec), b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0);
     let last = 0;
     for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; if (brown) { last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w; }
+    return b;
+  },
+  /* a looping noise of a given length worked out once and kept (each player starts it at its own random point, so two
+     of the same length do not sound as one): building it while playing was a stall (the storm, the way into space) */
+  loopBuf(sec, brown) {
+    const c = this.ctx, k = c.sampleRate + '|' + sec + '|' + (brown ? 1 : 0), M = this._loops || (this._loops = new Map());
+    let b = M.get(k); if (!b) { b = this.noiseBuf(sec, brown); M.set(k, b); }
     return b;
   },
   /* noise worked out once and shared (white: w, w2; deep, brown: b, b2; two of each, unlike, one for each ear) */
@@ -3676,12 +3691,24 @@ const Sound = {
     const g = c.createGain(); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     s.connect(f); f.connect(g); g.connect(bus || this._bus || this.sfx); s.start(t, off); s.stop(t + dur + 0.05);
   },
+  /* out in space the fish are silent (07b Space): no sound from a fish floating there, weightless (08
+     Tank.floatStep), until the water coming back catches it (Tank.floatLand, whose bubbles are heard), and nothing
+     on the fish's channel while the fish are made to float (Space.floatK, as Tank.updateFish tests it), nor, on the
+     way home (floatHome), a sound of no one fish (a show beginning or ending, a birth) while some of them still
+     float. Asked by play and FishVoice.play: all a floating fish could make (its sand, its splashes and its rubbing
+     come only from swimming). The sounds of space itself are not theirs */
+  fishHush(f) {
+    if (f && f.float && !f.float.landed) return true;
+    if (typeof Space === 'undefined') return false;
+    if (Space.floatK > 0.001 && !Tank.floatHome) return true;
+    return !!Space.S && !(f && f.id) && Tank.fish.some((o) => o.float && !o.float.landed);
+  },
   /* name: a built-in effect; fish: the fish making it (its own volume and mute apply) */
   /* x01: where across the view it happens (0 left, 1 right), for the sounds placed left or right */
   play(name, fish, x01) {
     if (!this.ctx || !this.on) return;
     const isFish = FISH_SFX.has(name);
-    if (isFish && (!this.fishOn || (fish && fish.muted))) return;
+    if (isFish && (!this.fishOn || (fish && fish.muted) || this.fishHush(fish))) return;
     if (!isFish && !this.uiOn) return;
     if (!this.gate(isFish ? null : () => this.play(name, null, x01))) return;
     this._bus = isFish ? this.fishOut(fish) : this.sfx;
@@ -3773,11 +3800,11 @@ const Sound = {
       o.connect(g); g.connect(p); g.connect(w); w.connect(this.rev);
       o.start(t + d); o.stop(t + d + 1.25); nodes.push(o, g, w);
     }
-    const n = c.createBufferSource(); n.buffer = this.noiseBuf(0.8);
+    const n = c.createBufferSource(); n.buffer = this.nz('w'); n.loop = true;
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 2.4;
     bp.frequency.setValueAtTime(7500, t); bp.frequency.exponentialRampToValueAtTime(2000, t + 0.65);
     const ng = c.createGain(); ng.gain.setValueAtTime(0.0001, t); ng.gain.exponentialRampToValueAtTime(0.016, t + 0.06); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.72);
-    n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t); n.stop(t + 0.76); nodes.push(n, bp, ng);
+    n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t, Math.random() * 3); n.stop(t + 0.76); nodes.push(n, bp, ng);
     setTimeout(() => { for (const nd of nodes) { try { nd.disconnect(); } catch (e) { /* gone */ } } }, 1700);
   },
   /* the water filling with sparkling light (Tank.dazzle): a shower of tiny glass bells all round, high and
@@ -3893,7 +3920,7 @@ const Sound = {
     /* the rush of your own speed: a breath of air brightening and swelling as you go faster */
     const sp = st && st.speed ? st.speed : 0;
     C.wh.bp.frequency.setTargetAtTime((260 + 2400 * sp) * r, t, T(0.12));
-    C.wh.g.gain.setTargetAtTime(0.035 * sp * sp * vol * level, t, T(0.12));
+    C.wh.g.gain.setTargetAtTime(0.048 * sp * sp * vol * level, t, T(0.12));
     C.wh.pan.pan.setTargetAtTime(clamp(st && st.pan ? st.pan * 1.6 : 0, -0.9, 0.9), t, T(0.15));
     /* the water and the weather, far back under it */
     const back = 1 - 0.85 * clamp(level * 1.6, 0, 1);
@@ -3933,15 +3960,15 @@ const Sound = {
     C.ev.connect(evHp); evHp.connect(C.rg); evHp.connect(C.evRs); C.evRs.connect(rv);
     /* six noises, six places round you: in front left and right, at the sides, behind left and right */
     [[-30, 0.2, 1], [30, 0.2, 1], [-95, 0.5, 0.55], [95, 0.5, 0.55], [-150, 0.6, 0.12], [150, 0.6, 0.12]].forEach(([deg, up, near], i) => {
-      const src = keep(c.createBufferSource()); src.buffer = this.noiseBuf(4.3 + i * 0.71, true); src.loop = true; src.start(t);
+      const src = keep(c.createBufferSource()); src.buffer = this.loopBuf(4.3 + i * 0.71, true); src.loop = true; src.start(t, Math.random() * 4);
       const hp = F('highpass', 24, 0.5), lp = F('lowpass', 950, 0.5), pk = F('peaking', 220, 1), g = G1(0);
-      const pan = keep(c.createPanner()); pan.panningModel = 'HRTF'; pan.distanceModel = 'inverse'; pan.refDistance = 1; pan.rolloffFactor = 0.4;
+      const pan = keep(c.createPanner()); pan.panningModel = Ambience.lite() ? 'equalpower' : 'HRTF'; pan.distanceModel = 'inverse'; pan.refDistance = 1; pan.rolloffFactor = 0.4;
       src.connect(hp); hp.connect(lp); lp.connect(pk); pk.connect(g); g.connect(pan); pan.connect(C.sum);
       C.em.push({ src, hp, lp, pk, g, pan, ang: deg * Math.PI / 180, up, near, ph: i * 1.3 });
     });
     /* the rush of your own speed */
     {
-      const s = keep(c.createBufferSource()); s.buffer = this.noiseBuf(2.9); s.loop = true; s.start(t);
+      const s = keep(c.createBufferSource()); s.buffer = this.loopBuf(2.9); s.loop = true; s.start(t, Math.random() * 2.5);
       const bp = F('bandpass', 400, 0.9), g = G1(0), pan = keep(c.createStereoPanner());
       s.connect(bp); bp.connect(g); g.connect(pan); pan.connect(this.master);
       C.wh = { bp, g, pan };
@@ -3988,7 +4015,7 @@ const Sound = {
       const iceA = G1(0.5); tg.connect(iceA.gain); for (const o of V.ice) o.connect(iceA); iceA.connect(V.iceG); V.iceG.connect(V.out);
       const iw = G1(0.7); V.iceG.connect(iw); iw.connect(this.rev);
       /* the whisper */
-      const n = keep(c.createBufferSource()); n.buffer = this.noiseBuf(3.7); n.loop = true; n.start(t);
+      const n = keep(c.createBufferSource()); n.buffer = this.loopBuf(3.7); n.loop = true; n.start(t, Math.random() * 3.5);
       V.wbp = keep(c.createBiquadFilter()); V.wbp.type = 'bandpass'; V.wbp.Q.value = 5; V.wbp.frequency.value = 800;
       const fl = osc('sine', 8.5), fg = G1(0.45), wa = G1(0.55); fl.connect(fg); fg.connect(wa.gain);
       V.whG = G1(0); n.connect(V.wbp); V.wbp.connect(wa); wa.connect(V.whG); V.whG.connect(V.out);
@@ -4107,10 +4134,10 @@ const Sound = {
       const o2 = mk(c.createOscillator()); o2.type = 'triangle'; o2.frequency.setValueAtTime(784, t); o2.frequency.exponentialRampToValueAtTime(261.6, t + sec);
       const o2g = mk(c.createGain()); o2g.gain.setValueAtTime(0.0001, t); o2g.gain.exponentialRampToValueAtTime(0.012 * v, t + 0.2); o2g.gain.exponentialRampToValueAtTime(0.0001, t + sec + 0.4);
       o2.connect(o2g); o2g.connect(pan); o2.start(t); o2.stop(t + sec + 0.5);
-      const n = mk(c.createBufferSource()); n.buffer = this.noiseBuf(sec + 0.6);
+      const n = mk(c.createBufferSource()); n.buffer = this.nz('w'); n.loop = true;
       const bp = mk(c.createBiquadFilter()); bp.type = 'bandpass'; bp.Q.value = 1.1; bp.frequency.setValueAtTime(5200, t); bp.frequency.exponentialRampToValueAtTime(700, t + sec);
       const ng = mk(c.createGain()); ng.gain.setValueAtTime(0.0001, t); ng.gain.exponentialRampToValueAtTime(0.05 * v, t + sec * 0.9); ng.gain.exponentialRampToValueAtTime(0.0001, t + sec + 0.15);
-      n.connect(bp); bp.connect(ng); ng.connect(pan); n.start(t); n.stop(t + sec + 0.6);
+      n.connect(bp); bp.connect(ng); ng.connect(pan); n.start(t, Math.random() * 3); n.stop(t + sec + 0.6);
     });
   },
   /* the water coming back: a breath drawn in (rising), then the rush of water filling the view, a deep soft thud,
@@ -4118,10 +4145,10 @@ const Sound = {
   waterReturn() {
     this.oneShot(3.4, (c, t, mk) => {
       const v = this.uiOn ? Math.max(this.uiVol, 0.4) : 0.4;
-      const n = mk(c.createBufferSource()); n.buffer = this.noiseBuf(2.8);
+      const n = mk(c.createBufferSource()); n.buffer = this.nz('w'); n.loop = true;
       const lp = mk(c.createBiquadFilter()); lp.type = 'lowpass'; lp.Q.value = 0.7; lp.frequency.setValueAtTime(2400, t); lp.frequency.exponentialRampToValueAtTime(380, t + 2.2);
       const g = mk(c.createGain()); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09 * v, t + 0.18); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
-      n.connect(lp); lp.connect(g); g.connect(this.master); n.start(t); n.stop(t + 2.8);
+      n.connect(lp); lp.connect(g); g.connect(this.master); n.start(t, Math.random() * 3); n.stop(t + 2.8);
       const o = mk(c.createOscillator()); o.type = 'sine'; o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.5);
       const og = mk(c.createGain()); og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.18 * v, t + 0.02); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.8);
       o.connect(og); og.connect(this.master); o.start(t); o.stop(t + 0.9);
@@ -4200,10 +4227,10 @@ const Sound = {
     p.panningModel = 'HRTF'; p.distanceModel = 'inverse'; p.refDistance = 1; p.rolloffFactor = 0.4;
     Ambience.pos(p, clamp(x01 - 0.5, -0.7, 0.7) * 6, -1 + 2 * up, -2.5);
     p.connect(this.sfx); nodes.push(p);
-    const n = c.createBufferSource(); n.buffer = this.noiseBuf(0.12);
+    const n = c.createBufferSource(); n.buffer = this.nz('w'); n.loop = true;
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 1.1;
     const ng = c.createGain(); ng.gain.setValueAtTime(0.11 * g0, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
-    n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t); n.stop(t + 0.1); nodes.push(n, bp, ng);
+    n.connect(bp); bp.connect(ng); ng.connect(p); n.start(t, Math.random() * 3.5); n.stop(t + 0.1); nodes.push(n, bp, ng);
     const tone = (f0, f1, d, a, dl) => {
       const o = c.createOscillator(); o.type = 'sine';
       o.frequency.setValueAtTime(f0, t + dl); o.frequency.exponentialRampToValueAtTime(f1, t + dl + d);
@@ -4453,7 +4480,7 @@ const Sound = {
       const grF = flt('highpass', 1400, 0.7), hsF = flt('bandpass', 2600, 0.6), bdF = flt('lowpass', 420, 0.7), lp = flt('lowpass', 12000, 0.5);
       const grG = c.createGain(), hsG = c.createGain(), bdG = c.createGain(), mix = c.createGain(), pan = c.createPanner();
       for (const g of [grG, hsG, bdG, mix]) g.gain.value = 0;
-      pan.panningModel = 'HRTF'; pan.distanceModel = 'inverse'; pan.refDistance = 1; pan.rolloffFactor = 0.5;
+      pan.panningModel = Ambience.lite() ? 'equalpower' : 'HRTF'; pan.distanceModel = 'inverse'; pan.refDistance = 1; pan.rolloffFactor = 0.5;
       gr.connect(grF); grF.connect(grG); hs.connect(hsF); hsF.connect(hsG); bd.connect(bdF); bdF.connect(bdG);
       grG.connect(mix); hsG.connect(mix); bdG.connect(mix); mix.connect(lp); lp.connect(pan); pan.connect(out);
       V = { srcs: [gr, hs, bd], nodes: [grF, hsF, bdF, lp, grG, hsG, bdG, mix, pan], gr, grG, hsG, bdG, hsF, mix, lp, pan, jT: 0, j: 1 };
@@ -4521,7 +4548,7 @@ const Sound = {
   churn(dur) {
     const c = this.ctx; if (!c) return;
     const t = c.currentTime;
-    const s = c.createBufferSource(); s.buffer = this.noiseBuf(dur + 0.1);
+    const s = c.createBufferSource(); s.buffer = this.nz('w'); s.loop = true;
     const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 2; f.frequency.value = 650;
     const lfo = c.createOscillator(), lg = c.createGain();
     lfo.frequency.setValueAtTime(1.4, t); lfo.frequency.linearRampToValueAtTime(3.2, t + dur * 0.45); lfo.frequency.linearRampToValueAtTime(1.1, t + dur);
@@ -4557,7 +4584,7 @@ const Sound = {
     if (!this.ctx) return;
     if (on && !this.vac) {
       const c = this.ctx;
-      const s = c.createBufferSource(); s.buffer = this.noiseBuf(2); s.loop = true;
+      const s = c.createBufferSource(); s.buffer = this.nz('w'); s.loop = true;
       const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400;
       const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 3200; f.Q.value = 0.5;
       const g = c.createGain(); g.gain.value = 0.0001;
@@ -4606,11 +4633,23 @@ const Sound = {
     }
   },
   ambientTick(dt) {
-    /* the fish's voices follow them about, a few times a second, gliding */
+    /* the fish's voices follow them about, a few times a second, gliding. One carried off into space (fishHush) lets
+       go of whatever it was saying as it left the water: its own channel fades out while it floats, and comes back
+       when the water catches it (its landing bubble, through fishOut, is heard at once) */
     this.placeT = (this.placeT || 0) - dt;
-    if (this.ctx && this.placeT <= 0 && this.fishGains.size) {
+    if (this.ctx && this.ctx.state === 'running' && this.placeT <= 0 && this.fishGains.size) {
       this.placeT = 0.06;
-      for (const f of Tank.fish) if (this.fishGains.has(f.id)) this.placeFish(f, 0.05);
+      for (const f of Tank.fish) {
+        const g = this.fishGains.get(f.id);
+        if (!g) continue;
+        this.placeFish(f, 0.05);
+        const h = this.fishHush(f);
+        if (h === !!g.hushed) continue;
+        g.hushed = h;
+        if (!h) { this.setFishLevel(f); continue; }
+        const t = this.ctx.currentTime;
+        g.gain.setTargetAtTime(0, t, 0.05); if (g.raw) g.raw.gain.setTargetAtTime(0, t, 0.05);
+      }
     }
     if (!this.ctx || this.ctx.state !== 'running' || !this.on || !this.ambientOn) return;
     /* a bubble now and then, more or fewer with the kind of water; in the deep, a drop instead, seldom, rising,
@@ -4945,7 +4984,7 @@ const FishVoice = {
   play(f, slot, o = {}) {
     if (!this.has(f, slot)) return false;
     const c = Sound.ctx;
-    if (!c || c.state !== 'running' || !Sound.on || !Sound.fishOn || f.muted) return false;
+    if (!c || c.state !== 'running' || !Sound.on || !Sound.fishOn || f.muted || Sound.fishHush(f)) return false;
     const t = c.currentTime;
     if (this.active >= (o.urgent ? 3 : 2)) return false;
     if (!o.urgent && t - this.lastStart < 0.7) return false;
@@ -5110,13 +5149,26 @@ const Ambience = {
       else { p.positionX.value = x; p.positionY.value = y; p.positionZ.value = z; }
     } else p.setPosition(x, y, z);
   },
-  noise(c, sec, brown) { const s = c.createBufferSource(); s.buffer = Sound.noiseBuf(sec, brown); s.loop = true; s.start(); return s; },
+  noise(c, sec, brown) { const s = c.createBufferSource(); s.buffer = Sound.loopBuf(sec, brown); s.loop = true; s.start(0, Math.random() * sec); return s; },
+  /* what the weather and the way into space will need, worked out ahead, a piece at a time while nothing happens
+     (each was a stall of a tenth of a second or more on a phone the first time it was heard) */
+  warm(c) {
+    this._warm = true;
+    const jobs = [() => this.noise(c, 4, false).stop(), () => this.noise(c, 5, false).stop(), () => this.noise(c, 5, true).stop(), () => this.noise(c, 3, false).stop(),
+      () => this.crackle(c, 3.1, 900), () => this.crackle(c, 4.3, 907), () => this.umbTaps(c), () => this.crackle(c, 3.1, 40), () => this.crackle(c, 4.3, 40),
+      () => { this.thunderBuf = this.thunderBuf || Sound.noiseBuf(9, true); }, () => { this.washBuf = this.washBuf || Sound.noiseBuf(1.6); }, () => { this.crashBuf = this.crashBuf || Sound.noiseBuf(3.2, true); },
+      () => Sound.loopBuf(2.9), () => Sound.loopBuf(3.7), () => { if (typeof SpaceEv !== 'undefined') SpaceEv.buf(c, 'w'); }].concat([0, 1, 2, 3, 4, 5, 6, 7].flatMap((i) => [() => SpaceEv.grains(c, 2.9 + 0.41 * i, 9 + i, 500 + i, true), () => SpaceEv.grains(c, 2.3 + 0.37 * i, 30 + 3 * i, 300 + i)])).concat([0, 1, 2, 3, 4, 5].map((i) => () => Sound.loopBuf(4.3 + i * 0.71, true)));
+    const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 3000 }) : (f) => setTimeout(f, 350);
+    const next = () => { const j = jobs.shift(); if (!j) return; try { if (Sound.ctx === c) j(); } catch (e) { /* not needed after all */ } idle(next); };
+    setTimeout(() => idle(next), 2500);
+  },
   filt(c, type, f, q) { const b = c.createBiquadFilter(); b.type = type; b.frequency.value = f; b.Q.value = q; return b; },
   gain(c, v) { const g = c.createGain(); g.gain.value = v; return g; },
   /* ----- per frame ----- */
   tick(dt) {
     if (!Sound.on || !Sound.ambiOn) { if (this.ready) this.quiet(dt); return; }
     const c = this.ctx(); if (!c || !this.ensure()) return;
+    if (!this._warm) this.warm(c);
     const E = G.state.env, g = Scene.geo, H = Scene.H, t = c.currentTime;
     this.t += dt;
     /* the waterline on screen: in the air the sounds are clear; with the water above the screen they are muffled */
@@ -7176,29 +7228,30 @@ const ENVP = {
     const im = g.getImageData(0, 0, w, hh), d = im.data;
     const cs = Math.max(w, hh) / cells, gx = Math.ceil(w / cs) + 2, gy = Math.ceil(hh / cs) + 2;
     const L = [-0.42, -0.78, 0.46], Ln = Math.hypot(...L);
-    const seeds = [];
+    /* (the seeds in flat arrays and the neighbours' range worked out once per row: the same picture, to the bit,
+       several times faster; the big ridges were the longest stall of a change of scene) */
+    const SX = new Float64Array(gx * gy), SY = new Float64Array(gx * gy), SK = new Float64Array(gx * gy);
     for (let j = 0; j < gy; j++) for (let i = 0; i < gx; i++) {
       const px = (i - 0.5 + rnd()) * cs, py = (j - 0.5 + rnd()) * cs;
       let nx = (rnd() - 0.5) * 1.3, ny = (py / hh - 0.55) * 1.4 - rnd() * 0.5, nz = 0.9;
       const nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
       const dif = Math.max(0, (nx * L[0] + ny * L[1] + nz * L[2]) / Ln);
-      seeds.push({ px, py, k: 0.42 + dif * 0.78 });
+      const q = j * gx + i; SX[q] = px; SY[q] = py; SK[q] = 0.42 + dif * 0.78;
     }
+    const CX = new Int32Array(w); for (let x = 0; x < w; x++) CX[x] = Math.floor(x / cs + 0.5);
+    const r0 = col[0], g0 = col[1], b0 = col[2];
     for (let y = 0; y < hh; y++) {
-      const cy = Math.floor(y / cs + 0.5);
-      for (let x = 0; x < w; x++) {
-        const p = (y * w + x) * 4;
+      const cy = Math.floor(y / cs + 0.5), j0 = Math.max(cy - 1, 0), j1 = Math.min(cy + 1, gy - 1), fy = 1.08 - 0.42 * (y / hh);
+      for (let x = 0, p = y * w * 4; x < w; x++, p += 4) {
         if (d[p + 3] < 4) continue;
-        const cx = Math.floor(x / cs + 0.5);
-        let b1 = 1e9, b2 = 1e9, best = null;
-        for (let j = cy - 1; j <= cy + 1; j++) for (let i = cx - 1; i <= cx + 1; i++) {
-          if (i < 0 || j < 0 || i >= gx || j >= gy) continue;
-          const s = seeds[j * gx + i], dd = (s.px - x) * (s.px - x) + (s.py - y) * (s.py - y);
-          if (dd < b1) { b2 = b1; b1 = dd; best = s; } else if (dd < b2) b2 = dd;
+        const cx = CX[x], i0 = Math.max(cx - 1, 0), i1 = Math.min(cx + 1, gx - 1);
+        let b1 = 1e9, b2 = 1e9, bk = 1;
+        for (let j = j0; j <= j1; j++) for (let i = i0, q = j * gx + i0; i <= i1; i++, q++) {
+          const dx = SX[q] - x, dy = SY[q] - y, dd = dx * dx + dy * dy;
+          if (dd < b1) { b2 = b1; b1 = dd; bk = SK[q]; } else if (dd < b2) b2 = dd;
         }
-        const edge = Math.sqrt(b2) - Math.sqrt(b1) < 1.6 ? 0.9 : 1;
-        const k = (best ? best.k : 1) * edge * (1.08 - 0.42 * (y / hh));
-        d[p] = clamp(col[0] * k * 255, 0, 255); d[p + 1] = clamp(col[1] * k * 255, 0, 255); d[p + 2] = clamp(col[2] * k * 255, 0, 255);
+        const k = bk * (Math.sqrt(b2) - Math.sqrt(b1) < 1.6 ? 0.9 : 1) * fy;
+        d[p] = r0 * k * 255; d[p + 1] = g0 * k * 255; d[p + 2] = b0 * k * 255;
       }
     }
     g.putImageData(im, 0, 0);
@@ -7710,7 +7763,43 @@ const Env = {
   autoHaze(L, z) { return Math.min(0.82, Scene.fogAt((z - 1.04) * (typeof L.dist === 'number' ? 0.3 : 1)) * 1.15); },
   /* the far ones first, as they are drawn */
   sortLayers(cs) { cs.layers.sort((a, b) => (b.dist || 0) - (a.dist || 0)); },
-  tex(canvas) { const t = GLX.texture(canvas, { mip: true }); this.texs.push(t); return t; },
+  /* (a picture sent to the screen ahead of time, prepare: taken as it is) */
+  tex(canvas) { let t = this.pre.get(canvas); if (t) this.pre.delete(canvas); else t = GLX.texture(canvas, { mip: true }); this.texs.push(t); return t; },
+  pre: new Map(), paintCache: new Map(), paintSeeds: [],
+  dropPre() { this.pre.forEach((t) => GLX.freeTex(t)); this.pre.clear(); },
+  /* a piece of scenery painted once and kept (the last three scenes): its painting draws from the scene's own run
+     of chance, so it is kept with where that run was before and after it, and used only from the same point */
+  painted(rnd, key, fn) {
+    const s0 = rnd.get(), e = this.paintCache.get(key);
+    if (e && e.s0 === s0) { rnd.set(e.s1); return e.r; }
+    const r = fn();
+    this.paintCache.set(key, { s0, s1: rnd.get(), r });
+    this.fresh = true;
+    return r;
+  },
+  keepPaint(seed) {
+    const L = this.paintSeeds; const i = L.indexOf(seed); if (i >= 0) L.splice(i, 1); L.unshift(seed);
+    if (L.length > 3) { const gone = new Set(L.splice(3).map(String)); for (const k of Array.from(this.paintCache.keys())) if (gone.has(k.split('|')[0])) this.paintCache.delete(k); }
+  },
+  /* a scene chosen by hand: its scenery painted first, a piece at a time between frames (the scene shown keeps
+     moving), then built at once from what was painted. False if another scene was chosen in the meantime. */
+  async prepare(def) {
+    const tok = this.prepTok = (this.prepTok || 0) + 1;
+    if (!def.open && !def.backdrop) return true;
+    this.dropPre();
+    const it = this.place(def, true);
+    let t0 = performance.now();
+    for (;;) {
+      this.fresh = false;
+      if (it.next().done) break;
+      if (performance.now() - t0 > 8) {
+        await new Promise((r) => { requestAnimationFrame(() => r()); setTimeout(r, 60); });
+        if (tok !== this.prepTok) return false;
+        t0 = performance.now();
+      }
+    }
+    return tok === this.prepTok;
+  },
   /* paint and place the scenery of a scene; the same scene always looks the same */
   build(def) {
     this.free();
@@ -7724,21 +7813,32 @@ const Env = {
     /* a rendered picture covers one part of the 360° circle: the rest of the way round is built like the open
        scenes, from the rendered props, in the picture's colours */
     Scene.env.terrain = this.terrainFn(def);
+    for (const _ of this.place(def, false));
+    this.dropPre();
+  },
+  /* the scenery itself, a step at a time (a generator): for real (build), or as a rehearsal (prepare) that only
+     paints, sends the pictures to the screen ahead and throws the placing away */
+  *place(def, rehearse) {
+    const T = rehearse ? (c) => { if (!this.pre.has(c)) { this.pre.set(c, GLX.texture(c, { mip: true })); this.fresh = true; } return c; } : (c) => this.tex(c);
+    const out = rehearse ? { items: [], fore: [], schools: [], parts: [] } : this;
     let skipHW = 0;
     if (def.backdrop) {
       const im = EnvArt.backdrops[def.backdrop].img, f = Math.max(Scene.W / im.width, Scene.H / im.height) * 1.1;
       skipHW = im.width * f / 2 * 0.8;
     }
-    const rnd = mulberry32(hashStr(def.id) + 7 + (def.seed || 0));
+    const seed = hashStr(def.id) + 7 + (def.seed || 0), rnd = mulberry32(seed);
+    this.keepPaint(seed);
     const propTex = new Map();
+    let ri = 0;
     for (let rule of def.scenery || (def.backdrop ? this.fillRules(def) : [])) {
+      ri++;
       /* a prop rule uses the rendered 3D pictures; without them it falls back to its painted kind */
       const ids = rule.kind === 'prop' ? EnvArt.propIds(rule.g) : null;
       if (ids && !ids.length) { if (!rule.alt) continue; rule = Object.assign({}, rule, { kind: rule.alt }); }
       const variants = [];
       if (ids && ids.length) {
         for (const id of ids) {
-          if (!propTex.has(id)) { const im = EnvArt.props[id].img; propTex.set(id, { tex: this.tex(im), glow: null, aspect: im.width / im.height }); }
+          if (!propTex.has(id)) { const im = EnvArt.props[id].img; propTex.set(id, { tex: T(im), glow: null, aspect: im.width / im.height }); }
           variants.push(propTex.get(id));
         }
         for (let i = variants.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [variants[i], variants[j]] = [variants[j], variants[i]]; }
@@ -7748,8 +7848,9 @@ const Env = {
         const nv = Math.min(rule.n, rule.kind === 'grass' ? 4 : 3);
         for (let v = 0; v < nv; v++) {
           const col = this.rgb(rule.col[v % rule.col.length]);
-          const r = fn(rnd, col, rule.glow);
-          variants.push({ tex: this.tex(r.canvas), glow: r.glow ? this.tex(r.glow) : null, aspect: r.canvas.width / r.canvas.height });
+          const r = this.painted(rnd, seed + '|' + ri + '|' + v, () => fn(rnd, col, rule.glow));
+          variants.push({ tex: T(r.canvas), glow: r.glow ? T(r.glow) : null, aspect: r.canvas.width / r.canvas.height });
+          yield;
         }
       }
       /* the scenery goes all the way round (four screens), as dense as it was in one */
@@ -7765,16 +7866,18 @@ const Env = {
           const half = rule.h[1] * Scene.H * v.aspect * Scene.s(z) * 0.5;
           if (Math.abs(d) - half < skipHW) continue;
         }
-        this.items.push({ v, x, z, h: lerp(rule.h[0], rule.h[1], rnd()), flip: rnd() < 0.5 ? -1 : 1, sway: rule.sway ? 1 : 0, ph: rnd() * TAU, emit: rule.emit || 0 });
+        out.items.push({ v, x, z, h: lerp(rule.h[0], rule.h[1], rnd()), flip: rnd() < 0.5 ? -1 : 1, sway: rule.sway ? 1 : 0, ph: rnd() * TAU, emit: rule.emit || 0 });
       }
     }
     /* the foreground pieces turn with the rest: one pair on each of the four screens of the circle */
+    let fi = 0;
     for (const f of def.fore || []) {
-      const r = SCENERY[f.kind](rnd, this.rgb(f.col), null);
-      const blurred = ENVP.blur(r.canvas, 7);
-      const v = { tex: this.tex(blurred), glow: null, aspect: blurred.width / blurred.height };
-      for (let k = 0; k < 4; k++) this.fore.push({ v, x: f.x + k + (k ? (rnd() - 0.5) * 0.3 : 0), z: f.z, h: f.h * (k ? 0.85 + rnd() * 0.3 : 1), flip: f.x > 0.5 ? -1 : 1, sway: f.kind === 'kelp' ? 1 : 0, ph: rnd() * TAU, fore: true });
+      const blurred = this.painted(rnd, seed + '|f' + (fi++), () => ENVP.blur(SCENERY[f.kind](rnd, this.rgb(f.col), null).canvas, 7));
+      const v = { tex: T(blurred), glow: null, aspect: blurred.width / blurred.height };
+      yield;
+      for (let k = 0; k < 4; k++) out.fore.push({ v, x: f.x + k + (k ? (rnd() - 0.5) * 0.3 : 0), z: f.z, h: f.h * (k ? 0.85 + rnd() * 0.3 : 1), flip: f.x > 0.5 ? -1 : 1, sway: f.kind === 'kelp' ? 1 : 0, ph: rnd() * TAU, fore: true });
     }
+    if (rehearse) return;
     for (const s of def.schools || []) {
       const members = [];
       const rx = (90 + s.n * 2.4) * (s.size / 30), ry = (34 + s.n * 0.8) * (s.size / 30);
@@ -7784,16 +7887,18 @@ const Env = {
       }
       /* how far the school reaches up and down from its leader (turned and breathing included) */
       const reach = (ry + rx * 0.35) * 1.18 + 4;
-      this.schools.push({ def: s, members, reach, col: this.rgb(s.col), t: rnd() * 100, p1: rnd() * TAU, p2: rnd() * TAU, p3: rnd() * TAU, dir: 1 });
+      out.schools.push({ def: s, members, reach, col: this.rgb(s.col), t: rnd() * 100, p1: rnd() * TAU, p2: rnd() * TAU, p3: rnd() * TAU, dir: 1 });
     }
     for (const p of def.particles || []) {
-      for (let i = 0; i < p.n; i++) this.parts.push({ type: p.type, col: this.rgb(p.col), size: p.size * (0.6 + rnd() * 0.8), x: rnd(), y: rnd(), z: lerp(p.z[0], p.z[1], rnd()), ph: rnd() * TAU, sp: 0.5 + rnd() });
+      for (let i = 0; i < p.n; i++) out.parts.push({ type: p.type, col: this.rgb(p.col), size: p.size * (0.6 + rnd() * 0.8), x: rnd(), y: rnd(), z: lerp(p.z[0], p.z[1], rnd()), ph: rnd() * TAU, sp: 0.5 + rnd() });
     }
   },
   async select(id, byUser) {
     let def = this.find(id);
     /* a rendered backdrop that did not load: open water instead */
     if (def.backdrop && !EnvArt.backdrops[def.backdrop]) def = this.find('openblue');
+    /* (chosen by hand: painted first between frames, the scene shown still moving; a later choice wins) */
+    if (byUser) { if (!(await this.prepare(def))) return; } else this.prepTok = (this.prepTok || 0) + 1;
     G.state.env.id = def.id;
     /* a scene with a sky lowers the water so the sky shows; leaving it puts the level back */
     const W = G.state.decor.water, E = G.state.env;
@@ -7971,6 +8076,15 @@ const Env = {
   },
   /* a small painted preview for the list of scenes */
   thumbs: new Map(),
+  /* the scenes window's previews drawn ahead, one at a time while nothing happens, and made real at once (a pixel
+     read back): the photos behind them were decoded only when the window first showed them, a stall of a third of
+     a second on a phone */
+  warmThumbs() {
+    const ids = ENVS.filter((en) => !en.picture && !(en.backdrop && !EnvArt.backdrops[en.backdrop])).map((en) => en.id);
+    const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 4000 }) : (f) => setTimeout(f, 400);
+    const next = () => { const id = ids.shift(); if (!id) return; try { const c = this.thumb(id, 200, 120); if (c && c.getContext) c.getContext('2d').getImageData(0, 0, 1, 1); } catch (e) { /* drawn when shown */ } idle(next); };
+    setTimeout(() => idle(next), 3000);
+  },
   thumb(id, w, hh, cs) {
     const key = id + w + 'x' + hh;
     if (this.thumbs.has(key)) return this.thumbs.get(key);
@@ -9552,7 +9666,10 @@ vec3 spaceSky(vec2 q, vec2 uv){
   vec2 qm = u_spaceW.xy + (q - u_spaceW.xy) / max(u_spaceW.z, .05);
   vec2 d = -(qm - u_spacePar * .12 - u_res * .5) / u_skyS;
   float r2 = dot(d, d), U = (4. - r2) / (4. + r2);
-  vec3 gv = u_skyM * vec3(d * (1. + U) * .5, U);
+  /* (the aberration, as the stars (SH.starVS): seen here, where it came from before the speed bent it, and the
+     Doppler factor of its light) */
+  float be = u_dopV.y, dn = 1. - be * U, Dm = sqrt(1. - be * be) / max(dn, .05);
+  vec3 gv = u_skyM * vec3(d * (1. + U) * .5 * sqrt(1. - be * be) / dn, (U - be) / dn);
   float b = asin(clamp(gv.z, -1., 1.)), l = atan(gv.y, gv.x);
   float core = .45 + .55 * pow(.5 + .5 * cos(l), 2.);
   float band = exp(-pow(b / (.1 + .1 * (1. - core)), 2.)) * core;
@@ -9560,10 +9677,10 @@ vec3 spaceSky(vec2 q, vec2 uv){
   float lane = exp(-pow((b - .012 * sin(l * 3.)) / .03, 2.)) * smoothstep(-.15, .2, fbm(vec2(l * 9., b * 30.) + 3.1, 3)) * (.4 + .6 * core);
   float mw = band * (.7 + .9 * tx) * (1. - .65 * lane) + exp(-(l * l * 3. + b * b * 45.)) * .5;
   /* (the Doppler tint, as on the stars: blue the way you go, red the way you leave) */
-  float dsh = clamp(u_dopV.z * U * .5 - u_dopV.x * d.x * (1. + U) * .5 * .55, -1., 1.);
+  float dsh = clamp((Dm - 1.) * 2.4 - u_dopV.x * d.x * (1. + U) * .5 * .55, -1., 1.);
   vec3 dop = dsh > 0. ? mix(vec3(1.), vec3(.62, .8, 1.35), dsh) : mix(vec3(1.), vec3(1.35, .7, .45), -dsh);
   float skyK = (1. + .14 * u_spaceL.z) * mix(1., .35, u_spaceL.w) * smoothstep(.3, .9, u_spaceW.z);
-  c += vec3(.55, .58, .7) * dop * max(mw, 0.) * .21 * skyK;
+  c += vec3(.55, .58, .7) * dop * Dm * Dm * max(mw, 0.) * .21 * skyK;
   /* clouds of gas, barely there: glowing hydrogen (rose), here and there the blue of dust lit by young stars; wisps
      (the noise bent by itself), most of them near the plane of the galaxy, a few far from it. Read on the direction
      itself (no seam where the longitude goes round) */
@@ -10243,9 +10360,12 @@ void main(){
   float E = -cd * sin(Ha), N = u_lat.y * sd - u_lat.x * cd * ch, U = u_lat.x * sd + u_lat.y * cd * ch;
   v_col = vec3(0.); v_r = 0.; v_big = 0.; v_sz = 1.; v_spk = 0.;
   if (U < .02) { gl_Position = vec4(3., 3., 0., 1.); gl_PointSize = 1.; return; }
+  /* the aberration of light (u_dop.y: v/c ahead, 07b Space.aber): going fast ahead the stars crowd toward the way you
+     go (the zenith, the middle of the view), going back they spread out; the light of those ahead is bunched, bluer
+     and brighter (beaming, D: the Doppler factor), of those behind redder and dimmer */
+  float be = u_dop.y, den = 1. + be * U, D = sqrt(1. - be * be) / max(1. - be * (U + be) / den, .05);
+  E *= sqrt(1. - be * be) / den; N *= sqrt(1. - be * be) / den; U = (U + be) / den;
   vec2 q = u_res * .5 - u_S * 2. * vec2(E, N) / (1. + U) + (u_par + u_lean) * a_c.w;
-  /* (going ahead the sky opens out a little from its middle, going back it gathers) */
-  q = u_res * .5 + (q - u_res * .5) * (1. + .05 * u_dop.z);
   q = u_warp.xy + (q - u_warp.xy) * u_warp.z;
   float s = a_x.x * 61.7;
   float tw = 1. + (.045 + .05 * smoothstep(.6, 1., a_s.w)) * (sin(u_t * (2.3 + 3.1 * fract(s)) + s) * .6 + sin(u_t * (5.7 + 4.3 * fract(s * 1.7)) + s * 2.3) * .4);
@@ -10255,9 +10375,9 @@ void main(){
   vec3 tint = mix(vec3(1.), vec3(1. + .05 * sin(u_t * 7. + s), 1., 1. - .05 * sin(u_t * 7. + s)), smoothstep(.8, 1., a_s.w));
   /* the Doppler shift: a star you are going toward turns blue and brightens, one you leave behind turns red and dims
      (looking straight up, ahead is the zenith U; to the right is the west, -E) */
-  float dsh = clamp(u_dop.z * U * .5 - u_dop.x * E * .55, -1., 1.);
+  float dsh = clamp((D - 1.) * 2.4 - u_dop.x * E * .55, -1., 1.);
   vec3 dop = dsh > 0. ? mix(vec3(1.), vec3(.62, .8, 1.35), dsh) : mix(vec3(1.), vec3(1.35, .7, .45), -dsh);
-  v_col = a_c.rgb * a_s.w * tw * (1. + fl * 2.2) * tint * dop * (1. + .3 * dsh) * mix(1., .22, u_warp.w * (1. - me)) * (1. - gone);
+  v_col = a_c.rgb * a_s.w * tw * (1. + fl * 2.2) * tint * dop * (1. + .2 * dsh) * D * D * mix(1., .22, u_warp.w * (1. - me)) * (1. - gone);
   v_r = a_s.z * (1. + fl * .7);
   /* (a star that can be touched: a little brighter and wider, glimmering slowly, so that it invites the finger) */
   float tch = step(.1, a_x.y) * step(a_x.y, .5);
@@ -11533,8 +11653,11 @@ const Scene = {
   ambient() { const E = this.env; return E ? mixRgb(E.wMid, [0.2, 0.22, 0.26], 0.55) : [0.2, 0.22, 0.26]; },
   buildDecor() {
     const cfg = this.cfg;
-    this.decor.forEach((d) => GLX.freeTex(d.tex));
+    this.decor.forEach((d) => { if (!d.shared) GLX.freeTex(d.tex); });
     this.decor = [];
+    /* (the rendered rocks and wood are the same pictures whatever the scene: sent to the screen once, kept) */
+    const PT = this.propTexs || (this.propTexs = new Map());
+    const keep = (im) => { let t = PT.get(im); if (!t) { t = GLX.texture(im, { mip: true }); PT.set(im, t); } return t; };
     this.mounds = [];
     const W = this.W, H = this.H;
     const [UX, UY] = this.decorUnit();
@@ -11554,10 +11677,10 @@ const Scene = {
         const pick = near[Math.floor(rnd() * Math.min(3, near.length))];
         const area = rw * UX * 1.2 * rh * UY * 1.1 * (type === 'arch' ? 0.75 : 0.9);
         const wpx = Math.sqrt(area * pick.a), hpx = wpx / pick.a;
-        const tex = GLX.texture(EnvArt.props[pick.id].img, { mip: true });
+        const tex = keep(EnvArt.props[pick.id].img);
         const zz = clamp(z + (rnd() - 0.5) * 0.02, 0.05, 0.98);
         const lift = (r[7] || 0) * UY;
-        this.decor.push({ kind: 'rock', type, tex, x: x * W, z: lift ? zz - 0.012 : zz, w: wpx, h: hpx, rot: rot || 0, anchorY: 0.9, flip: rnd() < 0.5 ? -1 : 1, lift, tint: ROCK_TINTS[type] });
+        this.decor.push({ kind: 'rock', type, tex, shared: true, x: x * W, z: lift ? zz - 0.012 : zz, w: wpx, h: hpx, rot: rot || 0, anchorY: 0.9, flip: rnd() < 0.5 ? -1 : 1, lift, tint: ROCK_TINTS[type] });
         if (!lift) this.mounds.push({ x: x * W, z: zz, rx: wpx * 0.42, rz: 0.07, h: Math.min(hpx * 0.07, H * 0.022) });
       });
     } else if (cfg.rocks.preset > 0) {
@@ -11596,8 +11719,8 @@ const Scene = {
       const im = realWood.img, a = im.width / im.height;
       const area = ww * UX * wh * UY * 0.9;
       const wpx = Math.sqrt(area * a), hpx = wpx / a;
-      const tex = GLX.texture(im, { mip: true });
-      this.decor.push({ kind: 'wood', type: kind, tex, x: x * W, z, w: wpx, h: hpx, rot: 0, anchorY: 0.95, flip: (cfg.wood.seed || 0) % 2 ? -1 : 1, lift: 0, tint: [1.08, 1.05, 1.0, 1] });
+      const tex = keep(im);
+      this.decor.push({ kind: 'wood', type: kind, tex, shared: true, x: x * W, z, w: wpx, h: hpx, rot: 0, anchorY: 0.95, flip: (cfg.wood.seed || 0) % 2 ? -1 : 1, lift: 0, tint: [1.08, 1.05, 1.0, 1] });
       this.mounds.push({ x: x * W, z, rx: wpx * 0.35, rz: 0.06, h: H * 0.012 });
     } else if (cfg.wood.preset > 0) {
       const p = WOOD_PRESETS[cfg.wood.preset - 1];
@@ -12025,7 +12148,7 @@ const Scene = {
       const B = Space.star, hb = Space.hover, fb = B ? B.b : hb, fp = fb ? Space.project(fb.ra, fb.de, fb.d) : null;
       const fk = B ? B.flare * (0.6 + 0.6 * B.c / SPACE_TAPS) + 0.3 * B.c / SPACE_TAPS : hb ? 0.3 : 0;
       gl.uniform4f(u2.u_flare, fp ? fp[0] : -999, fp ? fp[1] : -999, fk, FX.hide ? 1 : 0);
-      gl.uniform3f(u2.u_dop, Space.vel[0], 0, Space.vel[1]); gl.uniform2f(u2.u_lean, Space.lean[0], Space.lean[1]);
+      gl.uniform3f(u2.u_dop, Space.vel[0], Space.aber(), Space.vel[1]); gl.uniform2f(u2.u_lean, Space.lean[0], Space.lean[1]);
       gl.bindVertexArray(this.starVao); gl.drawArrays(gl.POINTS, 0, sky.n); draws++;
       /* the dust streaming past while you travel */
       const DL = Space.dustLines(W, H);
@@ -12218,7 +12341,7 @@ const Scene = {
       gl.uniform2f(up.u_cometV, CO ? CO.vx : 0, CO ? CO.vy : 1);
 
       const Wz = Space.w;
-      gl.uniform3f(up.u_dopV, Space.vel[0], 0, Space.vel[1]);
+      gl.uniform3f(up.u_dopV, Space.vel[0], Space.aber(), Space.vel[1]);
       const zc = [0, 0, 0]; SPACE_TYPES.forEach((m, i) => { for (let k = 0; k < 3; k++) zc[k] += m.col[k] * Wz[i]; });
       gl.uniform3f(up.u_zoneC, zc[0], zc[1], zc[2]);
       gl.uniform1f(up.u_depthS, Space.depth);
@@ -12387,13 +12510,13 @@ const Space = {
     const K = this.sky, W = Scene.W, H = Scene.H;
     if (!K) return null;
     const ph = SPACE_LAT * Math.PI / 180, sl = Math.sin(ph), cl = Math.cos(ph), Ha = this.lst - ra, cd = Math.cos(de), sd = Math.sin(de);
-    const E = -cd * Math.sin(Ha), N = cl * sd - sl * cd * Math.cos(Ha), U = sl * sd + cl * cd * Math.cos(Ha);
+    let E = -cd * Math.sin(Ha), N = cl * sd - sl * cd * Math.cos(Ha), U = sl * sd + cl * cd * Math.cos(Ha);
+    /* (the aberration of light, as SH.starVS: going fast ahead the stars crowd toward the way you go) */
+    const be = raw ? 0 : this.aber();
+    if (be) { const den = 1 + be * U, k = Math.sqrt(1 - be * be) / den; E *= k; N *= k; U = (U + be) / den; }
     if (U < 0.02) return null;
     let x = W / 2 - K.S * 2 * E / (1 + U) + (this.par[0] + this.lean[0]) * (dep || 0), y = H / 2 - K.S * 2 * N / (1 + U) + (this.par[1] + this.lean[1]) * (dep || 0);
     const F = this.fx;
-    /* (going ahead the sky opens out a little from its middle, going back it gathers: as SH.starVS does, so that what
-       is drawn on a star stays on it while you travel) */
-    if (!raw) { const k = 1 + 0.05 * this.vel[1]; x = W / 2 + (x - W / 2) * k; y = H / 2 + (y - H / 2) * k; }
     if (!raw && F.warpZ !== 1 && this.S) { x = this.S.x + (x - this.S.x) * F.warpZ; y = this.S.y + (y - this.S.y) * F.warpZ; }
     return [x, y];
   },
@@ -12593,14 +12716,19 @@ const Space = {
     return true;
   },
   flying() { const S = this.S; return !!S && S.phase === 'full'; },
+  /* how fast you go ahead, as a share of the speed of light (v/c, signed): the stars ahead crowd toward the middle and
+     turn blue and bright, those behind spread, redden and dim (the aberration and the beaming of light, 07_scene
+     SH.starVS and the sky behind them). Never far from real at a few tenths of c, kept gentle: at full speed (Shift) a
+     star halfway out moves a tenth of the way in */
+  aber() { return clamp(this.vel[1] * 0.15, -0.3, 0.3); },
   fly(dt) {
     const S = this.S, can = !!S && S.phase === 'full';
     let tx = 0, tz = 0;
     if (can) {
       const K = this.keys;
       tx = (K.has('arrowright') ? 1 : 0) - (K.has('arrowleft') ? 1 : 0);
-      /* (down: deeper, all round you; up: brighter and closer; the same way as the hand drawing the sky) */
-      tz = (K.has('arrowdown') ? 1 : 0) - (K.has('arrowup') ? 1 : 0);
+      /* (up: ahead, deeper, all round you, the stars rushing at you; down: back, brighter and closer) */
+      tz = (K.has('arrowup') ? 1 : 0) - (K.has('arrowdown') ? 1 : 0);
       const st = typeof Ctl !== 'undefined' && Ctl.stick && Ctl.stick.on ? Ctl.stick : null;
       if (st && !tx && !tz) { tx = st.x; tz = -st.y; }
       if (tx || tz) this.goal = null;
@@ -12655,7 +12783,7 @@ const Space = {
   /* the dust of space, only seen while you move: specks in a box round you (x, y across the view, z ahead), streaming
      past the way you go and coming round again */
   dustStep(dt) {
-    const N = 420;
+    const N = 640;
     if (!this.dust) { const d = this.dust = new Float32Array(N * 3); for (let i = 0; i < N; i++) { d[i * 3] = rand(-1.3, 1.3); d[i * 3 + 1] = rand(-1, 1); d[i * 3 + 2] = rand(0.12, 2); } }
     const d = this.dust, vx = this.vel[0] * 0.55, vz = this.vel[1] * 0.85;
     if (!vx && !vz) return;
@@ -12673,18 +12801,19 @@ const Space = {
     const d = this.dust, sp = Math.min(1, Math.hypot(this.vel[0], this.vel[1]) / 1.2);
     if (!d || sp < 0.02) return null;
     const N = d.length / 3, out = this.dustBuf || (this.dustBuf = new Float32Array(N * 12)), S0 = Math.max(W, H) * 0.5, cx = W / 2, cy = H / 2;
-    const vx = this.vel[0] * 0.55, vz = this.vel[1] * 0.85, Lt = 0.16, vl = Math.hypot(vx, vz) || 1;
+    /* (the faster, the longer the streaks: at full speed (Shift) about twice as long as when cruising) */
+    const vx = this.vel[0] * 0.55, vz = this.vel[1] * 0.85, Lt = 0.1 + 0.13 * Math.min(1.6, Math.hypot(this.vel[0], this.vel[1])), vl = Math.hypot(vx, vz) || 1;
     let n = 0;
     for (let i = 0; i < N; i++) {
       const x = d[i * 3], y = d[i * 3 + 1], z = d[i * 3 + 2];
       const tx = x + vx * Lt, tz = Math.max(0.1, z + vz * Lt);
       const hx = cx + x / z * S0, hy = cy + y / z * S0, ex = cx + tx / tz * S0, ey = cy + y / tz * S0;
       if ((hx < -50 || hx > W + 50 || hy < -50 || hy > H + 50) && (ex < -50 || ex > W + 50)) continue;
-      const a = sp * smoothstep(2, 1.4, z) * smoothstep(0.12, 0.3, z) * Math.min(1, 0.35 / z) * 0.9;
+      const a = sp * smoothstep(2, 1.4, z) * smoothstep(0.12, 0.3, z) * Math.min(1, 0.35 / z) * 1.05;
       /* (coming toward you: the way you go, seen from the speck) */
       const L = Math.hypot(x, y, z) || 1, app = (x * vx + z * vz) / (L * vl);
       const r = app > 0 ? lerp(1, 0.6, app) : 1, g = app > 0 ? lerp(1, 0.82, app) : lerp(1, 0.7, -app), b = app > 0 ? 1 : lerp(1, 0.5, -app);
-      out.set([hx, hy, r, g, b, a, ex, ey, r, g, b, 0], n * 12); n++;
+      const o = n * 12; out[o] = hx; out[o + 1] = hy; out[o + 2] = r; out[o + 3] = g; out[o + 4] = b; out[o + 5] = a; out[o + 6] = ex; out[o + 7] = ey; out[o + 8] = r; out[o + 9] = g; out[o + 10] = b; out[o + 11] = 0; n++;
     }
     return n ? { buf: out, n } : null;
   },
@@ -14292,13 +14421,15 @@ const Tank = {
   },
   /* ----- picking ----- */
   /* picking compares with where things are drawn, camera drift included */
-  pickFish(sx, sy, pad = 6) {
+  /* (busy: a fish in the middle of a show-off trick is found too, for the hand to take it, 11_main; otherwise it is
+     passed over: a touch on it applauds it, Tank.poke) */
+  pickFish(sx, sy, pad = 6, busy = false) {
     let best = null, bz = 9;
     const P = Scene.par;
     for (const f of this.fish) {
       /* busy with a trick, or deleted and swimming away or torn up: it cannot be caught */
       if (f.leaveCb || f.tear) continue;
-      if (f.trick && TRICKS[f.trick.type] && TRICKS[f.trick.type].label) continue;
+      if (!busy && f.trick && TRICKS[f.trick.type] && TRICKS[f.trick.type].label) continue;
       const s = f.screen;
       const rx = s.w * 0.5 + pad, ry = Math.max(s.h * 0.5, 14) + pad;
       const dx = (sx - s.x - P.x * s.s) / rx, dy = (sy - s.y - P.y * s.s) / ry;
@@ -14907,6 +15038,9 @@ const Tank = {
       const dd = Math.hypot(ddx, ddy);
       if (dd < 120) { ax += ddx / (dd || 1) * 90; ay += ddy / (dd || 1) * 90; }
     }
+    /* a bottom dweller wandering about goes down to the sand under it (the line sandFloor sets it on) and strolls along
+       it as the bottom rises and falls, whatever pushes it about (round the rocks and the others, not over them) */
+    if (K.mode === 5 && f.mode === 'wander' && !still) ay = Math.min((this.floorY(f.x, f.z) - f.h * 0.42 - 3 - f.y) * 3, K.speed * 2);
     const k = 1 - Math.exp(-K.agility * dt * (f.mode === 'flee' ? 2.5 : keepUp ? 2.2 : 1));
     f.vx += (ax - f.vx) * k; f.vy += (ay - f.vy) * k; f.vz += (az - f.vz) * k;
     if (K.mode === 3 && !still) f.vy += Math.sin(f.phase * 0.5) * 2 * dt;
@@ -15075,13 +15209,16 @@ const Tank = {
   still(f) { return f !== Ctl.fish && !!f.traits && f.traits.energy < 0.04; },
   startTrick(f, type, o = {}) {
     if (!type || !TRICKS[type] || this.fish.indexOf(f) < 0) return false;
-    /* (o.hand: brought on by your hand, so even a fish at rest has it) */
-    if ((this.still(f) && !o.hand) || f.leap || f.tear || (f.drag && !o.force)) return false;
+    /* (o.hand: brought on by your hand, so even a fish at rest has it; a fish in the hand has nothing else, forced or
+       not: a conga line, a loop for a couple or a level would take it out of the hand) */
+    if ((this.still(f) && !o.hand) || f.leap || f.tear || (f.drag && !o.hand)) return false;
     if (f.mode === 'leave' || f.mode === 'enter') return false;
     const K = KINDS[f.kind] || KINDS.swimmer;
     if (!o.force && f.mode !== 'wander') return false;
     if (K.noFlip && !NOFLIP_TRICKS.includes(type)) type = pick(['twirl', 'jelly']);
     if (K.mode === 5 && type === 'loop') type = 'hop';
+    /* (its sand habits, on the sand) */
+    if (!f.onSand && (type === 'sift' || type === 'scoot' || type === 'rest')) return false;
     const def = TRICKS[type];
     const W = Scene.W;
     const T = Object.assign({ type, t: 0, dur: def.dur, dir: f.face || 1 }, o);
@@ -16034,6 +16171,9 @@ const Tank = {
   dragged: null,
   dragStart(f, sx, sy) {
     if (this.fish.indexOf(f) < 0 || f.tear || f.leap || f.mode === 'leave' || f.mode === 'enter') return false;
+    /* (taken in the middle of a trick: the trick stops there, the fish stays where it was drawn, its rush checked as
+       when it is caught on the wing) */
+    if (f.trick && f.vis) { f.x += f.vis.ox; f.y += f.vis.oy; f.vx *= 0.3; f.vy *= 0.3; }
     f.trick = null; f.vis = null; f.boost = 0; f.tgt = null;
     if (f.mode !== 'wander') { f.mode = 'wander'; f.modeT = 0; }
     f.drag = { x: f.x, y: f.y, agit: 0, lx: sx, ly: sy, lt: performance.now(), dx: 0, dy: 0, woozyT: 0 };
@@ -20928,7 +21068,7 @@ const UI = {
     Scene.umbHi = onUmb || (Main.pointer && Main.pointer.down && Scene.umbHi) ? 1 : 0;
     Scene.umbPeek = onUmb || (Main.pointer && Main.pointer.down && Scene.umbPeek);
     if (onUmb) { Scene.lineHi = 0; return Cursors.act('umbrella', 'y'); }
-    if ((m === 'normal' || m === 'control') && !Tank.pickFish(sx, sy, 8)) {
+    if ((m === 'normal' || m === 'control') && !Tank.pickFish(sx, sy, 8, m === 'normal')) {
       const over = onSurface(sy, uy, sx);
       Scene.lineHi = over || (Main.pointer && Main.pointer.down && Scene.lineHi) ? 1 : 0;
       /* (on the waterline: up and down the water, along it the waves; in the sky above: down the rain, along it the
@@ -21083,31 +21223,35 @@ const UI = {
     this.syncDockStates();
     this.syncPad();
   },
-  /* ----- out in space, the compass at the top: the kinds of noise in a row that goes round, the one you are in under
-     the mark in the middle, the next ones fading to each side, the way the left and right arrows take you; it slides
-     as you go (every frame, UI.frame). The kind just come into lights up a moment (spaceMode) ----- */
+  /* ----- out in space, the compass over the bar of buttons: the kinds of noise in a row that goes round, the one you
+     are in over the mark in the middle, the next ones fading to each side, the way the left and right arrows take
+     you; it slides as you go (every frame in space only, UI.frame: only the slide is written each frame, the rest
+     when it changes, and the tape's width is read again only when the window's is) ----- */
   spaceCompass() {
     let C = this.compass;
     if (!C) {
       const track = h('div', { class: 'ctrack' }), items = [];
       for (let k = 0; k < 3; k++) SPACE_TYPES.forEach((m, i) => {
         const it = h('span', { class: 'citem', style: '--zc:rgb(' + m.col.map((v) => Math.round(v * 255)).join(',') + ')', html: '<i></i>' + escapeHtml(m.name) });
-        items.push({ el: it, i, j: k * SPACE_TYPES.length + i });
+        items.push({ el: it, i, j: k * SPACE_TYPES.length + i, op: -1, on: false });
         track.appendChild(it);
       });
       const el = h('div', { id: 'spacecompass', 'aria-hidden': 'true' }, h('span', { class: 'cchev', html: icon('chevl') }), h('div', { class: 'ctape' }, track), h('span', { class: 'cchev', html: icon('chevr') }), h('b', { class: 'cmark' }));
       this.layer.appendChild(el);
-      C = this.compass = { el, track, items, tape: el.querySelector('.ctape') };
+      C = this.compass = { el, track, items, tape: el.querySelector('.ctape'), sp: 0, iw: -1, w: 300 };
     }
-    const n = SPACE_TYPES.length, sp = this.compassSp(), wTape = C.tape.clientWidth || 300;
+    const n = SPACE_TYPES.length, sp = this.compassSp();
+    if (C.iw !== innerWidth || C.sp !== sp) {
+      C.iw = innerWidth; C.sp = sp; C.w = C.tape.clientWidth || 300;
+      for (const it of C.items) { it.el.style.left = (it.j * sp) + 'px'; it.el.style.width = sp + 'px'; }
+    }
     /* where you are across, in kinds (0 the first .. n), on the middle turn of three */
     const u = (spaceWrap(Space.pos[0]) + 1) / 0.5, at = n + u;
-    C.track.style.transform = 'translateX(' + (wTape / 2 - (at + 0.5) * sp).toFixed(1) + 'px)';
+    C.track.style.transform = 'translateX(' + (C.w / 2 - (at + 0.5) * sp).toFixed(1) + 'px)';
     for (const it of C.items) {
-      const d = Math.abs(it.j - at);
-      it.el.style.left = (it.j * sp) + 'px'; it.el.style.width = sp + 'px';
-      it.el.style.opacity = Math.max(0, 1 - d / 2.3).toFixed(3);
-      it.el.classList.toggle('on', it.i === Space.mode && d < 0.75);
+      const d = Math.abs(it.j - at), op = Math.round(Math.max(0, 1 - d / 2.3) * 100) / 100, on = it.i === Space.mode && d < 0.75;
+      if (op !== it.op) { it.op = op; it.el.style.opacity = op; }
+      if (on !== it.on) { it.on = on; it.el.classList.toggle('on', on); }
     }
   },
   /* the room of one kind on the compass's tape (px): the sky drawn by hand moves the tape by as much (07b) */
@@ -21461,7 +21605,7 @@ const UI = {
     /* the help (it was the ? at the top left): the guided tour of the tank; out in space, how things go there */
     const space = this.inSpace;
     list.append(head(_T('Aide')));
-    if (space) list.appendChild(h('p', { class: 'sethelp', text: _T('Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en haut dit où tu es), vers le bas il devient plus grave et t\'enveloppe, vers le haut il s\'éclaircit. Les flèches font de même. Tes poissons flottent : attrape-les et lance-les. Touche une étoile : elle explose, très loin, dans un grondement. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière).') }))
+    if (space) list.appendChild(h('p', { class: 'sethelp', text: _T('Fais glisser le ciel pour voyager : de côté le bruit change (profond, cabine, brun, houle, vent, puis de nouveau profond : la boussole en bas dit où tu es), vers le bas il devient plus grave et t\'enveloppe, vers le haut il s\'éclaircit. Avec les flèches, ↑ avance et t\'enveloppe, ↓ recule. Tes poissons flottent : attrape-les et lance-les. Touche une étoile : elle explose, très loin, dans un grondement. Pour rentrer, touche cinq fois une grosse étoile (celles qui portent une petite croix de lumière).') }))
     else list.appendChild(h('div', { class: 'setrow' + (st.ui.tourSeen ? '' : ' invite') }, h('span', { text: _T('Visite guidée') }), h('button', { class: 'btn small', text: st.ui.tourSeen ? _T('Revoir') : _T('Commencer'), onclick: () => { this.closePanel('settings', true); Tour.start(); } })));
     if (!space) list.append(head('Aquarium'),
       slide(_T('Activité des poissons'), _T('Calmes à gauche, très actifs à droite : plus de figures, de farandoles et de petits bruits'), () => (S.activity === undefined ? 0.5 : S.activity), (v) => { S.activity = v; Tank.groupT = Math.min(Tank.groupT || 0, Tank.showGap()); }));
@@ -21897,8 +22041,8 @@ Object.assign(UI, {
     }
     this.updateLabels();
     this.padTick(dt);
-    /* out in space: the compass at the top slides as you go */
-    if (this.inSpace || this.compass) this.spaceCompass();
+    /* out in space: the compass over the bar slides as you go (only there: back home it just fades) */
+    if (this.inSpace) this.spaceCompass();
     /* in the tank: the dial of what the hand is setting (09f) */
     Dial.frame();
     /* steering: the fish in hand gets nothing asked of it for a while (keys, thumb, a touch on the water): the line
@@ -24963,9 +25107,9 @@ function bindTankInput() {
     Main.pointer = { sx, sy, down: true };
     const m = G.mode;
     /* litter under the finger is caught (the default mode): it follows the finger and flies on when let go. A fish
-       in front of it is touched instead */
+       in front of it is touched instead (one in the middle of a trick too) */
     if (m === 'normal') {
-      const o = Tank.pickLitter(sx, sy), f0 = o && hit(sx, sy);
+      const o = Tank.pickLitter(sx, sy), f0 = o && Tank.pickFish(sx, sy, 8, true);
       if (o && (!f0 || o.z <= f0.z + 0.02)) { down.litter = o; Tank.grabLitter(o, sx, sy); UI.refreshCursor(sx, sy); return; }
     }
     /* a fish in mid-air, caught on the wing: in the hand at once */
@@ -24976,8 +25120,10 @@ function bindTankInput() {
     /* a long press on a fish takes it in hand: the arrows steer it */
     if (m === 'normal' || m === 'control') {
       const f = hit(sx, sy), d0 = down;
-      /* moved instead of held, it is carried about (the default mode) */
-      if (f && m === 'normal') d0.fish = f;
+      /* moved instead of held, it is carried about (the default mode): the fish drawn in front under the finger, one
+         in the middle of a trick too (held still or touched, that one goes on with its trick and is applauded, as
+         before) */
+      if (m === 'normal') d0.fish = Tank.pickFish(sx, sy, 8, true);
       if (f) holdRing(e.clientX, e.clientY);
       /* while the press lasts, bubbles rise from all over the fish, more and more */
       if (f) { let k = 0; d0.bub = setInterval(() => { if (down !== d0 || d0.moved) { clearInterval(d0.bub); return; } Tank.bodyBubbles(f, 1 + Math.floor(k++ / 3)); }, 45); }
@@ -25003,7 +25149,7 @@ function bindTankInput() {
     }
     /* the surface taken by hand (no fish under the finger): pulled up or down it changes the water's height,
        swept along its line it stirs the water; which of the two, the first move decides */
-    else if ((m === 'normal' || m === 'control') && !hit(sx, sy) && !down.litter && onSurface(sy, e.clientY, sx)) {
+    else if ((m === 'normal' || m === 'control') && !down.fish && !hit(sx, sy) && !down.litter && onSurface(sy, e.clientY, sx)) {
       down.surf = true; down.lx = e.clientX; down.lt = performance.now(); down.lvl0 = G.state.decor.water.level; down.sy0 = sy;
       Scene.lineHi = 1;
     }
@@ -25476,7 +25622,7 @@ function loop(tNow) {
   if (d > 1 && d < 100) {
     const r = Main.rafD || (Main.rafD = []);
     r.push(d); if (r.length > 61) r.shift();
-    if ((Main.rafN = (Main.rafN || 0) + 1) % 30 === 0) Main.vsync = r.slice().sort((a, b) => a - b)[r.length >> 1];
+    if ((Main.rafN = (Main.rafN || 0) + 1) % 30 === 0) { const q = r.slice().sort((a, b) => a - b); Main.vsync = q[r.length >> 1]; Main.vmin = q[Math.floor(r.length * 0.1)]; }
   }
   /* a screen faster than 100 Hz gets a picture every other refresh, a steady 60 a second (the graphics card would
      otherwise draw everything twice); any other screen gets one at every refresh: none is ever dropped for coming
@@ -25565,7 +25711,10 @@ function frame(tNow) {
        and applied at the start of the next frame, before drawing, so no empty frame reaches the screen */
     if (Main.qT > 4) {
       const fps = Main.qN / Main.qAcc;
-      Main.qSlow = fps < 50 ? (Main.qSlow || 0) + 1 : 0;
+      /* (not slow when every refresh gets its picture: a screen held at 30 a second, a phone saving its battery,
+         is not helped by a blurrier picture; its shortest gaps between frames are themselves a 30th of a second) */
+      const paced = Main.vmin > 24 && fps > 1000 / Main.vmin * 0.9;
+      Main.qSlow = fps < 50 && !paced ? (Main.qSlow || 0) + 1 : 0;
       Main.qFast = fps > 58 ? (Main.qFast || 0) + 1 : 0;
       const since = performance.now() - (Main.qChanged || 0);
       /* (a phone saving its battery draws 30 pictures a second whatever is drawn. So the way down is judged once, at
@@ -25671,6 +25820,7 @@ async function start() {
     if (performance.now() - (Main.tick || 0) > 1500) { cancelAnimationFrame(Main.raf); Main.last = performance.now(); Main.raf = requestAnimationFrame(loop); }
   }, 1000);
   try { if (G.state.settings.cloud && (await Cloud.available()) === 'granted') startCloud(false); } catch (e) { /* cloud optional */ }
+  try { Env.warmThumbs(); } catch (e) { /* drawn when shown */ }
   window.__ready = true;
 }
 
